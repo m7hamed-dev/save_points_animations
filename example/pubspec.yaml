@@ -1,0 +1,22 @@
+name: save_points_animations_example
+description: "Example app for the save_points_animations package."
+publish_to: "none"
+version: 1.0.0
+
+environment:
+  sdk: ^3.12.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  save_points_animations:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
