@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+import '../core/fx_curves.dart';
 import '../controllers/fx_controller.dart';
+import '../effects/attention_effects.dart';
 import '../effects/fx_effect.dart';
 import '../effects/motion_effects.dart';
 import '../effects/transform_effects.dart';
@@ -236,6 +238,54 @@ class FxBuilder extends StatelessWidget {
 
   /// Slide in from the right (with fade).
   FxBuilder slideFromRight({double distance = 0.25}) => fade().slideX(distance);
+
+  // --- Attention seekers & extra entrances -------------------------------
+
+  /// Elastic (spring-overshoot) scale entrance.
+  FxBuilder elastic({double begin = 0.0}) =>
+      scale(begin: begin).curve(FxCurves.elastic);
+
+  /// Zoom entrance: fade + scale up from [begin].
+  FxBuilder zoom({double begin = 0.3}) => fade().scale(begin: begin);
+
+  /// Opacity flash on/off.
+  FxBuilder flash() => addEffect(const FlashEffect());
+
+  /// Horizontal wobble with rotation.
+  FxBuilder wobble({double amplitude = 1.0}) =>
+      addEffect(WobbleEffect(amplitude: amplitude));
+
+  /// Pendulum swing.
+  FxBuilder swing() => addEffect(const SwingEffect());
+
+  /// Two-beat heartbeat scale.
+  FxBuilder heartbeat({double peak = 1.3}) =>
+      addEffect(HeartbeatEffect(peak: peak));
+
+  /// Jello-like skew wobble.
+  FxBuilder jelly() => addEffect(const JellyEffect());
+
+  /// Squash-and-stretch rubber band.
+  FxBuilder rubberBand() => addEffect(const RubberBandEffect());
+
+  /// Wiggle-and-grow celebration.
+  FxBuilder tada() => addEffect(const TadaEffect());
+
+  /// Gentle continuous vertical bob (pair with [looping]).
+  FxBuilder float({double amplitude = 8}) =>
+      addEffect(FloatEffect(amplitude: amplitude));
+
+  /// Pulsing glow (pair with [looping]).
+  FxBuilder glow({
+    Color color = const Color(0xFF448AFF),
+    double maxBlur = 24,
+    double maxSpread = 2,
+  }) => addEffect(
+    GlowEffect(color: color, maxBlur: maxBlur, maxSpread: maxSpread),
+  );
+
+  /// A general attention grabber (a firm double pulse).
+  FxBuilder attention() => addEffect(const HeartbeatEffect(peak: 1.15));
 
   @override
   Widget build(BuildContext context) => _FxRunner(config: this);

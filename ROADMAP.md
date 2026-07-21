@@ -12,8 +12,11 @@ The animation engine and the developer-facing surface:
 - `Widget.animate()` → immutable, chainable `FxBuilder` (itself a `Widget`).
 - Single `AnimationController` per builder; transform effects collapse into one
   `Matrix4`/`Transform`, fades into one `Opacity`, wrapped in `RepaintBoundary`.
-- Effects: fade, move, slide, scale, rotate, skew, flip, blur, tint, shake,
-  bounce, pulse (+ one-shot sugar).
+- **Full effect catalog**: fade, move, slide, scale, rotate, skew, flip, blur,
+  tint, shake, bounce, pulse, and the Animate.css-style attention seekers
+  (flash, wobble, swing, heartbeat, jelly, rubberBand, tada, float, glow).
+- Entrance one-shots (fadeIn, scaleIn/Out, zoom, elastic, slideFrom*) and 20
+  composed **presets** (success, error, loading, dialog, toast, fab, …).
 - Timeline: parallel-by-default, `then()`, `parallel()`, per-effect timing.
 - `FxController`, `FxTheme` (with defaults cascade), `FxCurves`, duration
   extensions, staggered lists, custom `FxEffect`s.
@@ -25,8 +28,8 @@ The animation engine and the developer-facing surface:
   `onVisible` (requires a viewport detector), `onAppear/onDisappear`.
 - Gesture animations: `pressScale`, `hoverScale`, `pressBounce`, `dragScale`,
   `swipeRotate`.
-- Presets: `success`, `error`, `warning`, `toast`, `dialog`, `cardEntry`, … as
-  composed sugar over core effects.
+
+  (Presets shipped early in v0.1 — see above.)
 
 ## ⏳ v0.3 — Advanced
 

@@ -1,15 +1,23 @@
 ## 0.1.0
 
-Initial release — the v0.1 **core** milestone.
+Initial release — the v0.1 **core** milestone with the full animation catalog.
 
 ### Added
 - `Widget.animate()` entry point returning a chainable, immutable `FxBuilder`
   that is itself a `Widget`.
 - Single-`AnimationController` engine that collapses transform effects into one
   `Transform` and fades into one `Opacity`, wrapped in a `RepaintBoundary`.
-- Effects: `fade`, `fadeOut`, `moveX/Y/move`, `slideX/Y`, `scale`, `rotate`,
-  `skew`, `flipX/Y`, `blur`, `tint`, `shake`, `bounce`, `pulse`.
-- One-shot sugar: `fadeIn`, `scaleIn/Out`, `slideFrom{Top,Bottom,Left,Right}`.
+- Transform/visual effects: `fade`, `fadeOut`, `moveX/Y/move`, `slideX/Y`,
+  `scale`, `rotate`, `skew`, `flipX/Y`, `blur`, `tint`.
+- Attention seekers: `shake`, `bounce`, `pulse`, `flash`, `wobble`, `swing`,
+  `heartbeat`, `jelly`, `rubberBand`, `tada`, `float`, `glow` (keyframe-accurate,
+  Animate.css-inspired).
+- Entrance one-shots: `fadeIn`, `scaleIn/Out`, `zoom`, `elastic`,
+  `slideFrom{Top,Bottom,Left,Right}`.
+- 20 composed presets: `success`, `error`, `warning`, `loading`, `attention`,
+  `heroEntry/Exit`, `dialog`, `tooltip`, `toast`, `snackbar`, `cardEntry`,
+  `listItem`, `pageTransition`, `modal`, `popup`, `emptyState`, `onboarding`,
+  `fab`, `notification`.
 - Timeline operators: parallel-by-default, `then()` sequencing, `parallel()`,
   and per-effect `duration()/delay()/curve()`.
 - `FxController` facade (`play/pause/resume/restart/reverse/stop/repeat/seek/

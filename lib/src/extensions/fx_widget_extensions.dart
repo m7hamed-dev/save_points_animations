@@ -61,4 +61,43 @@ extension FxAnimate on Widget {
 
   /// Single pulse.
   FxBuilder pulse({double amount = 0.1}) => animate().pulse(amount: amount);
+
+  /// Elastic scale entrance.
+  FxBuilder elastic({double begin = 0.0}) => animate().elastic(begin: begin);
+
+  /// Zoom entrance (fade + scale).
+  FxBuilder zoom({double begin = 0.3}) => animate().zoom(begin: begin);
+
+  /// Opacity flash.
+  FxBuilder flash() => animate().flash();
+
+  /// Horizontal wobble.
+  FxBuilder wobble({double amplitude = 1.0}) =>
+      animate().wobble(amplitude: amplitude);
+
+  /// Pendulum swing.
+  FxBuilder swing() => animate().swing();
+
+  /// Two-beat heartbeat.
+  FxBuilder heartbeat({double peak = 1.3}) => animate().heartbeat(peak: peak);
+
+  /// Jello-like wobble.
+  FxBuilder jelly() => animate().jelly();
+
+  /// Rubber-band squash and stretch.
+  FxBuilder rubberBand() => animate().rubberBand();
+
+  /// Wiggle-and-grow celebration.
+  FxBuilder tada() => animate().tada();
+
+  /// Continuous vertical bob (loops).
+  FxBuilder float({double amplitude = 8}) =>
+      animate().float(amplitude: amplitude).looping();
+
+  /// Pulsing glow (loops).
+  FxBuilder glow({Color color = const Color(0xFF448AFF)}) =>
+      animate().glow(color: color).looping();
+
+  /// General attention grabber.
+  FxBuilder attention() => animate().attention();
 }

@@ -22,6 +22,7 @@ export 'src/effects/fx_effect.dart' show FxEffect, FxAccumulator, fxLerp;
 export 'src/effects/transform_effects.dart';
 export 'src/effects/visual_effects.dart';
 export 'src/effects/motion_effects.dart';
+export 'src/effects/attention_effects.dart';
 
 // Engine / builder
 export 'src/builders/fx_builder.dart' show FxBuilder;
@@ -35,3 +36,6 @@ export 'src/themes/fx_theme.dart'
 export 'src/extensions/num_duration_extensions.dart';
 export 'src/extensions/fx_widget_extensions.dart';
 export 'src/extensions/fx_list_extensions.dart';
+
+// Presets
+export 'src/presets/fx_presets.dart';

@@ -147,10 +147,27 @@ widget.animate().addEffect(const SwingEffect());
 
 ## Built-in effects
 
-`fade` · `fadeOut` · `moveX/Y/move` · `slideX/Y` · `scale` · `rotate` · `skew` ·
-`flipX/Y` · `blur` · `tint` · `shake` · `bounce` · `pulse`
+**Transform / visual:** `fade` · `fadeOut` · `moveX/Y/move` · `slideX/Y` ·
+`scale` · `rotate` · `skew` · `flipX/Y` · `blur` · `tint`
 
-One-shots: `fadeIn` · `scaleIn/Out` · `slideFrom{Top,Bottom,Left,Right}`
+**Attention seekers:** `shake` · `bounce` · `pulse` · `flash` · `wobble` ·
+`swing` · `heartbeat` · `jelly` · `rubberBand` · `tada` · `float` · `glow`
+
+**Entrances (one-shots):** `fadeIn` · `scaleIn/Out` · `zoom` · `elastic` ·
+`slideFrom{Top,Bottom,Left,Right}`
+
+**Presets:** `success` · `error` · `warning` · `loading` · `attention` ·
+`heroEntry/Exit` · `dialog` · `tooltip` · `toast` · `snackbar` · `cardEntry` ·
+`listItem` · `pageTransition` · `modal` · `popup` · `emptyState` · `onboarding` ·
+`fab` · `notification`
+
+```dart
+title.tada();                       // celebrate
+field.error();                      // shake on invalid input
+spinner.loading();                  // continuous spinner
+badge.animate().glow().looping();   // pulsing glow
+avatar.animate().float().looping(); // gentle bob
+```
 
 ## Roadmap
 
