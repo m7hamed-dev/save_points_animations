@@ -46,3 +46,8 @@ export 'src/gestures/fx_gestures.dart' show FxGestures;
 
 // Physics
 export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;
+
+// Page transitions & Hero
+export 'src/transitions/fx_page_route.dart'
+    show FxPageRoute, FxPageTransition, FxNavigator, buildFxTransition;
+export 'src/transitions/fx_hero.dart' show FxHero, FxArcRectTween;

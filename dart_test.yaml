@@ -1,0 +1,7 @@
+tags:
+  golden:
+    # Golden image comparisons are platform-sensitive (font/anti-aliasing
+    # rendering differs across OSes). They run locally and are excluded from
+    # CI via `flutter test --exclude-tags golden`. Regenerate with:
+    #   flutter test --update-goldens --tags golden
+    skip: false

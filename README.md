@@ -225,6 +225,21 @@ A full demo lives in [`example/`](example/lib/main.dart):
 cd example && flutter run
 ```
 
+## Development
+
+```bash
+flutter test                       # everything (incl. golden images)
+flutter test --exclude-tags golden # fast, portable suite (what CI runs)
+flutter test --update-goldens --tags golden  # regenerate goldens
+dart format . && flutter analyze
+```
+
+Golden tests pump the controller to **deterministic `t` values** (never a live
+mid-flight frame) and are tagged `golden`. Because golden rendering varies by
+platform, CI runs the portable suite and goldens are verified locally. CI
+(analyze + format + test on every push/PR) is defined in
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## License
 
 See [LICENSE](LICENSE).

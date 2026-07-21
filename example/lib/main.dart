@@ -93,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text('Staggered item #$i'),
               ),
             ),
-          ).animateList().fade().slideX(0.15).interval(90.ms).build(),
+          ).animateList().fade().slideX(0.5).interval(90.ms).build(),
 
           const SizedBox(height: 32),
           Text('Physics', style: theme.textTheme.titleMedium),

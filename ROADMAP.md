@@ -44,6 +44,13 @@ The animation engine and the developer-facing surface:
 - ⏳ Debug HUD: `showTimeline`, `showBounds`, `showFPS`, gated behind `kDebugMode`.
 - ⏳ `benchmarks/` frame-budget harness + an Impeller driver test.
 
+## ✅ Quality infrastructure (shipped)
+
+- GitHub Actions CI (`.github/workflows/ci.yml`): format check, analyze, and the
+  portable test suite on every push/PR, plus example analysis.
+- Golden tests at deterministic `t` values (tagged `golden`, run locally).
+- `CONTRIBUTING.md` and a `dart_test.yaml` tag config.
+
 ## Testing philosophy
 
 - Engine/timeline/theming resolution: aim for ~100% coverage (the risky core).
