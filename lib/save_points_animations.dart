@@ -51,3 +51,6 @@ export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;
 export 'src/transitions/fx_page_route.dart'
     show FxPageRoute, FxPageTransition, FxNavigator, buildFxTransition;
 export 'src/transitions/fx_hero.dart' show FxHero, FxArcRectTween;
+
+// Debug tools
+export 'src/debug/fx_debug.dart' show FxDebug, FxDebugRegistry;

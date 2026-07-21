@@ -29,6 +29,12 @@ Initial release — the v0.1 **core** milestone with the full animation catalog.
   `zoom`, `slide`, `rotation`, `sharedAxisHorizontal/Vertical`.
 - Hero: `heroAnimate(tag)` with an optional curved-arc flight path
   (`FxArcRectTween`).
+- Debug tools (debug-build only, zero release overhead): `showFPS`,
+  `showBounds`, `showTimeline`, `showControllers`, `showPerformance`, backed by
+  a live `FxDebugRegistry` controller count.
+- Benchmark harness: a CI-runnable smoke benchmark (`test/benchmark/`) plus an
+  on-device / Impeller integration test (`example/integration_test/`) — see
+  `benchmark/README.md`.
 - Timeline operators: parallel-by-default, `then()` sequencing, `parallel()`,
   and per-effect `duration()/delay()/curve()`.
 - `FxController` facade (`play/pause/resume/restart/reverse/stop/repeat/seek/

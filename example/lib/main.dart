@@ -107,6 +107,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ).animate().scale(begin: 0.0).spring(stiffness: 320, damping: 14),
               const SizedBox(width: 16),
               _Chip(color: Colors.orange).animate().moveY(-120).gravity(),
+              const SizedBox(width: 16),
+              // Debug overlay (debug builds only): FPS + frame bars + count.
+              _Chip(
+                color: Colors.blueGrey,
+              ).animate().float().looping().showPerformance(),
             ],
           ),
 

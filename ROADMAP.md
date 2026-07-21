@@ -34,7 +34,7 @@ The animation engine and the developer-facing surface:
 - `dragScale`, `swipeRotate` (pan-tracking gestures — semantics are
   app-specific; deferred until a clean, general API is settled).
 
-## 🚧 v0.3 — Advanced (in progress)
+## ✅ v0.3 — Advanced (shipped)
 
 - ✅ Physics: `spring`, `gravity`, `friction`/inertia built on Flutter's
   `physics.dart` simulations (`FxSpringCurve` / `FxPhysics`) — not a hand-rolled
@@ -42,8 +42,10 @@ The animation engine and the developer-facing surface:
 - ✅ Page transitions (`FxPageRoute` / `context.fxPush`: fade, scale, zoom,
   slide, rotation, shared-axis H/V) and Hero enhancements (`heroAnimate` with
   curved-arc flight).
-- ⏳ Debug HUD: `showTimeline`, `showBounds`, `showFPS`, gated behind `kDebugMode`.
-- ⏳ `benchmarks/` frame-budget harness + an Impeller driver test.
+- ✅ Debug HUD: `showFPS`, `showBounds`, `showTimeline`, `showControllers`,
+  `showPerformance`, gated behind `kDebugMode` (zero release overhead).
+- ✅ Benchmark harness: CI-runnable smoke benchmark + on-device / Impeller
+  integration test (see `benchmark/README.md`).
 
 ## ✅ Quality infrastructure (shipped)
 

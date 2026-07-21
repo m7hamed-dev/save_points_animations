@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../core/fx_curves.dart';
 import '../controllers/fx_controller.dart';
+import '../debug/fx_debug.dart';
 import '../effects/attention_effects.dart';
 import '../effects/fx_effect.dart';
 import '../effects/motion_effects.dart';
@@ -357,6 +358,7 @@ class _FxRunnerState extends State<_FxRunner>
     super.initState();
     _controller = AnimationController(vsync: this);
     widget.config.controller?.attach(_controller);
+    FxDebugRegistry.activeControllers++;
   }
 
   @override
@@ -372,6 +374,7 @@ class _FxRunnerState extends State<_FxRunner>
   void dispose() {
     widget.config.controller?.detach(_controller);
     _controller.dispose();
+    FxDebugRegistry.activeControllers--;
     super.dispose();
   }
 

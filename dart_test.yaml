@@ -5,3 +5,7 @@ tags:
     # CI via `flutter test --exclude-tags golden`. Regenerate with:
     #   flutter test --update-goldens --tags golden
     skip: false
+  benchmark:
+    # Fast smoke benchmark. Runs in CI as part of the normal suite; run just it
+    # with `flutter test --tags benchmark`.
+    skip: false

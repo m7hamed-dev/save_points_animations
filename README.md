@@ -246,6 +246,19 @@ A full demo lives in [`example/`](example/lib/main.dart):
 cd example && flutter run
 ```
 
+## Debug tools
+
+Development-only overlays — in release builds they return the child untouched
+(**zero** overhead):
+
+```dart
+myPage.showFPS();            // live FPS + frame ms
+myWidget.showBounds();       // draw bounds + size
+list.showTimeline();         // rolling frame-duration bars
+scaffold.showControllers();  // count of active .animate() controllers
+scaffold.showPerformance();  // all of the above
+```
+
 ## Development
 
 ```bash
