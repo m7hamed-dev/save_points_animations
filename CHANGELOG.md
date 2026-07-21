@@ -25,6 +25,10 @@ Initial release — the v0.1 **core** milestone with the full animation catalog.
 - Physics: `spring` (real `SpringSimulation` with auto settle duration),
   `gravity`, `friction`/inertia — exposed as fluent modifiers and as
   `FxPhysics` / `FxSpringCurve` for use anywhere a `Curve` is accepted.
+- Page transitions: `FxPageRoute` + `context.fxPush` with `fade`, `scale`,
+  `zoom`, `slide`, `rotation`, `sharedAxisHorizontal/Vertical`.
+- Hero: `heroAnimate(tag)` with an optional curved-arc flight path
+  (`FxArcRectTween`).
 - Timeline operators: parallel-by-default, `then()` sequencing, `parallel()`,
   and per-effect `duration()/delay()/curve()`.
 - `FxController` facade (`play/pause/resume/restart/reverse/stop/repeat/seek/

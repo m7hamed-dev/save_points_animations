@@ -5,8 +5,9 @@ import 'package:save_points_animations/save_points_animations.dart';
 void main() {
   group('FxPageRoute', () {
     for (final transition in FxPageTransition.values) {
-      testWidgets('$transition pushes and settles on the new page',
-          (tester) async {
+      testWidgets('$transition pushes and settles on the new page', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
             home: Builder(
@@ -109,7 +110,7 @@ void main() {
         begin: const Rect.fromLTWH(0, 0, 10, 10),
         end: const Rect.fromLTWH(200, 200, 10, 10),
       );
-      final mid = tween.lerp(0.5)!;
+      final mid = tween.lerp(0.5);
       final straight = RectTween(
         begin: const Rect.fromLTWH(0, 0, 10, 10),
         end: const Rect.fromLTWH(200, 200, 10, 10),

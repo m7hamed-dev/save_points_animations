@@ -110,6 +110,31 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
 
+          const SizedBox(height: 12),
+
+          // Page transition + Hero.
+          Builder(
+            builder: (context) => Card(
+              child: ListTile(
+                leading: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ).heroAnimate('detail-hero'),
+                title: const Text('Open detail'),
+                subtitle: const Text('shared-axis transition + Hero'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.fxPush(
+                  const DetailScreen(),
+                  transition: FxPageTransition.sharedAxisHorizontal,
+                ),
+              ),
+            ),
+          ),
+
           const SizedBox(height: 32),
           Text('Interactive', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
@@ -185,4 +210,35 @@ class _Chip extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
     ),
   );
+}
+
+class DetailScreen extends StatelessWidget {
+  const DetailScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Detail')),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // The Hero grows from the list tile's small square.
+            Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                color: Colors.deepPurple,
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ).heroAnimate('detail-hero'),
+            const SizedBox(height: 24),
+            const Text(
+              'Arrived via shared-axis',
+            ).animate().fadeIn().slideY(0.3).duration(500.ms),
+          ],
+        ),
+      ),
+    );
+  }
 }

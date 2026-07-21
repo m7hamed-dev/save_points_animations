@@ -145,6 +145,27 @@ Or use the curves directly anywhere a `Curve` is accepted:
 widget.animate().scale(begin: 0).curve(FxPhysics.spring(stiffness: 260));
 ```
 
+### Page transitions & Hero
+
+Push routes with a built-in transition, or use `FxPageRoute` directly:
+
+```dart
+context.fxPush(DetailPage(), transition: FxPageTransition.sharedAxisHorizontal);
+
+Navigator.of(context).push(
+  FxPageRoute(builder: (_) => DetailPage(), transition: FxPageTransition.zoom),
+);
+```
+
+Transitions: `fade` · `scale` · `zoom` · `slide` (any `AxisDirection`) ·
+`rotation` · `sharedAxisHorizontal` · `sharedAxisVertical`.
+
+Hero flights (with an optional curved-arc path):
+
+```dart
+Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
+```
+
 ### Global theme
 
 ```dart

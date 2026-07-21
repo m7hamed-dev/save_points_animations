@@ -39,8 +39,9 @@ The animation engine and the developer-facing surface:
 - ✅ Physics: `spring`, `gravity`, `friction`/inertia built on Flutter's
   `physics.dart` simulations (`FxSpringCurve` / `FxPhysics`) — not a hand-rolled
   solver.
-- ⏳ Page transitions (Fade / SharedAxis / Scale / Zoom / Slide / Material /
-  Cupertino) and Hero enhancements.
+- ✅ Page transitions (`FxPageRoute` / `context.fxPush`: fade, scale, zoom,
+  slide, rotation, shared-axis H/V) and Hero enhancements (`heroAnimate` with
+  curved-arc flight).
 - ⏳ Debug HUD: `showTimeline`, `showBounds`, `showFPS`, gated behind `kDebugMode`.
 - ⏳ `benchmarks/` frame-budget harness + an Impeller driver test.
 
