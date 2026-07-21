@@ -94,6 +94,21 @@ class FxBuilder extends StatelessWidget {
         child: child,
       );
 
+  /// Return a copy bound to [controller] with an explicit [autoPlay].
+  ///
+  /// Used by triggers (e.g. `onTap`) to drive an existing chain imperatively.
+  FxBuilder configure({FxController? controller, bool? autoPlay}) =>
+      FxBuilder._(
+        key: key,
+        controller: controller ?? this.controller,
+        autoPlay: autoPlay ?? this.autoPlay,
+        addRepaintBoundary: addRepaintBoundary,
+        ops: _ops,
+        repeat: _repeat,
+        reverseOnRepeat: _reverseOnRepeat,
+        child: child,
+      );
+
   /// Append an arbitrary (including custom) effect to the chain.
   FxBuilder addEffect(FxEffect effect) =>
       _copy(ops: <_Op>[..._ops, _EffectOp(effect)]);

@@ -18,6 +18,10 @@ Initial release — the v0.1 **core** milestone with the full animation catalog.
   `heroEntry/Exit`, `dialog`, `tooltip`, `toast`, `snackbar`, `cardEntry`,
   `listItem`, `pageTransition`, `modal`, `popup`, `emptyState`, `onboarding`,
   `fab`, `notification`.
+- Triggers: `onTap`, `onDoubleTap`, `onLongPress`, `onHover`, `onAppear`,
+  `onVisible` / `animateOnVisible` — replay any chain on an event.
+- Gesture animations: `pressScale`, `pressBounce`, `hoverScale` — continuous,
+  pointer-state-driven feedback.
 - Timeline operators: parallel-by-default, `then()` sequencing, `parallel()`,
   and per-effect `duration()/delay()/curve()`.
 - `FxController` facade (`play/pause/resume/restart/reverse/stop/repeat/seek/

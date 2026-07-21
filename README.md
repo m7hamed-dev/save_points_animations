@@ -107,6 +107,27 @@ Column(
 );
 ```
 
+### Triggers — play on an event
+
+Turn any chain into an event-driven animation:
+
+```dart
+badge.animate().tada().onTap();          // replay on tap
+menu.animate().fadeIn().onHover();       // replay on hover
+card.animate().fadeIn().slideX(0.1).onVisible();  // play when scrolled into view
+```
+
+Available: `onTap` · `onDoubleTap` · `onLongPress` · `onHover` · `onAppear` ·
+`onVisible` / `animateOnVisible`.
+
+### Gestures — continuous, state-driven feedback
+
+```dart
+button.pressScale();     // dips while pressed, springs back
+button.pressBounce();    // dips then elastic overshoot on release
+card.hoverScale();       // grows while hovered (desktop/web)
+```
+
 ### Global theme
 
 ```dart

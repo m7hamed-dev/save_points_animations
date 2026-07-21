@@ -94,6 +94,63 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ).animateList().fade().slideX(0.15).interval(90.ms).build(),
+
+          const SizedBox(height: 32),
+          Text('Interactive', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // 5. Gesture animations: press & hover.
+          Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  onPressed: () {},
+                  child: const Text('pressScale'),
+                ).pressScale(),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.tonal(
+                  onPressed: () {},
+                  child: const Text('pressBounce'),
+                ).pressBounce(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: const ListTile(
+              leading: Icon(Icons.mouse),
+              title: Text('hoverScale me (desktop/web)'),
+            ),
+          ).hoverScale(),
+
+          const SizedBox(height: 12),
+
+          // 6. Trigger: replay a tada on tap.
+          Card(
+            color: theme.colorScheme.primaryContainer,
+            child: const ListTile(
+              leading: Icon(Icons.touch_app),
+              title: Text('Tap me to celebrate'),
+            ),
+          ).animate(autoPlay: false).tada().duration(700.ms).onTap(),
+
+          const SizedBox(height: 12),
+
+          // 7. Trigger: animate on scroll into view.
+          ...List.generate(
+            8,
+            (i) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Card(
+                child: ListTile(
+                  leading: const Icon(Icons.visibility),
+                  title: Text('Reveals on scroll #$i'),
+                ),
+              ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
         ],
       ),
     );

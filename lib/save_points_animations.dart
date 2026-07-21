@@ -39,3 +39,7 @@ export 'src/extensions/fx_list_extensions.dart';
 
 // Presets
 export 'src/presets/fx_presets.dart';
+
+// Triggers & gestures
+export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
+export 'src/gestures/fx_gestures.dart' show FxGestures;

@@ -22,14 +22,17 @@ The animation engine and the developer-facing surface:
   extensions, staggered lists, custom `FxEffect`s.
 - Reduced-motion support; unit + widget tests; example app.
 
-## ⏳ v0.2 — Interaction
+## ✅ v0.2 — Interaction (shipped)
 
-- Triggers: `onTap`, `onDoubleTap`, `onLongPress`, `onHover`, `onFocus`,
-  `onVisible` (requires a viewport detector), `onAppear/onDisappear`.
-- Gesture animations: `pressScale`, `hoverScale`, `pressBounce`, `dragScale`,
-  `swipeRotate`.
+- Triggers: `onTap`, `onDoubleTap`, `onLongPress`, `onHover`, `onAppear`,
+  `onVisible` / `animateOnVisible`.
+- Gesture animations: `pressScale`, `pressBounce`, `hoverScale`.
+- Presets (shipped early in v0.1 — see above).
 
-  (Presets shipped early in v0.1 — see above.)
+### Still open in this line
+- `onFocus`, `onDisappear` triggers.
+- `dragScale`, `swipeRotate` (pan-tracking gestures — semantics are
+  app-specific; deferred until a clean, general API is settled).
 
 ## ⏳ v0.3 — Advanced
 
