@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
-import 'fx_effect.dart';
+import 'package:save_points_animations/src/effects/fx_effect.dart';
 
 /// Animates opacity (folded into the single composed opacity multiplier).
 class FadeEffect extends FxEffect {

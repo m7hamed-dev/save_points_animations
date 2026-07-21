@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-import '../core/fx_curves.dart';
+import 'package:save_points_animations/src/core/fx_curves.dart';
 
 /// The built-in page transition styles.
 enum FxPageTransition {

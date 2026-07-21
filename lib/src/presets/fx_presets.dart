@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-import '../builders/fx_builder.dart';
-import '../core/fx_curves.dart';
-import '../extensions/fx_widget_extensions.dart';
-import '../extensions/num_duration_extensions.dart';
+import 'package:save_points_animations/src/builders/fx_builder.dart';
+import 'package:save_points_animations/src/core/fx_curves.dart';
+import 'package:save_points_animations/src/extensions/fx_widget_extensions.dart';
+import 'package:save_points_animations/src/extensions/num_duration_extensions.dart';
 
 /// Ready-made, professionally tuned animations composed from the core effects.
 ///
@@ -96,7 +96,7 @@ extension FxPresets on Widget {
 
   /// FAB entrance: elastic scale from zero.
   FxBuilder fab() =>
-      animate().scale(begin: 0).curve(FxCurves.elastic).duration(500.ms);
+      animate().scale().curve(FxCurves.elastic).duration(500.ms);
 
   /// Notification banner: drop in from the top.
   FxBuilder notification() =>

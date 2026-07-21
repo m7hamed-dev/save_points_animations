@@ -54,7 +54,7 @@ void main() {
       t: 0.5,
       name: 'scale_50',
       builder: (c) =>
-          _box().animate(controller: c, autoPlay: false).scale(begin: 0.0),
+          _box().animate(controller: c, autoPlay: false).scale(),
     );
   });
 
@@ -65,7 +65,7 @@ void main() {
       name: 'rotate_100',
       builder: (c) => _box(
         const Color(0xFFE91E63),
-      ).animate(controller: c, autoPlay: false).rotate(45, 0),
+      ).animate(controller: c, autoPlay: false).rotate(45),
     );
   });
 

@@ -1,15 +1,15 @@
 import 'package:flutter/widgets.dart';
 
-import '../controllers/fx_controller.dart';
-import '../core/fx_curves.dart';
-import '../debug/fx_debug.dart';
-import '../effects/attention_effects.dart';
-import '../effects/fx_effect.dart';
-import '../effects/motion_effects.dart';
-import '../effects/transform_effects.dart';
-import '../effects/visual_effects.dart';
-import '../physics/fx_physics.dart';
-import '../themes/fx_theme.dart';
+import 'package:save_points_animations/src/controllers/fx_controller.dart';
+import 'package:save_points_animations/src/core/fx_curves.dart';
+import 'package:save_points_animations/src/debug/fx_debug.dart';
+import 'package:save_points_animations/src/effects/attention_effects.dart';
+import 'package:save_points_animations/src/effects/fx_effect.dart';
+import 'package:save_points_animations/src/effects/motion_effects.dart';
+import 'package:save_points_animations/src/effects/transform_effects.dart';
+import 'package:save_points_animations/src/effects/visual_effects.dart';
+import 'package:save_points_animations/src/physics/fx_physics.dart';
+import 'package:save_points_animations/src/themes/fx_theme.dart';
 
 /// A single entry in the chain: either an effect or a `then` barrier.
 @immutable
@@ -204,7 +204,7 @@ class FxBuilder extends StatelessWidget {
 
   /// Horizontal 3D flip (degrees begin → 0).
   FxBuilder flipX({double begin = 90}) =>
-      addEffect(FlipEffect(horizontal: true, beginDegrees: begin));
+      addEffect(FlipEffect(beginDegrees: begin));
 
   /// Vertical 3D flip (degrees begin → 0).
   FxBuilder flipY({double begin = 90}) =>

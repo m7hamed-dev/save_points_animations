@@ -33,7 +33,7 @@ void main() {
 
   test('heartbeat scales up at its first beat', () {
     final acc = FxAccumulator();
-    const HeartbeatEffect(peak: 1.3).apply(acc, 0.14);
+    const HeartbeatEffect().apply(acc, 0.14);
     expect(acc.transform.getMaxScaleOnAxis(), closeTo(1.3, 1e-6));
   });
 

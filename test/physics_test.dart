@@ -11,7 +11,7 @@ void main() {
     });
 
     test('an underdamped spring overshoots past the target', () {
-      final spring = FxSpringCurve(stiffness: 180, damping: 12);
+      final spring = FxSpringCurve();
       var maxValue = 0.0;
       for (var i = 0; i <= 100; i++) {
         final v = spring.transform(i / 100);

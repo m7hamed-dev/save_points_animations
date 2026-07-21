@@ -63,7 +63,7 @@ class _FxBounds extends StatelessWidget {
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                border: Border.all(color: color, width: 1),
+                border: Border.all(color: color),
               ),
               child: Align(
                 alignment: Alignment.topLeft,

@@ -1,5 +1,7 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/physics.dart';
+import 'package:save_points_animations/save_points_animations.dart' show FxBuilder;
+import 'package:save_points_animations/src/builders/fx_builder.dart' show FxBuilder;
 
 /// Step a simulation until it reports settled (or a safety cap is hit) and
 /// return that time in seconds.

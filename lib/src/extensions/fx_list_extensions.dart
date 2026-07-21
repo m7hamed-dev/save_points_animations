@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-import '../effects/fx_effect.dart';
-import '../effects/transform_effects.dart';
-import '../effects/visual_effects.dart';
-import 'fx_widget_extensions.dart';
+import 'package:save_points_animations/src/effects/fx_effect.dart';
+import 'package:save_points_animations/src/effects/transform_effects.dart';
+import 'package:save_points_animations/src/effects/visual_effects.dart';
+import 'package:save_points_animations/src/extensions/fx_widget_extensions.dart';
 
 /// Turn a list of widgets into a staggered animation group.
 extension FxAnimateList on List<Widget> {

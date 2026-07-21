@@ -12,8 +12,8 @@ void main() {
 
     test('composes multiplicatively with a second fade', () {
       final acc = FxAccumulator();
-      const FadeEffect(begin: 0, end: 1).apply(acc, 0.5); // 0.5
-      const FadeEffect(begin: 0, end: 1).apply(acc, 0.5); // *0.5
+      const FadeEffect().apply(acc, 0.5); // 0.5
+      const FadeEffect().apply(acc, 0.5); // *0.5
       expect(acc.opacity, closeTo(0.25, 1e-9));
     });
 
@@ -39,7 +39,7 @@ void main() {
 
     test('ScaleEffect scales the matrix', () {
       final acc = FxAccumulator();
-      const ScaleEffect(begin: 0, end: 2).apply(acc, 0.5);
+      const ScaleEffect(end: 2).apply(acc, 0.5);
       expect(acc.transform.getMaxScaleOnAxis(), closeTo(1.0, 1e-9));
     });
 

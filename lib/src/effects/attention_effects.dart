@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
-import 'fx_effect.dart';
+import 'package:save_points_animations/src/effects/fx_effect.dart';
 
 double _deg2rad(double deg) => deg * math.pi / 180.0;
 

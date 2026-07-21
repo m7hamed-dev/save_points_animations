@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../builders/fx_builder.dart';
-import '../controllers/fx_controller.dart';
+import 'package:save_points_animations/src/builders/fx_builder.dart';
+import 'package:save_points_animations/src/controllers/fx_controller.dart';
 
 /// How a triggered animation is (re)started.
 enum FxTrigger {
