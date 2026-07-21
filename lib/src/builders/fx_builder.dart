@@ -7,6 +7,7 @@ import '../effects/fx_effect.dart';
 import '../effects/motion_effects.dart';
 import '../effects/transform_effects.dart';
 import '../effects/visual_effects.dart';
+import '../physics/fx_physics.dart';
 import '../themes/fx_theme.dart';
 
 /// A single entry in the chain: either an effect or a `then` barrier.
@@ -301,6 +302,37 @@ class FxBuilder extends StatelessWidget {
 
   /// A general attention grabber (a firm double pulse).
   FxBuilder attention() => addEffect(const HeartbeatEffect(peak: 1.15));
+
+  // --- Physics -----------------------------------------------------------
+
+  /// Drive the last effect with a real spring simulation, setting both its
+  /// curve and its physically-correct settle duration.
+  ///
+  /// ```dart
+  /// icon.animate().scale(begin: 0.5).spring(stiffness: 300, damping: 15);
+  /// ```
+  FxBuilder spring({
+    double stiffness = 180,
+    double damping = 12,
+    double mass = 1,
+    double velocity = 0,
+  }) {
+    final springCurve = FxPhysics.spring(
+      stiffness: stiffness,
+      damping: damping,
+      mass: mass,
+      velocity: velocity,
+    );
+    return curve(springCurve).duration(springCurve.settleDuration);
+  }
+
+  /// Drive the last effect with a constant-acceleration (gravity) curve.
+  FxBuilder gravity({double acceleration = 9.8, double velocity = 0}) =>
+      curve(FxPhysics.gravity(acceleration: acceleration, velocity: velocity));
+
+  /// Drive the last effect with a decelerating friction/inertia curve.
+  FxBuilder friction({double drag = 0.2, double velocity = 1}) =>
+      curve(FxPhysics.friction(drag: drag, velocity: velocity));
 
   @override
   Widget build(BuildContext context) => _FxRunner(config: this);

@@ -43,3 +43,6 @@ export 'src/presets/fx_presets.dart';
 // Triggers & gestures
 export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
 export 'src/gestures/fx_gestures.dart' show FxGestures;
+
+// Physics
+export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;

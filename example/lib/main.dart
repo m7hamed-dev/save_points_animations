@@ -96,6 +96,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ).animateList().fade().slideX(0.15).interval(90.ms).build(),
 
           const SizedBox(height: 32),
+          Text('Physics', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Spring-driven entrance (real SpringSimulation).
+          Row(
+            children: [
+              _Chip(
+                color: Colors.teal,
+              ).animate().scale(begin: 0.0).spring(stiffness: 320, damping: 14),
+              const SizedBox(width: 16),
+              _Chip(color: Colors.orange).animate().moveY(-120).gravity(),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('Interactive', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 

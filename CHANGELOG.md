@@ -22,6 +22,9 @@ Initial release — the v0.1 **core** milestone with the full animation catalog.
   `onVisible` / `animateOnVisible` — replay any chain on an event.
 - Gesture animations: `pressScale`, `pressBounce`, `hoverScale` — continuous,
   pointer-state-driven feedback.
+- Physics: `spring` (real `SpringSimulation` with auto settle duration),
+  `gravity`, `friction`/inertia — exposed as fluent modifiers and as
+  `FxPhysics` / `FxSpringCurve` for use anywhere a `Curve` is accepted.
 - Timeline operators: parallel-by-default, `then()` sequencing, `parallel()`,
   and per-effect `duration()/delay()/curve()`.
 - `FxController` facade (`play/pause/resume/restart/reverse/stop/repeat/seek/

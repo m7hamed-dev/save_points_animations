@@ -34,14 +34,15 @@ The animation engine and the developer-facing surface:
 - `dragScale`, `swipeRotate` (pan-tracking gestures — semantics are
   app-specific; deferred until a clean, general API is settled).
 
-## ⏳ v0.3 — Advanced
+## 🚧 v0.3 — Advanced (in progress)
 
-- Physics: `spring`, `friction`, `gravity`, `inertia` built on Flutter's
-  `physics.dart` simulations (not a hand-rolled solver).
-- Page transitions (Fade / SharedAxis / Scale / Zoom / Slide / Material /
+- ✅ Physics: `spring`, `gravity`, `friction`/inertia built on Flutter's
+  `physics.dart` simulations (`FxSpringCurve` / `FxPhysics`) — not a hand-rolled
+  solver.
+- ⏳ Page transitions (Fade / SharedAxis / Scale / Zoom / Slide / Material /
   Cupertino) and Hero enhancements.
-- Debug HUD: `showTimeline`, `showBounds`, `showFPS`, gated behind `kDebugMode`.
-- `benchmarks/` frame-budget harness + an Impeller driver test.
+- ⏳ Debug HUD: `showTimeline`, `showBounds`, `showFPS`, gated behind `kDebugMode`.
+- ⏳ `benchmarks/` frame-budget harness + an Impeller driver test.
 
 ## Testing philosophy
 

@@ -128,6 +128,23 @@ button.pressBounce();    // dips then elastic overshoot on release
 card.hoverScale();       // grows while hovered (desktop/web)
 ```
 
+### Physics — real spring simulations
+
+`.spring()` drives the previous effect with a `SpringSimulation` and sets the
+physically-correct settle duration for you:
+
+```dart
+icon.animate().scale(begin: 0.5).spring(stiffness: 300, damping: 15, mass: 1);
+box.animate().moveY(-120).gravity();          // constant-acceleration fall
+chip.animate().moveX(200).friction();         // flick that decelerates
+```
+
+Or use the curves directly anywhere a `Curve` is accepted:
+
+```dart
+widget.animate().scale(begin: 0).curve(FxPhysics.spring(stiffness: 260));
+```
+
 ### Global theme
 
 ```dart
