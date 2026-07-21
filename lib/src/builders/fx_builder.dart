@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../core/fx_curves.dart';
 import '../controllers/fx_controller.dart';
+import '../core/fx_curves.dart';
 import '../debug/fx_debug.dart';
 import '../effects/attention_effects.dart';
 import '../effects/fx_effect.dart';
