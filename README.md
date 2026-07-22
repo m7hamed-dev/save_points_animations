@@ -158,7 +158,9 @@ Navigator.of(context).push(
 ```
 
 Transitions: `fade` · `scale` · `zoom` · `slide` (any `AxisDirection`) ·
-`rotation` · `sharedAxisHorizontal` · `sharedAxisVertical`.
+`rotation` · `sharedAxisHorizontal` · `sharedAxisVertical` — plus the modern
+set: `fadeThrough` (Material 3) · `cupertino` (iOS parallax) · `depth` ·
+`sheet` (modal) · `circularReveal` · `cube3D` · `blur`.
 
 Hero flights (with an optional curved-arc path):
 

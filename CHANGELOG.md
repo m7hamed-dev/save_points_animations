@@ -1,3 +1,13 @@
+## 0.5.0
+
+Modern page transitions.
+
+### Added
+- Seven modern `FxPageTransition` styles: `fadeThrough` (Material 3),
+  `cupertino` (iOS parallax), `depth`, `sheet` (modal), `circularReveal`,
+  `cube3D`, and `blur` — all usable via `FxPageRoute` / `context.fxPush` and the
+  reusable `buildFxTransition` builder.
+
 ## 0.4.0
 
 More animation categories.

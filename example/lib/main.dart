@@ -161,10 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ])
                   ActionChip(
                     label: Text(t.name),
-                    onPressed: () => context.fxPush(
-                      const DetailScreen(),
-                      transition: t,
-                    ),
+                    onPressed: () =>
+                        context.fxPush(const DetailScreen(), transition: t),
                   ),
               ],
             ),
