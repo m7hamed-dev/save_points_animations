@@ -1,0 +1,83 @@
+import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/widgets/fx_switcher.dart';
+
+/// A countdown that ticks down from [duration], animating each change.
+///
+/// By default it shows whole seconds with a slide-up digit swap; supply
+/// [builder] for full control (e.g. a `mm:ss` label or a progress ring).
+///
+/// ```dart
+/// FxCountdown(
+///   duration: const Duration(seconds: 10),
+///   onComplete: () => print('liftoff'),
+/// );
+/// ```
+class FxCountdown extends StatefulWidget {
+  const FxCountdown({
+    super.key,
+    required this.duration,
+    this.onComplete,
+    this.style,
+    this.builder,
+  });
+
+  final Duration duration;
+  final VoidCallback? onComplete;
+  final TextStyle? style;
+
+  /// Custom renderer for the remaining time. When null, whole seconds are
+  /// shown with an animated swap.
+  final Widget Function(BuildContext context, Duration remaining)? builder;
+
+  @override
+  State<FxCountdown> createState() => _FxCountdownState();
+}
+
+class _FxCountdownState extends State<FxCountdown>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: widget.duration,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _controller
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) widget.onComplete?.call();
+      })
+      ..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Duration get _remaining => Duration(
+    milliseconds: (widget.duration.inMilliseconds * (1 - _controller.value))
+        .round(),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final remaining = _remaining;
+        if (widget.builder != null) return widget.builder!(context, remaining);
+        final seconds = remaining.inSeconds;
+        return FxSwitcher(
+          effect: FxSwitcherEffect.slideUp,
+          child: Text(
+            '$seconds',
+            key: ValueKey<int>(seconds),
+            style: widget.style,
+          ),
+        );
+      },
+    );
+  }
+}

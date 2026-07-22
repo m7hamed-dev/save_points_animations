@@ -1,3 +1,15 @@
+## 0.12.0
+
+More interactive widgets.
+
+### Added
+- `FxMarquee` — continuously scrolling ticker for overflowing content
+  (reduced-motion aware).
+- `FxSwipeToDismiss` — swipe-to-dismiss with fade, velocity-aware fling, and
+  spring-back when released below the threshold.
+- `FxCountdown` — a countdown that animates each tick (default slide-up digit
+  swap, or a custom `builder`), firing `onComplete` at zero.
+
 ## 0.11.0
 
 Modern UI building blocks.

@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Marquee, swipe-to-dismiss & countdown
+
+```dart
+FxMarquee(child: Text('Breaking news • ' * 4));          // scrolling ticker
+
+FxSwipeToDismiss(onDismissed: remove, child: card);      // swipe away, spring back
+
+FxCountdown(duration: 30.seconds, onComplete: launch);   // animated countdown
+```
+
 ### Content swap, skeletons & animated backgrounds
 
 ```dart

@@ -399,6 +399,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 32),
           Text(
+            'Marquee · Swipe · Countdown',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          // Scrolling ticker.
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: FxMarquee(
+                child: Text(
+                  'Breaking:  save_points_animations now ships marquees, '
+                  'swipe-to-dismiss, and countdowns   •   ',
+                  style: theme.textTheme.titleMedium,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Swipe to dismiss.
+          FxSwipeToDismiss(
+            onDismissed: () {},
+            child: Card(
+              color: theme.colorScheme.errorContainer,
+              child: const ListTile(
+                leading: Icon(Icons.swipe),
+                title: Text('Swipe me away'),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Countdown.
+          Row(
+            children: [
+              Text('Launch in ', style: theme.textTheme.titleMedium),
+              FxCountdown(
+                duration: const Duration(seconds: 30),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              Text('s', style: theme.textTheme.titleMedium),
+            ],
+          ),
+
+          const SizedBox(height: 32),
+          Text(
             'Switcher · Skeleton · Gradient',
             style: theme.textTheme.titleMedium,
           ),
