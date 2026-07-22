@@ -93,7 +93,9 @@ void main() {
   });
 
   group('spring-driven route', () {
-    testWidgets('fxPushSpring navigates with a physical settle', (tester) async {
+    testWidgets('fxPushSpring navigates with a physical settle', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(

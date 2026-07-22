@@ -42,6 +42,32 @@ class FxAccumulator {
   void addWrap(Widget Function(Widget child) wrap) => wraps.add(wrap);
 }
 
+/// Compose a single animated frame: apply the accumulator's wrappers, opacity,
+/// and transform over [child] (dropping any that are no-ops at rest).
+///
+/// Shared by the time-driven [FxEffect] engine and scroll-driven effects.
+Widget fxComposeFrame(
+  Widget child,
+  FxAccumulator acc, {
+  bool addRepaintBoundary = true,
+}) {
+  var built = child;
+  for (final wrap in acc.wraps) {
+    built = wrap(built);
+  }
+  if ((acc.opacity - 1.0).abs() > 1e-3) {
+    built = Opacity(opacity: acc.opacity.clamp(0.0, 1.0), child: built);
+  }
+  if (!acc.transform.isIdentity()) {
+    built = Transform(
+      transform: acc.transform,
+      alignment: Alignment.center,
+      child: built,
+    );
+  }
+  return addRepaintBoundary ? RepaintBoundary(child: built) : built;
+}
+
 /// Base class for every animation effect.
 ///
 /// Effects are **immutable value objects**. They carry optional per-effect

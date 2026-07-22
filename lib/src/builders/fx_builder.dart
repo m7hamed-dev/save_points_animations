@@ -525,23 +525,11 @@ class _FxRunnerState extends State<_FxRunner>
           r.effect.apply(acc, r.curve.transform(f));
         }
 
-        var built = child!;
-        for (final wrap in acc.wraps) {
-          built = wrap(built);
-        }
-        if ((acc.opacity - 1.0).abs() > 1e-3) {
-          built = Opacity(opacity: acc.opacity.clamp(0.0, 1.0), child: built);
-        }
-        if (!acc.transform.isIdentity()) {
-          built = Transform(
-            transform: acc.transform,
-            alignment: Alignment.center,
-            child: built,
-          );
-        }
-        return widget.config.addRepaintBoundary
-            ? RepaintBoundary(child: built)
-            : built;
+        return fxComposeFrame(
+          child!,
+          acc,
+          addRepaintBoundary: widget.config.addRepaintBoundary,
+        );
       },
     );
   }
