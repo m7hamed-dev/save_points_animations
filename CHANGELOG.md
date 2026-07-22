@@ -1,3 +1,13 @@
+## 0.14.0
+
+Form & content widgets.
+
+### Added
+- `FxExpandable` — an animated accordion (collapsible body + rotating chevron).
+- `FxRating` — an interactive star rating that pops the tapped star.
+- `FxProgressBar` — a rounded progress bar that animates toward its value, or
+  sweeps continuously when indeterminate (optional gradient fill).
+
 ## 0.13.0
 
 Indicators & attention widgets.

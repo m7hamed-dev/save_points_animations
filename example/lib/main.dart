@@ -38,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final FxConfettiController _confetti = FxConfettiController();
   final PageController _pageController = PageController();
   bool _showBanner = true;
+  int _rating = 3;
+  double _progress = 0.4;
 
   @override
   Widget build(BuildContext context) {
@@ -397,6 +399,54 @@ class _HomeScreenState extends State<HomeScreen> {
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
           ),
+
+          const SizedBox(height: 32),
+          Text(
+            'Rating · Expandable · Progress',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          FxRating(
+            value: _rating,
+            onChanged: (v) => setState(() => _rating = v),
+          ),
+          const SizedBox(height: 12),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: FxExpandable(
+                header: Text(
+                  'What is this?',
+                  style: theme.textTheme.titleMedium,
+                ),
+                body: const Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Text(
+                    'An animated accordion — the body expands and the chevron '
+                    'rotates. Tap the header to toggle.',
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Expanded(child: FxProgressBar(value: _progress)),
+              const SizedBox(width: 12),
+              IconButton(
+                onPressed: () => setState(
+                  () => _progress = (_progress + 0.2).clamp(0.0, 1.0),
+                ),
+                icon: const Icon(Icons.add),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const FxProgressBar(), // indeterminate
 
           const SizedBox(height: 32),
           Text('Badge · Pulse · Dots', style: theme.textTheme.titleMedium),

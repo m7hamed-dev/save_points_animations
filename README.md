@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Rating, expandable & progress
+
+```dart
+FxRating(value: stars, onChanged: (v) => setState(() => stars = v));
+
+FxExpandable(header: Text('Details'), body: bodyWidget);   // animated accordion
+
+FxProgressBar(value: 0.6);   // animates on change · omit value for indeterminate
+```
+
 ### Badges, pulses & page dots
 
 ```dart
