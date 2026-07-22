@@ -35,6 +35,8 @@ export 'src/gestures/fx_gestures.dart' show FxGestures;
 export 'src/gestures/fx_tilt.dart' show FxTilt, FxTiltExtension;
 export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;
 export 'src/presets/fx_presets.dart';
+export 'src/scroll/fx_scroll.dart'
+    show FxParallax, FxScrollExtension, FxScrollLinked;
 export 'src/text/fx_text.dart'
     show FxAnimatedText, FxCountNum, FxCountUp, FxTextString, FxTypewriter;
 export 'src/text/fx_text_fx.dart'

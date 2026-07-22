@@ -53,8 +53,8 @@ class _FxScrollLinkedState extends State<FxScrollLinked> {
   void _onScroll() {
     if (!mounted) return;
     final box = context.findRenderObject() as RenderBox?;
-    final viewport = _position?.context.storageContext.findRenderObject()
-        as RenderBox?;
+    final viewport =
+        _position?.context.storageContext.findRenderObject() as RenderBox?;
     if (box == null || viewport == null || !box.hasSize || !viewport.hasSize) {
       return;
     }
@@ -124,8 +124,8 @@ class _FxParallaxState extends State<FxParallax> {
   void _onScroll() {
     if (!mounted) return;
     final box = context.findRenderObject() as RenderBox?;
-    final viewport = _position?.context.storageContext.findRenderObject()
-        as RenderBox?;
+    final viewport =
+        _position?.context.storageContext.findRenderObject() as RenderBox?;
     if (box == null || viewport == null || !box.hasSize || !viewport.hasSize) {
       return;
     }
