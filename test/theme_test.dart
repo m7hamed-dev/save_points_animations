@@ -73,5 +73,53 @@ void main() {
       expect(find.text('THEMED'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    test('FxThemeData.copyWith replaces only the given fields', () {
+      const base = FxThemeData();
+      final copy = base.copyWith(
+        transitionCurve: Curves.bounceOut,
+        duration: const Duration(milliseconds: 999),
+      );
+      expect(copy.transitionCurve, Curves.bounceOut);
+      expect(copy.duration, const Duration(milliseconds: 999));
+      // Untouched fields are preserved.
+      expect(copy.curve, base.curve);
+      expect(copy.transitionDuration, base.transitionDuration);
+      // Value equality + hashing.
+      expect(base.copyWith(), base);
+      expect(base.copyWith().hashCode, base.hashCode);
+      expect(copy, isNot(base));
+    });
+  });
+
+  group('spring-driven route', () {
+    testWidgets('fxPushSpring navigates with a physical settle', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () => context.fxPushSpring<void>(
+                    const Scaffold(body: Center(child: Text('SPRUNG'))),
+                    stiffness: 240,
+                    damping: 18,
+                  ),
+                  child: const Text('go'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('go'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100)); // mid-flight
+      expect(find.byType(SlideTransition), findsWidgets);
+      await tester.pumpAndSettle();
+      expect(find.text('SPRUNG'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   });
 }

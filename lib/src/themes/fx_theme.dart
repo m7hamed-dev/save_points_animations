@@ -60,6 +60,47 @@ class FxThemeData {
 
   final bool respectReducedMotion;
   final FxReducedMotionBehavior reducedMotionBehavior;
+
+  /// Return a copy with the given fields replaced.
+  FxThemeData copyWith({
+    Duration? duration,
+    Curve? curve,
+    Duration? delay,
+    Curve? transitionCurve,
+    Duration? transitionDuration,
+    bool? respectReducedMotion,
+    FxReducedMotionBehavior? reducedMotionBehavior,
+  }) => FxThemeData(
+    duration: duration ?? this.duration,
+    curve: curve ?? this.curve,
+    delay: delay ?? this.delay,
+    transitionCurve: transitionCurve ?? this.transitionCurve,
+    transitionDuration: transitionDuration ?? this.transitionDuration,
+    respectReducedMotion: respectReducedMotion ?? this.respectReducedMotion,
+    reducedMotionBehavior: reducedMotionBehavior ?? this.reducedMotionBehavior,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is FxThemeData &&
+      other.duration == duration &&
+      other.curve == curve &&
+      other.delay == delay &&
+      other.transitionCurve == transitionCurve &&
+      other.transitionDuration == transitionDuration &&
+      other.respectReducedMotion == respectReducedMotion &&
+      other.reducedMotionBehavior == reducedMotionBehavior;
+
+  @override
+  int get hashCode => Object.hash(
+    duration,
+    curve,
+    delay,
+    transitionCurve,
+    transitionDuration,
+    respectReducedMotion,
+    reducedMotionBehavior,
+  );
 }
 
 /// Provides global animation defaults to descendant `.animate()` builders.

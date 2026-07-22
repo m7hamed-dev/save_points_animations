@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/physics/fx_physics.dart';
 import 'package:save_points_animations/src/themes/fx_theme.dart';
 
 /// The built-in page transition styles.
@@ -709,4 +710,37 @@ extension FxNavigator on BuildContext {
     originRect: originRect,
     duration: duration,
   );
+
+  /// Push [page] with a **physically spring-driven** transition.
+  ///
+  /// The [FxSpringCurve] provides natural overshoot + settle, and its own
+  /// settle time becomes the transition duration — so the timing is governed
+  /// by the spring, not a fixed number.
+  ///
+  /// ```dart
+  /// context.fxPushSpring(DetailPage(), stiffness: 220, damping: 18);
+  /// ```
+  Future<T?> fxPushSpring<T>(
+    Widget page, {
+    FxPageTransition transition = FxPageTransition.slide,
+    AxisDirection slideFrom = AxisDirection.right,
+    double stiffness = 180,
+    double damping = 16,
+    double mass = 1,
+    double velocity = 0,
+  }) {
+    final spring = FxSpringCurve(
+      stiffness: stiffness,
+      damping: damping,
+      mass: mass,
+      velocity: velocity,
+    );
+    return fxPush<T>(
+      page,
+      transition: transition,
+      slideFrom: slideFrom,
+      curve: spring,
+      duration: spring.settleDuration,
+    );
+  }
 }
