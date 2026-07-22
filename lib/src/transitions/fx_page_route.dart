@@ -1,5 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
+import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/core/fx_curves.dart';
 
 /// The built-in page transition styles.
@@ -24,6 +26,31 @@ enum FxPageTransition {
 
   /// Material shared-axis along Y.
   sharedAxisVertical,
+
+  /// Material 3 fade-through: outgoing fades + scales out, then incoming
+  /// fades + scales in.
+  fadeThrough,
+
+  /// iOS-style parallax: incoming slides fully in from the right while the
+  /// outgoing page parallax-slides partway out to the left.
+  cupertino,
+
+  /// Depth: incoming rises + scales up from below while the outgoing page
+  /// recedes and fades.
+  depth,
+
+  /// Modal sheet: incoming slides up from the bottom; the page behind scales
+  /// down slightly.
+  sheet,
+
+  /// Circular reveal: the incoming page expands from a growing circle.
+  circularReveal,
+
+  /// 3D cube-style rotation between pages.
+  cube3D,
+
+  /// Blur cross-fade: incoming sharpens in while outgoing blurs away.
+  blur,
 }
 
 Offset _slideBegin(AxisDirection from) {
@@ -172,7 +199,245 @@ Widget buildFxTransition({
         secondaryAnimation,
         child,
       );
+
+    case FxPageTransition.fadeThrough:
+      return _fadeThrough(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.cupertino:
+      return _cupertino(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.depth:
+      return _depth(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.sheet:
+      return _sheet(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.circularReveal:
+      return _circularReveal(curve, animation, child);
+
+    case FxPageTransition.cube3D:
+      return _cube(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.blur:
+      return _blur(curve, animation, secondaryAnimation, child);
   }
+}
+
+Widget _fadeThrough(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final inCurve = Interval(0.35, 1, curve: curve);
+  final outCurve = Interval(0, 0.35, curve: curve);
+
+  final incoming = FadeTransition(
+    opacity: animation.drive(CurveTween(curve: inCurve)),
+    child: ScaleTransition(
+      scale: animation.drive(
+        Tween<double>(begin: 0.92, end: 1).chain(CurveTween(curve: inCurve)),
+      ),
+      child: child,
+    ),
+  );
+
+  return FadeTransition(
+    opacity: secondaryAnimation.drive(
+      Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: outCurve)),
+    ),
+    child: ScaleTransition(
+      scale: secondaryAnimation.drive(
+        Tween<double>(begin: 1, end: 0.92).chain(CurveTween(curve: outCurve)),
+      ),
+      child: incoming,
+    ),
+  );
+}
+
+Widget _cupertino(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final incoming = SlideTransition(
+    position: animation.drive(
+      Tween<Offset>(
+        begin: const Offset(1, 0),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: curve)),
+    ),
+    child: child,
+  );
+
+  return SlideTransition(
+    position: secondaryAnimation.drive(
+      Tween<Offset>(
+        begin: Offset.zero,
+        end: const Offset(-0.3, 0),
+      ).chain(CurveTween(curve: curve)),
+    ),
+    child: incoming,
+  );
+}
+
+Widget _depth(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final incoming = FadeTransition(
+    opacity: animation.drive(CurveTween(curve: curve)),
+    child: ScaleTransition(
+      scale: animation.drive(
+        Tween<double>(begin: 0.85, end: 1).chain(CurveTween(curve: curve)),
+      ),
+      child: child,
+    ),
+  );
+
+  return FadeTransition(
+    opacity: secondaryAnimation.drive(
+      Tween<double>(begin: 1, end: 0).chain(CurveTween(curve: curve)),
+    ),
+    child: ScaleTransition(
+      scale: secondaryAnimation.drive(
+        Tween<double>(begin: 1, end: 1.1).chain(CurveTween(curve: curve)),
+      ),
+      child: incoming,
+    ),
+  );
+}
+
+Widget _sheet(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final incoming = SlideTransition(
+    position: animation.drive(
+      Tween<Offset>(
+        begin: const Offset(0, 1),
+        end: Offset.zero,
+      ).chain(CurveTween(curve: curve)),
+    ),
+    child: child,
+  );
+
+  return ScaleTransition(
+    scale: secondaryAnimation.drive(
+      Tween<double>(begin: 1, end: 0.92).chain(CurveTween(curve: curve)),
+    ),
+    child: incoming,
+  );
+}
+
+Widget _circularReveal(Curve curve, Animation<double> animation, Widget child) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final t = curve.transform(animation.value);
+      return ClipPath(clipper: _PageCircleClipper(t), child: child);
+    },
+    child: FadeTransition(opacity: animation, child: child),
+  );
+}
+
+Widget _cube(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final incoming = AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final deg = (1 - curve.transform(animation.value)) * 90;
+      final matrix = Matrix4.identity()
+        ..setEntry(3, 2, 0.0015)
+        ..rotateY(-deg * math.pi / 180);
+      return Transform(
+        transform: matrix,
+        alignment: Alignment.centerLeft,
+        child: child,
+      );
+    },
+    child: child,
+  );
+
+  return AnimatedBuilder(
+    animation: secondaryAnimation,
+    builder: (context, child) {
+      final deg = curve.transform(secondaryAnimation.value) * 90;
+      final matrix = Matrix4.identity()
+        ..setEntry(3, 2, 0.0015)
+        ..rotateY(deg * math.pi / 180);
+      return Transform(
+        transform: matrix,
+        alignment: Alignment.centerRight,
+        child: child,
+      );
+    },
+    child: incoming,
+  );
+}
+
+Widget _blur(
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  final incoming = AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final t = curve.transform(animation.value);
+      final sigma = (1 - t) * 12;
+      final content = sigma < 0.1
+          ? child!
+          : ImageFiltered(
+              imageFilter: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+              child: child,
+            );
+      return Opacity(opacity: t, child: content);
+    },
+    child: child,
+  );
+
+  return AnimatedBuilder(
+    animation: secondaryAnimation,
+    builder: (context, child) {
+      final sigma = curve.transform(secondaryAnimation.value) * 12;
+      if (sigma < 0.1) return child!;
+      return ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+        child: child,
+      );
+    },
+    child: incoming,
+  );
+}
+
+class _PageCircleClipper extends CustomClipper<Path> {
+  _PageCircleClipper(this.fraction);
+
+  final double fraction;
+
+  @override
+  Path getClip(Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final maxRadius =
+        math.sqrt(size.width * size.width + size.height * size.height) / 2;
+    return Path()
+      ..addOval(Rect.fromCircle(center: center, radius: maxRadius * fraction));
+  }
+
+  @override
+  bool shouldReclip(_PageCircleClipper oldClipper) =>
+      oldClipper.fraction != fraction;
 }
 
 Widget _sharedAxis(

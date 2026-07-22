@@ -10,6 +10,7 @@ void main() {
       ) async {
         await tester.pumpWidget(
           MaterialApp(
+            key: ValueKey(transition),
             home: Builder(
               builder: (context) => Scaffold(
                 body: Center(
@@ -63,6 +64,45 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('go'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('modern transitions render their signature widgets mid-flight',
+        (tester) async {
+      Future<void> pushAndCheck(
+        FxPageTransition transition,
+        Finder signature,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            key: ValueKey(transition),
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: Center(
+                  child: ElevatedButton(
+                    onPressed: () => context.fxPush<void>(
+                      const Scaffold(body: Center(child: Text('DETAIL'))),
+                      transition: transition,
+                    ),
+                    child: const Text('go'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.tap(find.text('go'));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 150)); // mid-flight
+        expect(signature, findsWidgets, reason: '$transition');
+        await tester.pumpAndSettle();
+      }
+
+      await pushAndCheck(
+        FxPageTransition.circularReveal,
+        find.byType(ClipPath),
+      );
+      await pushAndCheck(FxPageTransition.blur, find.byType(ImageFiltered));
+      await pushAndCheck(FxPageTransition.cube3D, find.byType(Transform));
     });
   });
 

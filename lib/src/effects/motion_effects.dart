@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
-
 import 'package:save_points_animations/src/effects/fx_effect.dart';
 
 /// A damped horizontal shake. Oscillates and settles to rest as `t → 1`.

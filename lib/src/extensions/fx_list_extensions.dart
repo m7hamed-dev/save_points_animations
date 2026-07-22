@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-
 import 'package:save_points_animations/src/effects/fx_effect.dart';
 import 'package:save_points_animations/src/effects/transform_effects.dart';
 import 'package:save_points_animations/src/effects/visual_effects.dart';
