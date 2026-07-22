@@ -1,3 +1,13 @@
+## 0.9.0
+
+Spring routes + theme ergonomics.
+
+### Added
+- `context.fxPushSpring(page, stiffness:, damping:, …)` — a physically
+  spring-driven page transition whose duration is the spring's own settle time
+  (natural overshoot + settle, not a fixed number).
+- `FxThemeData.copyWith(...)` plus value equality / `hashCode`.
+
 ## 0.8.0
 
 Theme transitions and effects separately.

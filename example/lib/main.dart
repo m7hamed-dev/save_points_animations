@@ -197,6 +197,21 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
 
+          const SizedBox(height: 8),
+
+          // Spring-driven route: timing governed by a real SpringSimulation.
+          Builder(
+            builder: (context) => OutlinedButton.icon(
+              onPressed: () => context.fxPushSpring(
+                const DetailScreen(),
+                stiffness: 220,
+                damping: 18,
+              ),
+              icon: const Icon(Icons.waves),
+              label: const Text('Spring transition'),
+            ),
+          ),
+
           const SizedBox(height: 32),
           Text('Loading · Text · Color', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),

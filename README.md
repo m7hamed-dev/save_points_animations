@@ -166,13 +166,16 @@ set: `fadeThrough` (Material 3) · `cupertino` (iOS parallax) · `depth` ·
 `sheet` (modal) · `circularReveal` · `cube3D` · `blur` · `containerTransform` ·
 `glass`.
 
-Reveal from a tap point, or expand from a card's bounds:
+Reveal from a tap point, expand from a card's bounds, or spring in:
 
 ```dart
 context.fxPushReveal(DetailPage(), alignment: Alignment.topRight);
 
 final box = key.currentContext!.findRenderObject() as RenderBox;
 context.fxPushFrom(DetailPage(), box.localToGlobal(Offset.zero) & box.size);
+
+// Physically spring-driven — the spring's settle time IS the duration:
+context.fxPushSpring(DetailPage(), stiffness: 220, damping: 18);
 ```
 
 Hero flights (with an optional curved-arc path):
