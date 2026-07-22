@@ -160,7 +160,17 @@ Navigator.of(context).push(
 Transitions: `fade` · `scale` · `zoom` · `slide` (any `AxisDirection`) ·
 `rotation` · `sharedAxisHorizontal` · `sharedAxisVertical` — plus the modern
 set: `fadeThrough` (Material 3) · `cupertino` (iOS parallax) · `depth` ·
-`sheet` (modal) · `circularReveal` · `cube3D` · `blur`.
+`sheet` (modal) · `circularReveal` · `cube3D` · `blur` · `containerTransform` ·
+`glass`.
+
+Reveal from a tap point, or expand from a card's bounds:
+
+```dart
+context.fxPushReveal(DetailPage(), alignment: Alignment.topRight);
+
+final box = key.currentContext!.findRenderObject() as RenderBox;
+context.fxPushFrom(DetailPage(), box.localToGlobal(Offset.zero) & box.size);
+```
 
 Hero flights (with an optional curved-arc path):
 

@@ -1,3 +1,17 @@
+## 0.6.0
+
+More modern transitions + origin-aware reveals.
+
+### Added
+- `containerTransform` transition — the incoming page expands from an
+  `originRect` (e.g. a tapped card) into the full screen, with easing corners.
+- `glass` transition — the incoming page materializes through a blur that peaks
+  mid-transition and clears.
+- `circularReveal` now honors a `revealAlignment` origin (reveal from a tap
+  point, not just the center).
+- `context.fxPushReveal(page, alignment: …)` and
+  `context.fxPushFrom(page, originRect)` convenience navigators.
+
 ## 0.5.0
 
 Modern page transitions.

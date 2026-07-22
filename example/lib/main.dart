@@ -185,8 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     final box =
                         key.currentContext!.findRenderObject() as RenderBox;
-                    final rect =
-                        box.localToGlobal(Offset.zero) & box.size;
+                    final rect = box.localToGlobal(Offset.zero) & box.size;
                     context.fxPushFrom(const DetailScreen(), rect);
                   },
                 ),
