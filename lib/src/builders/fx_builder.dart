@@ -4,7 +4,10 @@ import 'package:save_points_animations/src/controllers/fx_controller.dart';
 import 'package:save_points_animations/src/core/fx_curves.dart';
 import 'package:save_points_animations/src/debug/fx_debug.dart';
 import 'package:save_points_animations/src/effects/attention_effects.dart';
+import 'package:save_points_animations/src/effects/color_effects.dart';
+import 'package:save_points_animations/src/effects/entrance_effects.dart';
 import 'package:save_points_animations/src/effects/fx_effect.dart';
+import 'package:save_points_animations/src/effects/loading_effects.dart';
 import 'package:save_points_animations/src/effects/motion_effects.dart';
 import 'package:save_points_animations/src/effects/transform_effects.dart';
 import 'package:save_points_animations/src/effects/visual_effects.dart';
@@ -303,6 +306,61 @@ class FxBuilder extends StatelessWidget {
 
   /// A general attention grabber (a firm double pulse).
   FxBuilder attention() => addEffect(const HeartbeatEffect(peak: 1.15));
+
+  // --- Loading & skeleton -------------------------------------------------
+
+  /// A moving highlight sweep (pair with [looping]).
+  FxBuilder shimmer({
+    Color color = const Color(0xCCFFFFFF),
+    double bandWidth = 0.25,
+    double angle = 0.2,
+  }) => addEffect(
+    ShimmerEffect(color: color, bandWidth: bandWidth, angle: angle),
+  );
+
+  /// A gentle scale + opacity breathing pulse (pair with [looping]).
+  FxBuilder breathe({double scaleAmount = 0.04, double opacityDip = 0.25}) =>
+      addEffect(
+        BreatheEffect(scaleAmount: scaleAmount, opacityDip: opacityDip),
+      );
+
+  // --- Color & filter -----------------------------------------------------
+
+  /// Animate saturation from [begin] (0 = grayscale) to [end] (1 = full).
+  FxBuilder saturate({double begin = 0.0, double end = 1.0}) =>
+      addEffect(SaturationEffect(begin: begin, end: end));
+
+  /// Fade to grayscale (saturation 1 → 0).
+  FxBuilder grayscale() => addEffect(const SaturationEffect(begin: 1, end: 0));
+
+  /// Animate brightness (1 = normal).
+  FxBuilder brightness({double begin = 0.0, double end = 1.0}) =>
+      addEffect(BrightnessEffect(begin: begin, end: end));
+
+  /// Animate a hue rotation, in degrees (pair with [looping] for a cycle).
+  FxBuilder hueShift({double begin = 0, double end = 360}) =>
+      addEffect(HueEffect(begin: begin, end: end));
+
+  // --- Entrance choreography ---------------------------------------------
+
+  /// Roll in from the left with an unrolling rotation.
+  FxBuilder rollIn() => addEffect(const RollInEffect());
+
+  /// Swing from a corner then drop away (an exit).
+  FxBuilder hinge() => addEffect(const HingeEffect());
+
+  /// Pop out of a box (tiny + rotated → full).
+  FxBuilder jackInTheBox() => addEffect(const JackInTheBoxEffect());
+
+  /// Streak in from the right with a skew (Animate.css `lightSpeedIn`).
+  FxBuilder lightSpeedIn() => fade().slideX(0.5).skew(beginX: -30);
+
+  /// Streak out to the right with a skew (Animate.css `lightSpeedOut`).
+  FxBuilder lightSpeedOut() => fadeOut().slideX(0, end: 0.5).skew(beginX: 30);
+
+  /// Rotate + fade into place from [begin] degrees.
+  FxBuilder rotateIn({double begin = -90}) =>
+      fade().addEffect(RotateEffect(beginDegrees: begin));
 
   // --- Physics -----------------------------------------------------------
 

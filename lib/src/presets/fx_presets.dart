@@ -95,8 +95,7 @@ extension FxPresets on Widget {
       animate().fade().moveY(30).curve(FxCurves.snappy).duration(600.ms);
 
   /// FAB entrance: elastic scale from zero.
-  FxBuilder fab() =>
-      animate().scale().curve(FxCurves.elastic).duration(500.ms);
+  FxBuilder fab() => animate().scale().curve(FxCurves.elastic).duration(500.ms);
 
   /// Notification banner: drop in from the top.
   FxBuilder notification() =>

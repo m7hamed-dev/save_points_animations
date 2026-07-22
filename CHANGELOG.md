@@ -1,3 +1,18 @@
+## 0.2.0
+
+Expanded animation catalog.
+
+### Added
+- Loading effects: `shimmer` (gradient sweep) and `breathe`.
+- Color/filter effects: `saturate` / `grayscale`, `brightness`, `hueShift`
+  (animated `ColorFilter` matrices).
+- Animate.css-style entrances: `rollIn`, `hinge`, `jackInTheBox`,
+  `lightSpeedIn/Out`, `rotateIn`.
+- Text animations: `String.typewriter()`, `String.animateChars()` (per-character
+  stagger), and `num.countUp()` (animated number ticker) — plus the `FxTypewriter`,
+  `FxAnimatedText`, and `FxCountUp` widgets.
+- A shared `fxKeyframe` helper for keyframe-based effects.
+
 ## 0.1.0
 
 Initial release — the v0.1 **core** milestone with the full animation catalog.

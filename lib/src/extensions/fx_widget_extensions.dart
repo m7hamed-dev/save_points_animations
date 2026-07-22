@@ -100,4 +100,30 @@ extension FxAnimate on Widget {
 
   /// General attention grabber.
   FxBuilder attention() => animate().attention();
+
+  /// Loading shimmer sweep (loops).
+  FxBuilder shimmer({Color color = const Color(0xCCFFFFFF)}) =>
+      animate().shimmer(color: color).looping();
+
+  /// Breathing pulse (loops).
+  FxBuilder breathe() => animate().breathe().looping();
+
+  /// Grayscale-to-color reveal.
+  FxBuilder saturate({double begin = 0.0, double end = 1.0}) =>
+      animate().saturate(begin: begin, end: end);
+
+  /// Roll in from the left.
+  FxBuilder rollIn() => animate().rollIn();
+
+  /// Swing then drop away (exit).
+  FxBuilder hinge() => animate().hinge();
+
+  /// Pop out of a box.
+  FxBuilder jackInTheBox() => animate().jackInTheBox();
+
+  /// Streak in with a skew.
+  FxBuilder lightSpeedIn() => animate().lightSpeedIn();
+
+  /// Rotate + fade into place.
+  FxBuilder rotateIn({double begin = -90}) => animate().rotateIn(begin: begin);
 }

@@ -141,6 +141,56 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text('Loading · Text · Color', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Shimmer skeleton placeholder.
+          Container(
+            height: 20,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ).animate().shimmer().looping(),
+
+          const SizedBox(height: 16),
+
+          // Typewriter text.
+          'Typing character by character…'.typewriter(
+            cursor: '|',
+            style: theme.textTheme.titleMedium,
+          ),
+
+          const SizedBox(height: 16),
+
+          // Per-character stagger + an animated counter.
+          'Staggered'.animateChars(style: theme.textTheme.headlineSmall),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text('Downloads: ', style: theme.textTheme.titleMedium),
+              (12840).countUp(
+                duration: 1200.ms,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Grayscale → color reveal.
+          Row(
+            children: [
+              _Chip(color: Colors.pink).animate().saturate().duration(1500.ms),
+              const SizedBox(width: 16),
+              // Continuous hue cycle.
+              _Chip(color: Colors.green).animate().hueShift().looping(),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('Interactive', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 

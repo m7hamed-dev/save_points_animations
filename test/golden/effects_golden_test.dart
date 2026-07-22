@@ -53,8 +53,7 @@ void main() {
       tester,
       t: 0.5,
       name: 'scale_50',
-      builder: (c) =>
-          _box().animate(controller: c, autoPlay: false).scale(),
+      builder: (c) => _box().animate(controller: c, autoPlay: false).scale(),
     );
   });
 

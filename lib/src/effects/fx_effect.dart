@@ -3,6 +3,23 @@ import 'package:flutter/widgets.dart';
 /// Linear interpolation helper shared by effects.
 double fxLerp(double a, double b, double t) => a + (b - a) * t;
 
+/// Piecewise-linear keyframe interpolation. [frames] is an ordered list of
+/// `[stop, value]` pairs with `stop` in `0..1`.
+double fxKeyframe(double t, List<List<double>> frames) {
+  if (t <= frames.first[0]) return frames.first[1];
+  if (t >= frames.last[0]) return frames.last[1];
+  for (var i = 0; i < frames.length - 1; i++) {
+    final a = frames[i];
+    final b = frames[i + 1];
+    if (t >= a[0] && t <= b[0]) {
+      final span = b[0] - a[0];
+      final local = span == 0 ? 0.0 : (t - a[0]) / span;
+      return a[1] + (b[1] - a[1]) * local;
+    }
+  }
+  return frames.last[1];
+}
+
 /// Mutable accumulator that every [FxEffect] contributes to for a single frame.
 ///
 /// The engine collapses all transform-type effects into a single [Matrix4] and

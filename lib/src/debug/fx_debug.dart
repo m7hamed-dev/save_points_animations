@@ -62,9 +62,7 @@ class _FxBounds extends StatelessWidget {
         Positioned.fill(
           child: IgnorePointer(
             child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(color: color),
-              ),
+              decoration: BoxDecoration(border: Border.all(color: color)),
               child: Align(
                 alignment: Alignment.topLeft,
                 child: LayoutBuilder(

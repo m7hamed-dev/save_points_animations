@@ -23,6 +23,9 @@ export 'src/effects/transform_effects.dart';
 export 'src/effects/visual_effects.dart';
 export 'src/effects/motion_effects.dart';
 export 'src/effects/attention_effects.dart';
+export 'src/effects/loading_effects.dart';
+export 'src/effects/entrance_effects.dart';
+export 'src/effects/color_effects.dart';
 
 // Engine / builder
 export 'src/builders/fx_builder.dart' show FxBuilder;
@@ -54,3 +57,7 @@ export 'src/transitions/fx_hero.dart' show FxHero, FxArcRectTween;
 
 // Debug tools
 export 'src/debug/fx_debug.dart' show FxDebug, FxDebugRegistry;
+
+// Text animations
+export 'src/text/fx_text.dart'
+    show FxTypewriter, FxAnimatedText, FxCountUp, FxTextString, FxCountNum;

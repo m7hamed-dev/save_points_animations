@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:save_points_animations/save_points_animations.dart' show FxPageRoute;
-import 'package:save_points_animations/src/transitions/fx_page_route.dart' show FxPageRoute;
+import 'package:save_points_animations/save_points_animations.dart'
+    show FxPageRoute;
+import 'package:save_points_animations/src/transitions/fx_page_route.dart'
+    show FxPageRoute;
 
 /// A [RectTween] that arcs (rather than moving in a straight line) for more
 /// natural Hero flights.

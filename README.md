@@ -212,7 +212,12 @@ widget.animate().addEffect(const SwingEffect());
 **Attention seekers:** `shake` · `bounce` · `pulse` · `flash` · `wobble` ·
 `swing` · `heartbeat` · `jelly` · `rubberBand` · `tada` · `float` · `glow`
 
+**Loading:** `shimmer` (gradient sweep) · `breathe`
+
+**Color & filter:** `saturate` / `grayscale` · `brightness` · `hueShift`
+
 **Entrances (one-shots):** `fadeIn` · `scaleIn/Out` · `zoom` · `elastic` ·
+`rollIn` · `hinge` · `jackInTheBox` · `lightSpeedIn/Out` · `rotateIn` ·
 `slideFrom{Top,Bottom,Left,Right}`
 
 **Presets:** `success` · `error` · `warning` · `loading` · `attention` ·
@@ -244,6 +249,14 @@ A full demo lives in [`example/`](example/lib/main.dart):
 
 ```bash
 cd example && flutter run
+```
+
+## Text animations
+
+```dart
+'Typing…'.typewriter(cursor: '|');       // character-by-character reveal
+'Staggered'.animateChars();              // per-character stagger in
+(12840).countUp(duration: 1.seconds);    // animated number ticker
 ```
 
 ## Debug tools
