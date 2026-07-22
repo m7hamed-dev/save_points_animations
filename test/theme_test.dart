@@ -4,8 +4,9 @@ import 'package:save_points_animations/save_points_animations.dart';
 
 void main() {
   group('FxTheme resolution', () {
-    testWidgets('effect and transition curves theme independently',
-        (tester) async {
+    testWidgets('effect and transition curves theme independently', (
+      tester,
+    ) async {
       late FxThemeData resolved;
       await tester.pumpWidget(
         FxTheme(
