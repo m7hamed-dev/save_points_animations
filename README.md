@@ -123,6 +123,18 @@ card.animate().fadeIn().slideX(0.1).onVisible();  // play when scrolled into vie
 Available: `onTap` · `onDoubleTap` · `onLongPress` · `onHover` · `onAppear` ·
 `onVisible` / `animateOnVisible`.
 
+### Scroll-driven animations
+
+Animate as content scrolls into view, or add depth with parallax:
+
+```dart
+// Effects driven by scroll position (not time):
+card.animateOnScroll(const [FadeEffect(), SlideEffect(beginY: 0.2)]);
+
+// Parallax — moves as the user scrolls:
+banner.parallax(amount: 40);
+```
+
 ### Gestures — continuous, state-driven feedback
 
 ```dart

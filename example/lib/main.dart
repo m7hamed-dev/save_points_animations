@@ -396,6 +396,59 @@ class _HomeScreenState extends State<HomeScreen> {
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
           ),
+
+          const SizedBox(height: 32),
+          Text('Scroll-driven', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Parallax banner — moves as you scroll.
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: 120,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.indigo, Colors.purple.shade300],
+                      ),
+                    ),
+                  ).parallax(amount: 40),
+                  const Center(
+                    child: Text(
+                      'Parallax',
+                      style: TextStyle(color: Colors.white, fontSize: 22),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Scroll-linked reveal: progress driven by scroll position.
+          ...List.generate(
+            5,
+            (i) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child:
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.animation),
+                      title: Text('Scroll-linked #$i'),
+                    ),
+                  ).animateOnScroll(const [
+                    FadeEffect(),
+                    SlideEffect(beginY: 0.2),
+                    ScaleEffect(begin: 0.9),
+                  ]),
+            ),
+          ),
+
+          const SizedBox(height: 48),
         ],
       ),
     );

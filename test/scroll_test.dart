@@ -6,15 +6,17 @@ Widget _scrollHost(List<Widget> children) => MaterialApp(
   home: Scaffold(
     body: SizedBox(
       height: 600,
-      child: ListView(children: children),
+      // Non-lazy so off-screen items still build (deterministic for tests).
+      child: SingleChildScrollView(child: Column(children: children)),
     ),
   ),
 );
 
 void main() {
   group('FxScrollLinked', () {
-    testWidgets('an item far below the fold starts hidden, reveals on scroll',
-        (tester) async {
+    testWidgets('an item far below the fold starts hidden, reveals on scroll', (
+      tester,
+    ) async {
       final target = const Text(
         'reveal-me',
       ).animateOnScroll(const [FadeEffect()]);
@@ -51,17 +53,18 @@ void main() {
       await tester.pumpWidget(
         _scrollHost([
           const SizedBox(height: 800),
-          const SizedBox(
-            height: 100,
-            child: Text('bg'),
-          ).parallax(amount: 60),
+          const SizedBox(height: 100, child: Text('bg')).parallax(amount: 60),
           const SizedBox(height: 800),
         ]),
       );
       await tester.pump();
 
       double translationY() => tester
-          .widget<Transform>(find.byType(Transform).first)
+          .widget<Transform>(
+            find
+                .ancestor(of: find.text('bg'), matching: find.byType(Transform))
+                .first,
+          )
           .transform
           .getTranslation()
           .y;

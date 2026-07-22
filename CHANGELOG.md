@@ -1,3 +1,15 @@
+## 0.10.0
+
+Scroll-driven animations.
+
+### Added
+- `FxScrollLinked` (and `Widget.animateOnScroll(effects)`) — drives effects from
+  a widget's **scroll position** in the nearest `Scrollable` (reveal as it
+  enters the viewport), rather than from time.
+- `FxParallax` (and `Widget.parallax(amount:)`) — scroll parallax translation.
+- `fxComposeFrame` — the shared frame-composition helper is now public, reused
+  by both the time-driven engine and scroll-driven effects.
+
 ## 0.9.0
 
 Spring routes + theme ergonomics.
