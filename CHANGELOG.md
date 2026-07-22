@@ -1,3 +1,14 @@
+## 0.19.0
+
+Atmospheric backgrounds & shapes.
+
+### Added
+- `FxAurora` — a drifting, blurred multi-blob "aurora" gradient backdrop.
+- `FxRadar` — a rotating radar/sonar sweep with rings, crosshairs, and a
+  fading trail.
+- `FxBlob` — an organic, continuously morphing blob shape (clips an optional
+  child).
+
 ## 0.18.0
 
 Cinematic & stylized effects.

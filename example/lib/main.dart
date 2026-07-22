@@ -403,6 +403,39 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text('Aurora · Radar · Blob', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Aurora background.
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: const SizedBox(
+              height: 110,
+              width: double.infinity,
+              child: FxAurora(
+                child: Center(
+                  child: Text(
+                    'Aurora',
+                    style: TextStyle(color: Colors.white, fontSize: 22),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FxRadar(size: 120),
+              FxBlob(
+                color: theme.colorScheme.primary,
+                child: const Icon(Icons.star, color: Colors.white, size: 32),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('KenBurns · Glitch · Shine', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 

@@ -51,7 +51,9 @@ export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
 export 'src/widgets/fx_animated_visibility.dart'
     show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;
+export 'src/widgets/fx_aurora.dart' show FxAurora;
 export 'src/widgets/fx_badge.dart' show FxBadge, FxBadgeExtension;
+export 'src/widgets/fx_blob.dart' show FxBlob;
 export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
 export 'src/widgets/fx_expandable.dart' show FxExpandable;
@@ -67,6 +69,7 @@ export 'src/widgets/fx_page_indicator.dart' show FxPageIndicator;
 export 'src/widgets/fx_particles.dart' show FxParticles;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_pulse.dart' show FxPulse;
+export 'src/widgets/fx_radar.dart' show FxRadar;
 export 'src/widgets/fx_rating.dart' show FxRating;
 export 'src/widgets/fx_segmented_control.dart' show FxSegmentedControl;
 export 'src/widgets/fx_shine.dart' show FxShine;

@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Aurora, radar & blob
+
+```dart
+FxAurora(child: hero);                 // drifting blurred-blob backdrop
+
+FxRadar(size: 160, color: Colors.green); // sweeping scan
+
+FxBlob(color: Colors.purple, child: icon); // organic morphing shape
+```
+
 ### Ken Burns, glitch & shine
 
 ```dart
