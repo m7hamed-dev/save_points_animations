@@ -42,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double _progress = 0.4;
   int _score = 1234;
   int _segment = 0;
+  bool _menuOpen = false;
 
   @override
   Widget build(BuildContext context) {
@@ -400,6 +401,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('MorphIcon · Ripple · Wave', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              FxMorphIcon(
+                isOpen: _menuOpen,
+                size: 32,
+                onTap: () => setState(() => _menuOpen = !_menuOpen),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: FxRipple(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                  child: Container(
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text('Tap for ripples'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: const FxWaveDivider(),
           ),
 
           const SizedBox(height: 32),

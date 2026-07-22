@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Morph icon, ripple & wave divider
+
+```dart
+FxMorphIcon(isOpen: open, onTap: toggle);   // hamburger ↔ close morph
+
+FxRipple(color: Colors.blue, child: card);  // colorable tap ripples
+
+FxWaveDivider(color: Colors.blue);          // animated wavy separator
+```
+
 ### Aurora, radar & blob
 
 ```dart

@@ -1,3 +1,13 @@
+## 0.20.0
+
+Interactive controls & separators.
+
+### Added
+- `FxMorphIcon` — a hamburger ↔ close (✕) morphing menu icon.
+- `FxRipple` — colorable tap ripples that expand and fade from each touch
+  point (no Material ancestor required).
+- `FxWaveDivider` — a horizontal band with an animated sine-wave edge.
+
 ## 0.19.0
 
 Atmospheric backgrounds & shapes.
