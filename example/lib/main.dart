@@ -401,6 +401,55 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text('Flip · SpeedDial · Check', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: 96,
+                height: 72,
+                child: FxFlipCard(
+                  front: Card(
+                    color: theme.colorScheme.primaryContainer,
+                    child: const Center(child: Text('Tap')),
+                  ),
+                  back: Card(
+                    color: theme.colorScheme.tertiaryContainer,
+                    child: const Center(child: Text('👋')),
+                  ),
+                ),
+              ),
+              const FxAnimatedCheck(size: 64),
+              FxSpeedDial(
+                size: 48,
+                icon: const Icon(Icons.add, color: Colors.white),
+                children: [
+                  for (final ic in const [
+                    Icons.share,
+                    Icons.edit,
+                    Icons.delete,
+                  ])
+                    Container(
+                      width: 40,
+                      height: 40,
+                      margin: const EdgeInsets.only(bottom: 4),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Color(0x22000000), blurRadius: 6),
+                        ],
+                      ),
+                      child: Icon(ic, size: 20, color: Colors.indigo),
+                    ),
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text(
             'Rating · Expandable · Progress',
             style: theme.textTheme.titleMedium,

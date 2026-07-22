@@ -1,3 +1,15 @@
+## 0.15.0
+
+Interactive card & action widgets.
+
+### Added
+- `FxFlipCard` (+ `FxFlipCardController`) — a 3D flip between front/back faces,
+  on tap or programmatically, with back-face un-mirroring.
+- `FxSpeedDial` — an expanding FAB menu whose actions fan out staggered while
+  the main icon rotates.
+- `FxAnimatedCheck` — a success indicator that draws a circle then a checkmark
+  stroke-by-stroke (reduced-motion aware).
+
 ## 0.14.0
 
 Form & content widgets.

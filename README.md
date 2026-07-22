@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Flip card, speed dial & success check
+
+```dart
+FxFlipCard(front: cardFront, back: cardBack);            // 3D flip on tap
+
+FxSpeedDial(icon: const Icon(Icons.add), children: [...]); // expanding FAB menu
+
+FxAnimatedCheck(color: Colors.green);                    // draw-on success tick
+```
+
 ### Rating, expandable & progress
 
 ```dart
