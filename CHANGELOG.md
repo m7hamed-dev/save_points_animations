@@ -1,3 +1,22 @@
+## 0.3.0
+
+Exit animations + quality hardening.
+
+### Added
+- `FxAnimatedVisibility` (and the `animatedVisibility` extension): animate a
+  widget **out** — the entrance chain plays in reverse on dismiss, and the child
+  is only removed once the exit completes. Fires `onDismissed` after removal.
+
+### Changed
+- Stricter analysis: enabled `strict-casts`, `strict-inference`,
+  `strict-raw-types`, plus `directives_ordering`, `always_declare_return_types`,
+  `unawaited_futures`, `use_super_parameters`, and more. Codebase is clean under
+  all of them.
+
+### Verified
+- Golden coverage extended to the new effects (grayscale, shimmer, rollIn).
+- Example compiles for **web** (CanvasKit) and passes the **Wasm** dry run.
+
 ## 0.2.0
 
 Expanded animation catalog.

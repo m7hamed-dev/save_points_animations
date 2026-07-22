@@ -80,4 +80,37 @@ void main() {
           .moveY(40),
     );
   });
+
+  testWidgets('grayscale fully desaturated at end', (tester) async {
+    await _goldenAt(
+      tester,
+      t: 1.0,
+      name: 'grayscale_100',
+      builder: (c) => _box(
+        const Color(0xFFE91E63),
+      ).animate(controller: c, autoPlay: false).grayscale(),
+    );
+  });
+
+  testWidgets('shimmer highlight at mid-sweep', (tester) async {
+    await _goldenAt(
+      tester,
+      t: 0.5,
+      name: 'shimmer_50',
+      builder: (c) => _box(
+        const Color(0xFF455A64),
+      ).animate(controller: c, autoPlay: false).shimmer(),
+    );
+  });
+
+  testWidgets('rollIn at 50%', (tester) async {
+    await _goldenAt(
+      tester,
+      t: 0.5,
+      name: 'rollIn_50',
+      builder: (c) => _box(
+        const Color(0xFFFF9800),
+      ).animate(controller: c, autoPlay: false).rollIn(),
+    );
+  });
 }

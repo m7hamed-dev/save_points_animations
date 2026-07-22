@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_points_animations/save_points_animations.dart';
@@ -67,7 +69,7 @@ void main() {
     );
     await tester.pump();
     expect(controller.value, 0.0);
-    controller.play();
+    unawaited(controller.play());
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
     expect(controller.value, closeTo(1.0, 1e-3));

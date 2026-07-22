@@ -31,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FxController _card = FxController();
+  bool _showBanner = true;
 
   @override
   Widget build(BuildContext context) {
@@ -188,6 +189,30 @@ class _HomeScreenState extends State<HomeScreen> {
               // Continuous hue cycle.
               _Chip(color: Colors.green).animate().hueShift().looping(),
             ],
+          ),
+
+          const SizedBox(height: 32),
+          Text('Exit / dismiss', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          OutlinedButton.icon(
+            onPressed: () => setState(() => _showBanner = !_showBanner),
+            icon: Icon(_showBanner ? Icons.visibility_off : Icons.visibility),
+            label: Text(_showBanner ? 'Dismiss banner' : 'Show banner'),
+          ),
+          const SizedBox(height: 8),
+          FxAnimatedVisibility(
+            visible: _showBanner,
+            // Same chain plays forward on show, reversed on dismiss.
+            effects: (a) =>
+                a.fade().scale(begin: 0.9).slideY(-0.2).duration(300.ms),
+            child: Card(
+              color: theme.colorScheme.tertiaryContainer,
+              child: const ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text('I animate out before I leave'),
+              ),
+            ),
           ),
 
           const SizedBox(height: 32),

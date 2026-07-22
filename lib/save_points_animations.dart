@@ -14,50 +14,32 @@
 /// ```
 library;
 
-// Core
-export 'src/core/fx_curves.dart';
-
-// Effects
-export 'src/effects/fx_effect.dart' show FxEffect, FxAccumulator, fxLerp;
-export 'src/effects/transform_effects.dart';
-export 'src/effects/visual_effects.dart';
-export 'src/effects/motion_effects.dart';
-export 'src/effects/attention_effects.dart';
-export 'src/effects/loading_effects.dart';
-export 'src/effects/entrance_effects.dart';
-export 'src/effects/color_effects.dart';
-
-// Engine / builder
 export 'src/builders/fx_builder.dart' show FxBuilder;
 export 'src/controllers/fx_controller.dart' show FxController;
-
-// Theming
-export 'src/themes/fx_theme.dart'
-    show FxTheme, FxThemeData, FxReducedMotionBehavior;
-
-// Extensions
-export 'src/extensions/num_duration_extensions.dart';
-export 'src/extensions/fx_widget_extensions.dart';
-export 'src/extensions/fx_list_extensions.dart';
-
-// Presets
-export 'src/presets/fx_presets.dart';
-
-// Triggers & gestures
-export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
-export 'src/gestures/fx_gestures.dart' show FxGestures;
-
-// Physics
-export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;
-
-// Page transitions & Hero
-export 'src/transitions/fx_page_route.dart'
-    show FxPageRoute, FxPageTransition, FxNavigator, buildFxTransition;
-export 'src/transitions/fx_hero.dart' show FxHero, FxArcRectTween;
-
-// Debug tools
+export 'src/core/fx_curves.dart';
 export 'src/debug/fx_debug.dart' show FxDebug, FxDebugRegistry;
-
-// Text animations
+export 'src/effects/attention_effects.dart';
+export 'src/effects/color_effects.dart';
+export 'src/effects/entrance_effects.dart';
+export 'src/effects/fx_effect.dart'
+    show FxAccumulator, FxEffect, fxKeyframe, fxLerp;
+export 'src/effects/loading_effects.dart';
+export 'src/effects/motion_effects.dart';
+export 'src/effects/transform_effects.dart';
+export 'src/effects/visual_effects.dart';
+export 'src/extensions/fx_list_extensions.dart';
+export 'src/extensions/fx_widget_extensions.dart';
+export 'src/extensions/num_duration_extensions.dart';
+export 'src/gestures/fx_gestures.dart' show FxGestures;
+export 'src/physics/fx_physics.dart' show FxPhysics, FxSpringCurve;
+export 'src/presets/fx_presets.dart';
 export 'src/text/fx_text.dart'
-    show FxTypewriter, FxAnimatedText, FxCountUp, FxTextString, FxCountNum;
+    show FxAnimatedText, FxCountNum, FxCountUp, FxTextString, FxTypewriter;
+export 'src/themes/fx_theme.dart'
+    show FxReducedMotionBehavior, FxTheme, FxThemeData;
+export 'src/transitions/fx_hero.dart' show FxArcRectTween, FxHero;
+export 'src/transitions/fx_page_route.dart'
+    show FxNavigator, FxPageRoute, FxPageTransition, buildFxTransition;
+export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
+export 'src/widgets/fx_animated_visibility.dart'
+    show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;

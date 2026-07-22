@@ -14,7 +14,7 @@ void main() {
               builder: (context) => Scaffold(
                 body: Center(
                   child: ElevatedButton(
-                    onPressed: () => context.fxPush(
+                    onPressed: () => context.fxPush<void>(
                       const Scaffold(body: Center(child: Text('DETAIL'))),
                       transition: transition,
                     ),
@@ -43,7 +43,7 @@ void main() {
             builder: (context) => Scaffold(
               body: Center(
                 child: ElevatedButton(
-                  onPressed: () => context.fxPush(
+                  onPressed: () => context.fxPush<void>(
                     const Scaffold(body: Center(child: Text('DETAIL'))),
                     transition: FxPageTransition.sharedAxisHorizontal,
                   ),
@@ -74,7 +74,7 @@ void main() {
             builder: (context) => Scaffold(
               body: Center(
                 child: GestureDetector(
-                  onTap: () => context.fxPush(
+                  onTap: () => context.fxPush<void>(
                     Scaffold(
                       body: Center(
                         child: const SizedBox(

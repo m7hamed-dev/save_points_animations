@@ -166,6 +166,24 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Exit / dismiss animations
+
+Effects normally play on mount. To animate a widget **out** before it leaves the
+tree, use `FxAnimatedVisibility` — it plays your entrance chain in reverse on
+dismiss and only removes the child once the exit finishes:
+
+```dart
+FxAnimatedVisibility(
+  visible: _show,
+  effects: (a) => a.fade().scale(begin: 0.9).slideY(-0.2),
+  onDismissed: () => print('gone'),
+  child: const Card(child: Text('I animate out before I leave')),
+);
+
+// or the extension form:
+card.animatedVisibility(visible: _show, effects: (a) => a.fadeIn());
+```
+
 ### Global theme
 
 ```dart
