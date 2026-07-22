@@ -1,3 +1,13 @@
+## 0.11.0
+
+Modern UI building blocks.
+
+### Added
+- `FxSwitcher` — animate between children when the (keyed) child changes
+  (`fade`, `scaleFade`, `slideUp`, `slideHorizontal`, `rotationFade`).
+- `FxSkeleton` (+ `FxSkeleton.circle`) — shimmering loading placeholders.
+- `FxAnimatedGradient` — a living gradient background whose direction rotates.
+
 ## 0.10.0
 
 Scroll-driven animations.

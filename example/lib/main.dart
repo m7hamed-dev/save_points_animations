@@ -398,6 +398,60 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text(
+            'Switcher · Skeleton · Gradient',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          // Animated content swap (tap the FAB counter to see it switch).
+          FxSwitcher(
+            child: Text(
+              'count: ${_card.value.toStringAsFixed(2)}',
+              key: ValueKey(_showBanner),
+              style: theme.textTheme.titleLarge,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Shimmer skeleton placeholders for a loading card.
+          Row(
+            children: [
+              FxSkeleton.circle(size: 48),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FxSkeleton(width: 180),
+                    SizedBox(height: 8),
+                    FxSkeleton(width: 120, height: 12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Living animated gradient background.
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: FxAnimatedGradient(
+              colors: const [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              child: const SizedBox(
+                height: 80,
+                width: double.infinity,
+                child: Center(
+                  child: Text(
+                    'Animated gradient',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 32),
           Text('Scroll-driven', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 

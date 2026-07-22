@@ -196,6 +196,25 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Content swap, skeletons & animated backgrounds
+
+```dart
+// Animate between children when the (keyed) child changes:
+FxSwitcher(
+  effect: FxSwitcherEffect.scaleFade,
+  child: loading
+      ? const CircularProgressIndicator(key: ValueKey('load'))
+      : Text(data, key: ValueKey(data)),
+);
+
+// Shimmer loading placeholders:
+FxSkeleton.circle(size: 48);
+const FxSkeleton(width: 200);
+
+// A living animated gradient backdrop:
+FxAnimatedGradient(colors: const [Color(0xFF6A11CB), Color(0xFF2575FC)], child: hero);
+```
+
 ### Exit / dismiss animations
 
 Effects normally play on mount. To animate a widget **out** before it leaves the

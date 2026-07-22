@@ -47,8 +47,11 @@ export 'src/transitions/fx_hero.dart' show FxArcRectTween, FxHero;
 export 'src/transitions/fx_page_route.dart'
     show FxNavigator, FxPageRoute, FxPageTransition, buildFxTransition;
 export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
+export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
 export 'src/widgets/fx_animated_visibility.dart'
     show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;
 export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_loaders.dart'
     show FxBarsLoader, FxDotsLoader, FxProgressRing;
+export 'src/widgets/fx_skeleton.dart' show FxSkeleton;
+export 'src/widgets/fx_switcher.dart' show FxSwitcher, FxSwitcherEffect;
