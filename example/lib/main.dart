@@ -31,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FxController _card = FxController();
+  final FxConfettiController _confetti = FxConfettiController();
   bool _showBanner = true;
 
   @override
@@ -188,6 +189,60 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(width: 16),
               // Continuous hue cycle.
               _Chip(color: Colors.green).animate().hueShift().looping(),
+            ],
+          ),
+
+          const SizedBox(height: 32),
+          Text('Reveal · Loaders · FX', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Circular reveal + loaders row.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FxDotsLoader(),
+              const FxBarsLoader(color: Colors.pink),
+              const FxProgressRing(color: Colors.teal),
+              const Icon(
+                Icons.star,
+                size: 40,
+                color: Colors.amber,
+              ).animate().circularReveal().duration(900.ms),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Text FX.
+          'Gradient headline'.gradientText(
+            style: theme.textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 8),
+          'wavy text ~'.wavyText(style: theme.textTheme.titleLarge),
+          const SizedBox(height: 8),
+          'DECODING'.scrambleText(style: theme.textTheme.titleMedium),
+
+          const SizedBox(height: 16),
+
+          // Confetti + 3D tilt.
+          Row(
+            children: [
+              FxConfetti(
+                controller: _confetti,
+                child: FilledButton.icon(
+                  onPressed: _confetti.play,
+                  icon: const Icon(Icons.celebration),
+                  label: const Text('Celebrate'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Card(
+                child: const SizedBox(
+                  width: 90,
+                  height: 60,
+                  child: Center(child: Text('tilt me')),
+                ),
+              ).tilt(),
             ],
           ),
 

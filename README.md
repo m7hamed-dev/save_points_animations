@@ -230,7 +230,10 @@ widget.animate().addEffect(const SwingEffect());
 **Attention seekers:** `shake` · `bounce` · `pulse` · `flash` · `wobble` ·
 `swing` · `heartbeat` · `jelly` · `rubberBand` · `tada` · `float` · `glow`
 
-**Loading:** `shimmer` (gradient sweep) · `breathe`
+**Reveal & clip:** `circularReveal` · `wipe` (any `AxisDirection`) · `curtain`
+
+**Loading:** `shimmer` (gradient sweep) · `breathe` · plus widgets
+`FxDotsLoader` · `FxBarsLoader` · `FxProgressRing`
 
 **Color & filter:** `saturate` / `grayscale` · `brightness` · `hueShift`
 
@@ -275,6 +278,18 @@ cd example && flutter run
 'Typing…'.typewriter(cursor: '|');       // character-by-character reveal
 'Staggered'.animateChars();              // per-character stagger in
 (12840).countUp(duration: 1.seconds);    // animated number ticker
+'Gradient'.gradientText();               // animated gradient headline
+'wavy ~'.wavyText();                     // rippling wave
+'DECODING'.scrambleText();               // scramble-in reveal
+'word by word'.wordsFadeIn();            // staggered word fade
+```
+
+## Confetti & 3D tilt
+
+```dart
+final confetti = FxConfettiController();
+FxConfetti(controller: confetti, child: myButton);   // confetti.play() to fire
+card.tilt();                                          // pointer-driven 3D tilt
 ```
 
 ## Debug tools

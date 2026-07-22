@@ -126,4 +126,17 @@ extension FxAnimate on Widget {
 
   /// Rotate + fade into place.
   FxBuilder rotateIn({double begin = -90}) => animate().rotateIn(begin: begin);
+
+  /// Reveal through an expanding circular clip.
+  FxBuilder circularReveal({Alignment center = Alignment.center}) =>
+      animate().circularReveal(center: center);
+
+  /// Reveal through a directional wipe.
+  FxBuilder wipe({
+    AxisDirection direction = AxisDirection.right,
+    bool fromCenter = false,
+  }) => animate().wipe(direction: direction, fromCenter: fromCenter);
+
+  /// Reveal outward from the center.
+  FxBuilder curtain() => animate().curtain();
 }

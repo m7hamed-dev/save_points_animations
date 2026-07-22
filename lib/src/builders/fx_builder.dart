@@ -8,6 +8,7 @@ import 'package:save_points_animations/src/effects/entrance_effects.dart';
 import 'package:save_points_animations/src/effects/fx_effect.dart';
 import 'package:save_points_animations/src/effects/loading_effects.dart';
 import 'package:save_points_animations/src/effects/motion_effects.dart';
+import 'package:save_points_animations/src/effects/reveal_effects.dart';
 import 'package:save_points_animations/src/effects/transform_effects.dart';
 import 'package:save_points_animations/src/effects/visual_effects.dart';
 import 'package:save_points_animations/src/physics/fx_physics.dart';
@@ -341,6 +342,19 @@ class FxBuilder extends StatelessWidget {
       addEffect(HueEffect(begin: begin, end: end));
 
   // --- Entrance choreography ---------------------------------------------
+
+  /// Reveal through an expanding circular clip.
+  FxBuilder circularReveal({Alignment center = Alignment.center}) =>
+      addEffect(CircularRevealEffect(center: center));
+
+  /// Reveal through a directional wipe (a curtain).
+  FxBuilder wipe({
+    AxisDirection direction = AxisDirection.right,
+    bool fromCenter = false,
+  }) => addEffect(WipeEffect(direction: direction, fromCenter: fromCenter));
+
+  /// Reveal by opening outward from the center.
+  FxBuilder curtain() => addEffect(const WipeEffect(fromCenter: true));
 
   /// Roll in from the left with an unrolling rotation.
   FxBuilder rollIn() => addEffect(const RollInEffect());

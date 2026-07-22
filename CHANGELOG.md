@@ -1,3 +1,15 @@
+## 0.4.0
+
+More animation categories.
+
+### Added
+- Reveal & clip effects: `circularReveal`, `wipe` (any direction), `curtain`.
+- Loading-indicator widgets: `FxDotsLoader`, `FxBarsLoader`, `FxProgressRing`.
+- Rich text FX: `gradientText`, `wavyText`, `scrambleText`, `wordsFadeIn`
+  (with `FxGradientText`, `FxWavyText`, `FxScrambleText`, `FxWordsText`).
+- `FxConfetti` + `FxConfettiController` — a particle celebration burst.
+- `FxTilt` (and the `tilt` extension) — pointer-driven 3D perspective tilt.
+
 ## 0.3.0
 
 Exit animations + quality hardening.
