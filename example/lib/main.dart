@@ -158,6 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   FxPageTransition.circularReveal,
                   FxPageTransition.cube3D,
                   FxPageTransition.blur,
+                  FxPageTransition.glass,
                 ])
                   ActionChip(
                     label: Text(t.name),
@@ -166,6 +167,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
               ],
             ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // Real container transform: the page grows from this card's bounds.
+          Builder(
+            builder: (context) {
+              final key = GlobalKey();
+              return Card(
+                key: key,
+                color: theme.colorScheme.secondaryContainer,
+                child: ListTile(
+                  leading: const Icon(Icons.open_in_full),
+                  title: const Text('Expand this card'),
+                  subtitle: const Text('container transform from its rect'),
+                  onTap: () {
+                    final box =
+                        key.currentContext!.findRenderObject() as RenderBox;
+                    final rect =
+                        box.localToGlobal(Offset.zero) & box.size;
+                    context.fxPushFrom(const DetailScreen(), rect);
+                  },
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 32),

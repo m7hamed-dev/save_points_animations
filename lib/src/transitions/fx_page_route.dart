@@ -51,6 +51,15 @@ enum FxPageTransition {
 
   /// Blur cross-fade: incoming sharpens in while outgoing blurs away.
   blur,
+
+  /// Container transform: the incoming page expands from `originRect`
+  /// (e.g. a tapped card) into the full screen, with rounded corners easing
+  /// out. Falls back to a centered grow when no rect is given.
+  containerTransform,
+
+  /// Frosted glass: the incoming page materializes through a blur that peaks
+  /// mid-transition and clears.
+  glass,
 }
 
 Offset _slideBegin(AxisDirection from) {
@@ -79,6 +88,8 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
     required WidgetBuilder builder,
     this.transition = FxPageTransition.fade,
     this.slideFrom = AxisDirection.right,
+    this.revealAlignment = Alignment.center,
+    this.originRect,
     this.curve = FxCurves.snappy,
     Duration duration = const Duration(milliseconds: 350),
     Duration? reverseDuration,
@@ -97,6 +108,12 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
 
   final FxPageTransition transition;
   final AxisDirection slideFrom;
+
+  /// Origin for [FxPageTransition.circularReveal].
+  final Alignment revealAlignment;
+
+  /// Screen-space source rect for [FxPageTransition.containerTransform].
+  final Rect? originRect;
   final Curve curve;
 
   @override
@@ -109,6 +126,8 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
     return buildFxTransition(
       transition: transition,
       slideFrom: slideFrom,
+      revealAlignment: revealAlignment,
+      originRect: originRect,
       curve: curve,
       animation: animation,
       secondaryAnimation: secondaryAnimation,
@@ -126,6 +145,8 @@ Widget buildFxTransition({
   required Animation<double> animation,
   required Animation<double> secondaryAnimation,
   required Widget child,
+  Alignment revealAlignment = Alignment.center,
+  Rect? originRect,
 }) {
   final opacity = animation.drive(CurveTween(curve: curve));
 
@@ -213,13 +234,19 @@ Widget buildFxTransition({
       return _sheet(curve, animation, secondaryAnimation, child);
 
     case FxPageTransition.circularReveal:
-      return _circularReveal(curve, animation, child);
+      return _circularReveal(curve, animation, revealAlignment, child);
 
     case FxPageTransition.cube3D:
       return _cube(curve, animation, secondaryAnimation, child);
 
     case FxPageTransition.blur:
       return _blur(curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.containerTransform:
+      return _containerTransform(curve, animation, originRect, child);
+
+    case FxPageTransition.glass:
+      return _glass(curve, animation, child);
   }
 }
 
@@ -335,14 +362,73 @@ Widget _sheet(
   );
 }
 
-Widget _circularReveal(Curve curve, Animation<double> animation, Widget child) {
+Widget _circularReveal(
+  Curve curve,
+  Animation<double> animation,
+  Alignment alignment,
+  Widget child,
+) {
   return AnimatedBuilder(
     animation: animation,
     builder: (context, child) {
       final t = curve.transform(animation.value);
-      return ClipPath(clipper: _PageCircleClipper(t), child: child);
+      return ClipPath(clipper: _PageCircleClipper(t, alignment), child: child);
     },
     child: FadeTransition(opacity: animation, child: child),
+  );
+}
+
+Widget _containerTransform(
+  Curve curve,
+  Animation<double> animation,
+  Rect? originRect,
+  Widget child,
+) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final t = curve.transform(animation.value);
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final full = Offset.zero & constraints.biggest;
+          final begin =
+              originRect ??
+              Rect.fromCenter(
+                center: full.center,
+                width: full.width * 0.35,
+                height: full.height * 0.2,
+              );
+          final rect = Rect.lerp(begin, full, t)!;
+          final radius = ui.lerpDouble(24, 0, t)!;
+          return Opacity(
+            opacity: (t * 2.5).clamp(0.0, 1.0),
+            child: ClipPath(clipper: _RectClipper(rect, radius), child: child),
+          );
+        },
+      );
+    },
+    child: child,
+  );
+}
+
+Widget _glass(Curve curve, Animation<double> animation, Widget child) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final t = curve.transform(animation.value);
+      final sigma = math.sin(t * math.pi) * 12;
+      final content = sigma < 0.1
+          ? child!
+          : ImageFiltered(
+              imageFilter: ui.ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+              child: child,
+            );
+      return Opacity(
+        opacity: t.clamp(0.0, 1.0),
+        child: Transform.scale(scale: 0.98 + 0.02 * t, child: content),
+      );
+    },
+    child: child,
   );
 }
 
@@ -422,22 +508,47 @@ Widget _blur(
 }
 
 class _PageCircleClipper extends CustomClipper<Path> {
-  _PageCircleClipper(this.fraction);
+  _PageCircleClipper(this.fraction, this.alignment);
 
   final double fraction;
+  final Alignment alignment;
 
   @override
   Path getClip(Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius =
-        math.sqrt(size.width * size.width + size.height * size.height) / 2;
+    final center = alignment.alongSize(size);
+    final corners = <Offset>[
+      Offset.zero,
+      Offset(size.width, 0),
+      Offset(0, size.height),
+      Offset(size.width, size.height),
+    ];
+    var maxRadius = 0.0;
+    for (final corner in corners) {
+      final d = (corner - center).distance;
+      if (d > maxRadius) maxRadius = d;
+    }
     return Path()
       ..addOval(Rect.fromCircle(center: center, radius: maxRadius * fraction));
   }
 
   @override
   bool shouldReclip(_PageCircleClipper oldClipper) =>
-      oldClipper.fraction != fraction;
+      oldClipper.fraction != fraction || oldClipper.alignment != alignment;
+}
+
+class _RectClipper extends CustomClipper<Path> {
+  _RectClipper(this.rect, this.radius);
+
+  final Rect rect;
+  final double radius;
+
+  @override
+  Path getClip(Size size) =>
+      Path()..addRRect(RRect.fromRectAndRadius(rect, Radius.circular(radius)));
+
+  @override
+  bool shouldReclip(_RectClipper oldClipper) =>
+      oldClipper.rect != rect || oldClipper.radius != radius;
 }
 
 Widget _sharedAxis(
@@ -495,6 +606,8 @@ extension FxNavigator on BuildContext {
     Widget page, {
     FxPageTransition transition = FxPageTransition.fade,
     AxisDirection slideFrom = AxisDirection.right,
+    Alignment revealAlignment = Alignment.center,
+    Rect? originRect,
     Curve curve = FxCurves.snappy,
     Duration duration = const Duration(milliseconds: 350),
   }) {
@@ -503,9 +616,36 @@ extension FxNavigator on BuildContext {
         builder: (_) => page,
         transition: transition,
         slideFrom: slideFrom,
+        revealAlignment: revealAlignment,
+        originRect: originRect,
         curve: curve,
         duration: duration,
       ),
     );
   }
+
+  /// Push [page] with a circular reveal from [alignment] (e.g. a tap point).
+  Future<T?> fxPushReveal<T>(
+    Widget page, {
+    Alignment alignment = Alignment.center,
+    Duration duration = const Duration(milliseconds: 450),
+  }) => fxPush<T>(
+    page,
+    transition: FxPageTransition.circularReveal,
+    revealAlignment: alignment,
+    duration: duration,
+  );
+
+  /// Push [page] with a container transform expanding from [originRect]
+  /// (in global/screen coordinates — e.g. from a tapped card's bounds).
+  Future<T?> fxPushFrom<T>(
+    Widget page,
+    Rect originRect, {
+    Duration duration = const Duration(milliseconds: 450),
+  }) => fxPush<T>(
+    page,
+    transition: FxPageTransition.containerTransform,
+    originRect: originRect,
+    duration: duration,
+  );
 }
