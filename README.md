@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Ken Burns, glitch & shine
+
+```dart
+FxKenBurns(child: Image.asset('hero.jpg', fit: BoxFit.cover)); // cinematic zoom/pan
+
+FxGlitch(child: Text('SYSTEM'));                               // RGB-split glitch
+
+FxShine(child: myButton);                                      // gloss sweep
+```
+
 ### Odometer, segmented control & particles
 
 ```dart

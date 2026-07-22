@@ -1,3 +1,13 @@
+## 0.18.0
+
+Cinematic & stylized effects.
+
+### Added
+- `FxKenBurns` — a slow, ping-ponging zoom-and-pan for image/hero backgrounds
+  (reduced-motion aware).
+- `FxGlitch` — a looping RGB-split glitch that spikes intermittently.
+- `FxShine` — a diagonal glossy light sweep across a child (looping or single).
+
 ## 0.17.0
 
 Counters, selectors & backgrounds.

@@ -403,6 +403,59 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text('KenBurns · Glitch · Shine', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          // Ken Burns zoom/pan over a gradient "image".
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: 110,
+              child: FxKenBurns(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.indigo, Colors.pink.shade300],
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Ken Burns',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxGlitch(
+                child: Text('GLITCH', style: theme.textTheme.headlineSmall),
+              ),
+              FxShine(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Shine',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text(
             'Odometer · Segments · Particles',
             style: theme.textTheme.titleMedium,
