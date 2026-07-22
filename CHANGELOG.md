@@ -1,3 +1,14 @@
+## 0.8.0
+
+Theme transitions and effects separately.
+
+### Added
+- `FxTheme.transitionCurve` and `FxTheme.transitionDuration` — page transitions
+  now inherit their own easing/timing, independent of effect animations.
+- `FxPageRoute.curve` is now optional and resolves from
+  `FxTheme.of(context).transitionCurve` when omitted; `context.fxPush` (and
+  `fxPushReveal`/`fxPushFrom`) inherit `transitionDuration` too.
+
 ## 0.7.0
 
 Modern-motion pass across the whole library.

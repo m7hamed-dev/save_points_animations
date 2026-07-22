@@ -114,7 +114,7 @@ class _FxTriggeredState extends State<_FxTriggered> {
   @override
   void initState() {
     super.initState();
-    if (widget.trigger == FxTrigger.visible) {
+    if (widget.trigger == .visible) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _checkVisible();
       });
@@ -129,17 +129,17 @@ class _FxTriggeredState extends State<_FxTriggered> {
     );
 
     switch (widget.trigger) {
-      case FxTrigger.appear:
+      case .appear:
         return animated;
-      case FxTrigger.tap:
+      case .tap:
         return GestureDetector(onTap: _fire, child: animated);
-      case FxTrigger.doubleTap:
+      case .doubleTap:
         return GestureDetector(onDoubleTap: _fire, child: animated);
-      case FxTrigger.longPress:
+      case .longPress:
         return GestureDetector(onLongPress: _fire, child: animated);
-      case FxTrigger.hover:
+      case .hover:
         return MouseRegion(onEnter: (_) => _fire(), child: animated);
-      case FxTrigger.visible:
+      case .visible:
         return NotificationListener<ScrollNotification>(
           onNotification: (_) {
             _checkVisible();

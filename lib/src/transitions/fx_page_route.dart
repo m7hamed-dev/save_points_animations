@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
-import 'package:save_points_animations/src/core/fx_curves.dart';
+import 'package:save_points_animations/src/themes/fx_theme.dart';
 
 /// The built-in page transition styles.
 enum FxPageTransition {
@@ -90,8 +90,8 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
     this.slideFrom = AxisDirection.right,
     this.revealAlignment = Alignment.center,
     this.originRect,
-    this.curve = FxCurves.emphasized,
-    Duration duration = const Duration(milliseconds: 350),
+    this.curve,
+    Duration duration = kFxDefaultTransitionDuration,
     Duration? reverseDuration,
     super.settings,
     super.opaque,
@@ -114,7 +114,10 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
 
   /// Screen-space source rect for [FxPageTransition.containerTransform].
   final Rect? originRect;
-  final Curve curve;
+
+  /// Easing for this transition. When null, resolves from
+  /// `FxTheme.of(context).transitionCurve`.
+  final Curve? curve;
 
   @override
   Widget buildTransitions(
@@ -128,7 +131,7 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
       slideFrom: slideFrom,
       revealAlignment: revealAlignment,
       originRect: originRect,
-      curve: curve,
+      curve: curve ?? FxTheme.of(context).transitionCurve,
       animation: animation,
       secondaryAnimation: secondaryAnimation,
       child: child,
@@ -652,6 +655,10 @@ Widget _sharedAxis(
 extension FxNavigator on BuildContext {
   /// Push [page] with an [FxPageTransition].
   ///
+  /// When [curve] / [duration] are omitted they resolve from
+  /// `FxTheme.of(context).transitionCurve` / `transitionDuration`, so
+  /// transitions can be themed independently of effect animations.
+  ///
   /// ```dart
   /// context.fxPush(DetailPage(), transition: FxPageTransition.sharedAxisHorizontal);
   /// ```
@@ -661,9 +668,10 @@ extension FxNavigator on BuildContext {
     AxisDirection slideFrom = AxisDirection.right,
     Alignment revealAlignment = Alignment.center,
     Rect? originRect,
-    Curve curve = FxCurves.emphasized,
-    Duration duration = const Duration(milliseconds: 350),
+    Curve? curve,
+    Duration? duration,
   }) {
+    final theme = FxTheme.of(this);
     return Navigator.of(this).push<T>(
       FxPageRoute<T>(
         builder: (_) => page,
@@ -671,8 +679,8 @@ extension FxNavigator on BuildContext {
         slideFrom: slideFrom,
         revealAlignment: revealAlignment,
         originRect: originRect,
-        curve: curve,
-        duration: duration,
+        curve: curve ?? theme.transitionCurve,
+        duration: duration ?? theme.transitionDuration,
       ),
     );
   }
@@ -681,7 +689,7 @@ extension FxNavigator on BuildContext {
   Future<T?> fxPushReveal<T>(
     Widget page, {
     Alignment alignment = Alignment.center,
-    Duration duration = const Duration(milliseconds: 450),
+    Duration? duration,
   }) => fxPush<T>(
     page,
     transition: FxPageTransition.circularReveal,
@@ -694,7 +702,7 @@ extension FxNavigator on BuildContext {
   Future<T?> fxPushFrom<T>(
     Widget page,
     Rect originRect, {
-    Duration duration = const Duration(milliseconds: 450),
+    Duration? duration,
   }) => fxPush<T>(
     page,
     transition: FxPageTransition.containerTransform,

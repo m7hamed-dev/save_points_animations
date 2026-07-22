@@ -12,10 +12,14 @@ class ExampleApp extends StatelessWidget {
       title: 'Save Points Animations',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-      // Global animation defaults for every `.animate()` below.
+      // Effects and page transitions are themed independently.
       home: const FxTheme(
+        // Effects: snappy and a touch longer.
         duration: Duration(milliseconds: 500),
         curve: FxCurves.snappy,
+        // Page transitions: Material 3 emphasized, slightly quicker.
+        transitionCurve: FxCurves.emphasized,
+        transitionDuration: Duration(milliseconds: 400),
         child: HomeScreen(),
       ),
     );

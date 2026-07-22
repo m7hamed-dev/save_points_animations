@@ -201,17 +201,24 @@ card.animatedVisibility(visible: _show, effects: (a) => a.fadeIn());
 
 ### Global theme
 
+Effects and page transitions are themed **independently**:
+
 ```dart
 FxTheme(
+  // Effects (.animate()):
   duration: 300.ms,
   curve: FxCurves.snappy,
+  // Page transitions (FxPageRoute / context.fxPush):
+  transitionCurve: FxCurves.emphasized,
+  transitionDuration: 400.ms,
   respectReducedMotion: true,
   child: MaterialApp(...),
 );
 ```
 
 Resolution order for any parameter: **explicit argument → nearest `FxTheme` →
-package default.**
+package default.** Omit `curve`/`duration` on `context.fxPush` and they inherit
+`transitionCurve`/`transitionDuration` from the theme.
 
 ### Custom effects
 

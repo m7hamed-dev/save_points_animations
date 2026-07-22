@@ -12,6 +12,12 @@ const Curve kFxDefaultCurve = FxCurves.emphasized;
 /// Package-level default delay.
 const Duration kFxDefaultDelay = Duration.zero;
 
+/// Package-level default page-transition duration.
+const Duration kFxDefaultTransitionDuration = Duration(milliseconds: 350);
+
+/// Package-level default page-transition curve.
+const Curve kFxDefaultTransitionCurve = FxCurves.emphasized;
+
 /// Behavior when the platform requests reduced motion.
 enum FxReducedMotionBehavior {
   /// Jump straight to the animation's final frame (default).
@@ -31,13 +37,27 @@ class FxThemeData {
     this.duration = kFxDefaultDuration,
     this.curve = kFxDefaultCurve,
     this.delay = kFxDefaultDelay,
+    this.transitionCurve = kFxDefaultTransitionCurve,
+    this.transitionDuration = kFxDefaultTransitionDuration,
     this.respectReducedMotion = true,
     this.reducedMotionBehavior = FxReducedMotionBehavior.jumpToEnd,
   });
 
-  final Duration duration;
+  /// Default easing for `.animate()` **effects**.
   final Curve curve;
+
+  /// Default duration for `.animate()` **effects**.
+  final Duration duration;
+
+  /// Default delay for `.animate()` effects.
   final Duration delay;
+
+  /// Default easing for **page transitions** (themed independently of effects).
+  final Curve transitionCurve;
+
+  /// Default duration for **page transitions**.
+  final Duration transitionDuration;
+
   final bool respectReducedMotion;
   final FxReducedMotionBehavior reducedMotionBehavior;
 }
@@ -60,6 +80,8 @@ class FxTheme extends InheritedWidget {
     this.duration,
     this.curve,
     this.delay,
+    this.transitionCurve,
+    this.transitionDuration,
     this.respectReducedMotion = true,
     this.reducedMotionBehavior = FxReducedMotionBehavior.jumpToEnd,
     required super.child,
@@ -68,6 +90,13 @@ class FxTheme extends InheritedWidget {
   final Duration? duration;
   final Curve? curve;
   final Duration? delay;
+
+  /// Default easing for page transitions (`FxPageRoute` / `context.fxPush`).
+  final Curve? transitionCurve;
+
+  /// Default duration for page transitions.
+  final Duration? transitionDuration;
+
   final bool respectReducedMotion;
   final FxReducedMotionBehavior reducedMotionBehavior;
 
@@ -79,6 +108,9 @@ class FxTheme extends InheritedWidget {
       duration: theme?.duration ?? kFxDefaultDuration,
       curve: theme?.curve ?? kFxDefaultCurve,
       delay: theme?.delay ?? kFxDefaultDelay,
+      transitionCurve: theme?.transitionCurve ?? kFxDefaultTransitionCurve,
+      transitionDuration:
+          theme?.transitionDuration ?? kFxDefaultTransitionDuration,
       respectReducedMotion: theme?.respectReducedMotion ?? true,
       reducedMotionBehavior:
           theme?.reducedMotionBehavior ?? FxReducedMotionBehavior.jumpToEnd,
@@ -90,6 +122,8 @@ class FxTheme extends InheritedWidget {
       duration != oldWidget.duration ||
       curve != oldWidget.curve ||
       delay != oldWidget.delay ||
+      transitionCurve != oldWidget.transitionCurve ||
+      transitionDuration != oldWidget.transitionDuration ||
       respectReducedMotion != oldWidget.respectReducedMotion ||
       reducedMotionBehavior != oldWidget.reducedMotionBehavior;
 }
