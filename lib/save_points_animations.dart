@@ -60,10 +60,13 @@ export 'src/widgets/fx_gradient_border.dart' show FxGradientBorder;
 export 'src/widgets/fx_loaders.dart'
     show FxBarsLoader, FxDotsLoader, FxProgressRing;
 export 'src/widgets/fx_marquee.dart' show FxMarquee;
+export 'src/widgets/fx_odometer.dart' show FxOdometer;
 export 'src/widgets/fx_page_indicator.dart' show FxPageIndicator;
+export 'src/widgets/fx_particles.dart' show FxParticles;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_pulse.dart' show FxPulse;
 export 'src/widgets/fx_rating.dart' show FxRating;
+export 'src/widgets/fx_segmented_control.dart' show FxSegmentedControl;
 export 'src/widgets/fx_skeleton.dart' show FxSkeleton;
 export 'src/widgets/fx_speed_dial.dart' show FxSpeedDial;
 export 'src/widgets/fx_swipe.dart' show FxSwipeToDismiss;

@@ -40,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showBanner = true;
   int _rating = 3;
   double _progress = 0.4;
+  int _score = 1234;
+  int _segment = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -397,6 +399,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'Odometer · Segments · Particles',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              FxOdometer(value: _score),
+              const SizedBox(width: 16),
+              OutlinedButton(
+                onPressed: () => setState(() => _score += 111),
+                child: const Text('+111'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          FxSegmentedControl(
+            segments: const ['Day', 'Week', 'Month'],
+            selectedIndex: _segment,
+            onChanged: (i) => setState(() => _segment = i),
+          ),
+          const SizedBox(height: 12),
+
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: 90,
+              child: FxParticles(
+                color: const Color(0x66FFFFFF),
+                child: const ColoredBox(
+                  color: Color(0xFF283593),
+                  child: Center(
+                    child: Text(
+                      'Ambient particles',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
 

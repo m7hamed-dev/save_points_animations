@@ -1,3 +1,15 @@
+## 0.17.0
+
+Counters, selectors & backgrounds.
+
+### Added
+- `FxOdometer` — a rolling-digit number display; each digit scrolls to its new
+  value.
+- `FxSegmentedControl` — an animated segmented selector with a sliding pill and
+  cross-fading labels.
+- `FxParticles` — an ambient field of drifting particles (reduced-motion aware),
+  with an optional foreground child.
+
 ## 0.16.0
 
 Decorative & chat widgets.

@@ -196,6 +196,17 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Odometer, segmented control & particles
+
+```dart
+FxOdometer(value: score);                                // rolling-digit counter
+
+FxSegmentedControl(segments: const ['Day', 'Week'],      // sliding-pill selector
+    selectedIndex: i, onChanged: (v) => setState(() => i = v));
+
+FxParticles(child: hero);                                // ambient drifting dots
+```
+
 ### Gradient border, wave fill & typing dots
 
 ```dart
