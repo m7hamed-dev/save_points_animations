@@ -142,6 +142,34 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
+          const SizedBox(height: 8),
+
+          // Modern page transitions — tap a chip to preview.
+          Builder(
+            builder: (context) => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final t in const [
+                  FxPageTransition.fadeThrough,
+                  FxPageTransition.cupertino,
+                  FxPageTransition.depth,
+                  FxPageTransition.sheet,
+                  FxPageTransition.circularReveal,
+                  FxPageTransition.cube3D,
+                  FxPageTransition.blur,
+                ])
+                  ActionChip(
+                    label: Text(t.name),
+                    onPressed: () => context.fxPush(
+                      const DetailScreen(),
+                      transition: t,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 32),
           Text('Loading · Text · Color', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),

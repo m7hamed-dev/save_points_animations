@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-
 import 'package:save_points_animations/src/builders/fx_builder.dart';
 import 'package:save_points_animations/src/controllers/fx_controller.dart';
 
