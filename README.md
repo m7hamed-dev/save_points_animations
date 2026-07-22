@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Gradient border, wave fill & typing dots
+
+```dart
+FxGradientBorder(child: card);                 // rotating gradient outline ("AI glow")
+
+FxWaveProgress(value: 0.65, child: Text('65%')); // liquid water-fill indicator
+
+const FxTypingIndicator();                       // chat "typing…" bubble
+```
+
 ### Flip card, speed dial & success check
 
 ```dart

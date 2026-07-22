@@ -1,3 +1,15 @@
+## 0.16.0
+
+Decorative & chat widgets.
+
+### Added
+- `FxGradientBorder` — a continuously rotating gradient outline (the "AI glow"
+  border) around any child.
+- `FxWaveProgress` — a liquid water-fill progress indicator (circle or box) with
+  an animated wave surface and optional centered label.
+- `FxTypingIndicator` — the chat "typing…" indicator: sequenced pulsing dots,
+  optionally inside a bubble.
+
 ## 0.15.0
 
 Interactive card & action widgets.

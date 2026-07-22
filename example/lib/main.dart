@@ -401,6 +401,41 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text(
+            'Gradient border · Wave · Typing',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxGradientBorder(
+                borderRadius: 16,
+                child: Container(
+                  width: 90,
+                  height: 64,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: const Text('AI'),
+                ),
+              ),
+              const FxWaveProgress(
+                value: 0.65,
+                size: 84,
+                child: Text(
+                  '65%',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const FxTypingIndicator(),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('Flip · SpeedDial · Check', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 
