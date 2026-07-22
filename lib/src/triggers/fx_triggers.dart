@@ -100,7 +100,7 @@ class _FxTriggeredState extends State<_FxTriggered> {
     if (box == null || !box.hasSize) return;
     final top = box.localToGlobal(Offset.zero).dy;
     final bottom = top + box.size.height;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final visiblePx =
         bottom.clamp(0.0, screenHeight) - top.clamp(0.0, screenHeight);
     final fraction = box.size.height == 0 ? 0.0 : visiblePx / box.size.height;

@@ -1,3 +1,14 @@
+## 0.13.0
+
+Indicators & attention widgets.
+
+### Added
+- `FxPageIndicator` — animated worm-style page dots synced to a `PageController`.
+- `FxBadge` (+ `Widget.badge(count)`) — a count badge that pops when its value
+  changes.
+- `FxPulse` — a looping sonar halo of expanding, fading rings for live/attention
+  indicators.
+
 ## 0.12.0
 
 More interactive widgets.

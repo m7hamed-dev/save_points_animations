@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Badges, pulses & page dots
+
+```dart
+icon.badge(unreadCount);                                 // pops when count changes
+
+FxPulse(color: Colors.red, child: liveDot);              // sonar attention halo
+
+FxPageIndicator(controller: pageController, count: 4);   // animated worm dots
+```
+
 ### Marquee, swipe-to-dismiss & countdown
 
 ```dart

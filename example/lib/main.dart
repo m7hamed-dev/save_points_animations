@@ -36,6 +36,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FxController _card = FxController();
   final FxConfettiController _confetti = FxConfettiController();
+  final PageController _pageController = PageController();
   bool _showBanner = true;
 
   @override
@@ -394,6 +395,49 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Badge · Pulse · Dots', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // Count badge that pops when tapped (increments via FAB replay).
+              const Icon(Icons.notifications, size: 36).badge(3),
+              // Sonar pulse behind a live dot.
+              const FxPulse(
+                color: Color(0xFF43A047),
+                child: Icon(Icons.circle, size: 14, color: Color(0xFF43A047)),
+              ),
+              // Animated page dots.
+              FxPageIndicator(controller: _pageController, count: 4),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 90,
+            child: PageView(
+              controller: _pageController,
+              children: [
+                for (final c in [
+                  Colors.pink,
+                  Colors.teal,
+                  Colors.orange,
+                  Colors.indigo,
+                ])
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: c.withValues(alpha: 0.85),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
 
