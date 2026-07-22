@@ -1,3 +1,25 @@
+## 0.7.0
+
+Modern-motion pass across the whole library.
+
+### Changed (behavior)
+- **Default easing is now Material 3 emphasized** (`FxCurves.emphasized`) instead
+  of `easeInOut` — a confident, quick-in / smooth-settle feel across every effect
+  and transition. Override per effect (`.curve(...)`) or globally via `FxTheme`.
+- Default effect/transition duration nudged 300 → 350 ms for a more deliberate,
+  premium cadence.
+- Page transitions now default to emphasized easing.
+
+### Added
+- Material 3 expressive easing tokens on `FxCurves`: `emphasized`,
+  `emphasizedDecelerate` (entering), `emphasizedAccelerate` (leaving),
+  `standardDecelerate`.
+
+### Polished
+- `cupertino` transition now dims the receding page (native iOS parallax feel).
+- `sheet` transition gains rounded top corners that flatten on arrival, plus a
+  dim + deeper scale on the page behind (iOS 15+ sheet stack).
+
 ## 0.6.0
 
 More modern transitions + origin-aware reveals.

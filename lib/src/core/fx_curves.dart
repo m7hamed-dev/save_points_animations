@@ -31,4 +31,19 @@ abstract final class FxCurves {
 
   /// Material standard easing.
   static const Curve material = Cubic(0.4, 0.0, 0.2, 1.0);
+
+  // --- Material 3 "expressive" easing tokens --------------------------------
+
+  /// Material 3 emphasized — the modern default: quick, confident start with a
+  /// long, smooth settle. Great for most entrances and transitions.
+  static const Curve emphasized = Cubic(0.2, 0.0, 0.0, 1.0);
+
+  /// Emphasized decelerate — for elements **entering** the screen.
+  static const Curve emphasizedDecelerate = Cubic(0.05, 0.7, 0.1, 1.0);
+
+  /// Emphasized accelerate — for elements **leaving** the screen.
+  static const Curve emphasizedAccelerate = Cubic(0.3, 0.0, 0.8, 0.15);
+
+  /// Standard decelerate — a clean, overshoot-free "ease-out".
+  static const Curve standardDecelerate = Cubic(0.0, 0.0, 0.0, 1.0);
 }

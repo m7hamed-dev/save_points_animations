@@ -1,11 +1,13 @@
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_curves.dart';
 
 /// Package-level default duration when neither the effect nor an [FxTheme]
 /// specifies one.
-const Duration kFxDefaultDuration = Duration(milliseconds: 300);
+const Duration kFxDefaultDuration = Duration(milliseconds: 350);
 
-/// Package-level default curve.
-const Curve kFxDefaultCurve = Curves.easeInOut;
+/// Package-level default curve — Material 3 emphasized easing for a modern,
+/// confident-in / smooth-settle feel (override per effect or via [FxTheme]).
+const Curve kFxDefaultCurve = FxCurves.emphasized;
 
 /// Package-level default delay.
 const Duration kFxDefaultDelay = Duration.zero;

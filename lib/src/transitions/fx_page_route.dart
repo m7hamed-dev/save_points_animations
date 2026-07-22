@@ -90,7 +90,7 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
     this.slideFrom = AxisDirection.right,
     this.revealAlignment = Alignment.center,
     this.originRect,
-    this.curve = FxCurves.snappy,
+    this.curve = FxCurves.emphasized,
     Duration duration = const Duration(milliseconds: 350),
     Duration? reverseDuration,
     super.settings,
@@ -298,6 +298,27 @@ Widget _cupertino(
     child: child,
   );
 
+  // Dim this page as it recedes under a newer one (native iOS feel).
+  final dimmed = Stack(
+    fit: StackFit.passthrough,
+    children: [
+      incoming,
+      Positioned.fill(
+        child: IgnorePointer(
+          child: FadeTransition(
+            opacity: secondaryAnimation.drive(
+              Tween<double>(
+                begin: 0,
+                end: 0.12,
+              ).chain(CurveTween(curve: curve)),
+            ),
+            child: const ColoredBox(color: Color(0xFF000000)),
+          ),
+        ),
+      ),
+    ],
+  );
+
   return SlideTransition(
     position: secondaryAnimation.drive(
       Tween<Offset>(
@@ -305,7 +326,7 @@ Widget _cupertino(
         end: const Offset(-0.3, 0),
       ).chain(CurveTween(curve: curve)),
     ),
-    child: incoming,
+    child: dimmed,
   );
 }
 
@@ -344,21 +365,53 @@ Widget _sheet(
   Animation<double> secondaryAnimation,
   Widget child,
 ) {
-  final incoming = SlideTransition(
-    position: animation.drive(
-      Tween<Offset>(
-        begin: const Offset(0, 1),
-        end: Offset.zero,
-      ).chain(CurveTween(curve: curve)),
-    ),
+  // Incoming sheet slides up with rounded top corners that flatten as it
+  // reaches the top (modern iOS 15+ sheet).
+  final incoming = AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final t = curve.transform(animation.value);
+      final radius = ui.lerpDouble(28, 0, t)!;
+      return ClipRRect(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(radius)),
+        child: SlideTransition(
+          position: animation.drive(
+            Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: curve)),
+          ),
+          child: child,
+        ),
+      );
+    },
     child: child,
   );
 
+  // Page behind scales down + dims, like a card sliding back in a stack.
   return ScaleTransition(
     scale: secondaryAnimation.drive(
-      Tween<double>(begin: 1, end: 0.92).chain(CurveTween(curve: curve)),
+      Tween<double>(begin: 1, end: 0.9).chain(CurveTween(curve: curve)),
     ),
-    child: incoming,
+    child: Stack(
+      fit: StackFit.passthrough,
+      children: [
+        incoming,
+        Positioned.fill(
+          child: IgnorePointer(
+            child: FadeTransition(
+              opacity: secondaryAnimation.drive(
+                Tween<double>(
+                  begin: 0,
+                  end: 0.18,
+                ).chain(CurveTween(curve: curve)),
+              ),
+              child: const ColoredBox(color: Color(0xFF000000)),
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }
 
@@ -608,7 +661,7 @@ extension FxNavigator on BuildContext {
     AxisDirection slideFrom = AxisDirection.right,
     Alignment revealAlignment = Alignment.center,
     Rect? originRect,
-    Curve curve = FxCurves.snappy,
+    Curve curve = FxCurves.emphasized,
     Duration duration = const Duration(milliseconds: 350),
   }) {
     return Navigator.of(this).push<T>(

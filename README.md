@@ -26,6 +26,9 @@ Text('Hello')
   widget builds.
 - **Accessible by default.** Honors `MediaQuery.disableAnimations` and jumps to
   the end frame under reduced-motion.
+- **Modern motion by default.** Effects and transitions ease with Material 3
+  **emphasized** curves out of the box (`FxCurves.emphasized` /
+  `emphasizedDecelerate` / `emphasizedAccelerate`) — override any time.
 - **Extensible.** Create your own effect by extending `FxEffect` — no fork needed.
 
 ## Install
