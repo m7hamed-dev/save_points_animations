@@ -39,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Save Points Animations',
+          'Save Points Animations V 1.0',
         ).animate().fade().slideY(-0.5).duration(400.ms),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: Text('Staggered item #$i'),
               ),
             ),
-          ).animateList().fade().slideX(0.5).interval(90.ms).build(),
+          ).animateList().fade().slideX(0.2).interval(90.ms).build(),
 
           const SizedBox(height: 32),
           Text('Physics', style: theme.textTheme.titleMedium),
