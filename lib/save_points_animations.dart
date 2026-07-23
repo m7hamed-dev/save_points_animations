@@ -70,6 +70,7 @@ export 'src/widgets/fx_circular_text.dart' show FxCircularText;
 export 'src/widgets/fx_color_cycle.dart' show FxColorCycle;
 export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
+export 'src/widgets/fx_curved_nav_bar.dart' show FxCurvedNavBar;
 export 'src/widgets/fx_dot_grid.dart' show FxDotGrid;
 export 'src/widgets/fx_expandable.dart' show FxExpandable;
 export 'src/widgets/fx_fireworks.dart' show FxFireworks;
@@ -85,6 +86,7 @@ export 'src/widgets/fx_loaders.dart'
     show FxBarsLoader, FxDotsLoader, FxProgressRing;
 export 'src/widgets/fx_marquee.dart' show FxMarquee;
 export 'src/widgets/fx_morph_icon.dart' show FxMorphIcon;
+export 'src/widgets/fx_nav_item.dart' show FxNavItem;
 export 'src/widgets/fx_neon_text.dart' show FxNeonText;
 export 'src/widgets/fx_odometer.dart' show FxOdometer;
 export 'src/widgets/fx_orbit_loader.dart' show FxOrbitLoader;
@@ -93,6 +95,7 @@ export 'src/widgets/fx_parallax_layers.dart'
     show FxParallaxLayer, FxParallaxLayers;
 export 'src/widgets/fx_particles.dart' show FxParticles;
 export 'src/widgets/fx_pie_chart.dart' show FxPieChart;
+export 'src/widgets/fx_pill_nav_bar.dart' show FxPillNavBar;
 export 'src/widgets/fx_pin_dots.dart' show FxPinDots;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_progress_button.dart'

@@ -70,6 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
         label: const Text('Replay card'),
         icon: const Icon(Icons.refresh),
       ).animate().scale().curve(FxCurves.elastic),
+      bottomNavigationBar: FxPillNavBar(
+        currentIndex: _navIndex,
+        onTap: (i) => setState(() => _navIndex = i),
+        items: const [
+          FxNavItem(icon: Icon(Icons.home), label: 'Home'),
+          FxNavItem(icon: Icon(Icons.search), label: 'Search'),
+          FxNavItem(icon: Icon(Icons.favorite), label: 'Likes'),
+          FxNavItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
       body: ListView(
         controller: _scrollController,
         padding: const EdgeInsets.all(24),
@@ -733,6 +743,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 Icon(Icons.person),
               ],
             ),
+          ),
+          const SizedBox(height: 12),
+          // Curved nav bar (floating icon over a sliding notch).
+          FxCurvedNavBar(
+            currentIndex: _navIndex,
+            onTap: (i) => setState(() => _navIndex = i),
+            items: const [
+              FxNavItem(icon: Icon(Icons.home), label: 'Home'),
+              FxNavItem(icon: Icon(Icons.search), label: 'Search'),
+              FxNavItem(icon: Icon(Icons.favorite), label: 'Likes'),
+              FxNavItem(icon: Icon(Icons.person), label: 'Profile'),
+            ],
           ),
 
           const SizedBox(height: 32),

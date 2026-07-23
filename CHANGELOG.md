@@ -1,3 +1,15 @@
+## 0.35.0
+
+Animated bottom navigation bars.
+
+### Added
+- `FxPillNavBar` — the selected destination expands into a tinted pill that
+  reveals its label (Salomon style).
+- `FxCurvedNavBar` — a curved notch that slides to the selected item with its
+  icon floating in a circle above the dip.
+- `FxNavItem` — the shared `{icon, label}` model for the new nav bars.
+  (Joins the existing `FxAnimatedNavBar`.)
+
 ## 0.34.0
 
 Space, water & chance.

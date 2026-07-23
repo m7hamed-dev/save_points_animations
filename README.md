@@ -196,6 +196,22 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Animated bottom nav bars
+
+Three styles, all driven by `currentIndex` + `onTap`:
+
+```dart
+// Sliding circle indicator + icon lift:
+FxAnimatedNavBar(items: icons, currentIndex: i, onTap: setIndex);
+
+// Selected item expands into a labelled pill (Salomon style):
+FxPillNavBar(items: navItems, currentIndex: i, onTap: setIndex);
+
+// Floating icon over a sliding curved notch:
+FxCurvedNavBar(items: navItems, currentIndex: i, onTap: setIndex);
+// where navItems are FxNavItem(icon: ..., label: ...)
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart
