@@ -1,3 +1,16 @@
+## 0.41.0
+
+Forms & pointer interaction.
+
+### Added
+- `FxFloatingField` — a text field with a floating label that shrinks up on
+  focus/content and an underline that animates to the accent colour. Built on
+  `EditableText` (Material-free).
+- `FxMagneticButton` — a target that leans toward the pointer while hovered and
+  springs back to center on exit (desktop/web); forwards taps on touch.
+- `FxWizardSteps` — a horizontal labelled step indicator; completed steps fill
+  and show a check, connectors fill as you progress.
+
 ## 0.40.0
 
 Comparison, keypad & reactions.

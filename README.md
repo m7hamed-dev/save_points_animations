@@ -279,6 +279,19 @@ FxReactionBar(
 );
 ```
 
+### Forms & pointer interaction
+
+```dart
+// Floating-label text field (Material-free, EditableText-based):
+FxFloatingField(label: 'Email', onChanged: (v) => email = v);
+
+// Button that leans toward the pointer on hover, springs back on exit:
+FxMagneticButton(onTap: go, child: myButton);
+
+// Horizontal labelled step indicator with filling connectors:
+FxWizardSteps(steps: const ['Cart', 'Address', 'Pay'], currentStep: step);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart

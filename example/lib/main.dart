@@ -66,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _playing = true;
   String _pinEntry = '';
   int? _reaction = 1;
+  int _wizard = 1;
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1652,6 +1653,59 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+              Text(
+                'Wizard · Field · Magnetic',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              FxWizardSteps(
+                steps: const ['Cart', 'Address', 'Pay', 'Done'],
+                currentStep: _wizard,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  OutlinedButton(
+                    onPressed: () =>
+                        setState(() => _wizard = (_wizard - 1).clamp(0, 3)),
+                    child: const Text('Back'),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton(
+                    onPressed: () =>
+                        setState(() => _wizard = (_wizard + 1).clamp(0, 3)),
+                    child: const Text('Next'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const FxFloatingField(label: 'Email address'),
+              const SizedBox(height: 20),
+              Center(
+                child: FxMagneticButton(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text(
+                      'Hover / tap me',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ),
