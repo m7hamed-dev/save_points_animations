@@ -1,3 +1,15 @@
+## 0.38.0
+
+Pickers & sheets.
+
+### Added
+- `FxDraggableSheet` — a draggable bottom sheet that snaps between configurable
+  height fractions and springs to the nearest snap point on release.
+- `FxColorWheel` — a circular HSV color picker; drag to set hue (angle) and
+  saturation (radius), with an animated selector ring. Material-free.
+- `FxDateStrip` — a horizontally-scrolling strip of day chips; the selected day
+  animates into a filled pill.
+
 ## 0.37.0
 
 Animated input controls & feedback.

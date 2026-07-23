@@ -58,6 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
   double _slider = 0.4;
   int _qty = 1;
   bool _toast = false;
+  Color _wheelColor = const Color(0xFFE91E63);
+  static final DateTime _dayBase = DateTime(2026, 7, 20);
+  DateTime _day = DateTime(2026, 7, 22);
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1579,6 +1582,72 @@ class _HomeScreenState extends State<HomeScreen> {
                         SlideEffect(beginY: 0.2),
                         ScaleEffect(begin: 0.9),
                       ]),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+              Text(
+                'Date strip · Color wheel',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              FxDateStrip(
+                days: List.generate(14, (i) => _dayBase.add(Duration(days: i))),
+                selected: _day,
+                onChanged: (d) => setState(() => _day = d),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  FxColorWheel(
+                    color: _wheelColor,
+                    size: 180,
+                    onChanged: (c) => setState(() => _wheelColor = c),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: _wheelColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Draggable snapping sheet, shown inside a fixed-height stage.
+              SizedBox(
+                height: 260,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Stack(
+                    children: [
+                      const Center(child: Text('Drag the sheet ↑')),
+                      FxDraggableSheet(
+                        snapSizes: const [0.25, 0.55, 0.9],
+                        child: ListView(
+                          padding: const EdgeInsets.all(20),
+                          children: const [
+                            Text(
+                              'Bottom sheet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text('Drag the handle to snap between sizes.'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 

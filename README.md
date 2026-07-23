@@ -234,6 +234,19 @@ FxStepper(value: qty, onChanged: (n) => setState(() => qty = n), max: 10);
 Stack(children: [content, FxToast(visible: show, child: Text('Saved'))]);
 ```
 
+### Pickers & sheets
+
+```dart
+// Draggable bottom sheet that snaps between height fractions:
+Stack(children: [page, FxDraggableSheet(snapSizes: const [0.3, 0.6, 0.9], child: content)]);
+
+// Circular HSV color picker (Material-free):
+FxColorWheel(color: c, onChanged: (v) => setState(() => c = v));
+
+// Horizontal day strip — selected day animates into a pill:
+FxDateStrip(days: days, selected: picked, onChanged: (d) => setState(() => picked = d));
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart
