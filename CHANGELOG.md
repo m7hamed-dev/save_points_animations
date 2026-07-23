@@ -1,3 +1,13 @@
+## 0.34.0
+
+Space, water & chance.
+
+### Added
+- `FxStarField` — a "warp speed" starfield streaming toward the viewer.
+- `FxBubbles` — rising, gently wobbling bubbles over a child.
+- `FxSpinWheel` (+ `FxSpinWheelController`) — a fortune wheel that spins with
+  deceleration and reports the landed segment.
+
 ## 0.33.0
 
 More data viz + celebration.

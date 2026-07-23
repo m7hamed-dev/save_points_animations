@@ -133,7 +133,13 @@ Widget buildFxTransition({
       return _fadeUpwards(curve, animation, child);
 
     case FxPageTransition.flip:
-      return _flip(Axis.horizontal, curve, animation, secondaryAnimation, child);
+      return _flip(
+        Axis.horizontal,
+        curve,
+        animation,
+        secondaryAnimation,
+        child,
+      );
 
     case FxPageTransition.flipVertical:
       return _flip(Axis.vertical, curve, animation, secondaryAnimation, child);

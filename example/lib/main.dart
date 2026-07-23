@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _pin = 2;
   int _radio = 0;
   final Set<int> _chips = {0};
+  final FxSpinWheelController _wheel = FxSpinWheelController();
 
   @override
   Widget build(BuildContext context) {
@@ -424,6 +425,65 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'StarField · Bubbles · SpinWheel',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const SizedBox(
+                  width: 120,
+                  height: 110,
+                  child: FxStarField(
+                    child: ColoredBox(color: Color(0xFF05060E)),
+                  ),
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const SizedBox(
+                  width: 120,
+                  height: 110,
+                  child: FxBubbles(
+                    color: Color(0x552575FC),
+                    child: ColoredBox(color: Color(0xFFE3F2FD)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: Column(
+              children: [
+                FxSpinWheel(
+                  size: 180,
+                  controller: _wheel,
+                  items: const ['10', '20', '50', '5', '100', '0'],
+                  colors: const [
+                    Colors.pink,
+                    Colors.teal,
+                    Colors.amber,
+                    Colors.indigo,
+                    Colors.green,
+                    Colors.orange,
+                  ],
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: _wheel.spin,
+                  child: const Text('Spin!'),
+                ),
+              ],
             ),
           ),
 

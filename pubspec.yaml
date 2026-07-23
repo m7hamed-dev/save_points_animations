@@ -3,7 +3,7 @@ description: >-
   A fluent, extensible animation framework for Flutter. Animate any widget with
   chainable extension methods, a single-controller engine, timelines, staggered
   lists, theming and reduced-motion support.
-version: 0.33.0
+version: 0.34.0
 homepage: https://github.com/your-org/save_points_animations
 repository: https://github.com/your-org/save_points_animations
 issue_tracker: https://github.com/your-org/save_points_animations/issues

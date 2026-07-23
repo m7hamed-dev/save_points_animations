@@ -196,6 +196,18 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Starfield, bubbles & spin wheel
+
+```dart
+FxStarField(child: launchScreen);        // warp-speed stars
+
+FxBubbles(child: panel);                 // rising bubbles
+
+final wheel = FxSpinWheelController();
+FxSpinWheel(items: prizes, colors: palette, controller: wheel, onResult: award);
+// wheel.spin();
+```
+
 ### Pie chart, fireworks & tag chips
 
 ```dart
