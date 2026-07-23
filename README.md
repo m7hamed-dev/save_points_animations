@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Rotating words, flip clock & color cycle
+
+```dart
+FxRotatingWords(words: const ['Build', 'Ship', 'Scale']); // word carousel
+
+FxFlipClock(value: '12:45');                              // split-flap digits
+
+FxColorCycle(colors: palette, builder: (ctx, c) => Text('Hi', style: TextStyle(color: c)));
+```
+
 ### Slide to confirm, progress button & swipe deck
 
 ```dart

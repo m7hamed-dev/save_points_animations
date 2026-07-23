@@ -1,3 +1,13 @@
+## 0.24.0
+
+Text & number motion.
+
+### Added
+- `FxRotatingWords` — a fade + slide word carousel for hero headlines.
+- `FxFlipClock` — split-flap "flip clock" characters that flip in 3D on change.
+- `FxColorCycle` — continuously interpolates a palette and hands the current
+  color to a builder (cycling text, borders, glows).
+
 ## 0.23.0
 
 Gesture-driven actions.

@@ -408,6 +408,43 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text(
+            'RotatingWords · FlipClock · ColorCycle',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              Text('We ', style: theme.textTheme.headlineSmall),
+              FxRotatingWords(
+                words: const ['Build', 'Ship', 'Scale'],
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FxFlipClock(value: '12:45'),
+              FxColorCycle(
+                colors: const [Colors.red, Colors.orange, Colors.purple],
+                builder: (context, color) => Text(
+                  'Rainbow',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('Slide · Progress · Swipe', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
 
