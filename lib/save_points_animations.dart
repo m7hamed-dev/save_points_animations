@@ -49,11 +49,13 @@ export 'src/transitions/fx_page_route.dart'
 export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
 export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
+export 'src/widgets/fx_animated_toggle.dart' show FxAnimatedToggle;
 export 'src/widgets/fx_animated_visibility.dart'
     show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;
 export 'src/widgets/fx_aurora.dart' show FxAurora;
 export 'src/widgets/fx_badge.dart' show FxBadge, FxBadgeExtension;
 export 'src/widgets/fx_blob.dart' show FxBlob;
+export 'src/widgets/fx_circular_countdown.dart' show FxCircularCountdown;
 export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
 export 'src/widgets/fx_expandable.dart' show FxExpandable;
@@ -77,6 +79,7 @@ export 'src/widgets/fx_segmented_control.dart' show FxSegmentedControl;
 export 'src/widgets/fx_shine.dart' show FxShine;
 export 'src/widgets/fx_skeleton.dart' show FxSkeleton;
 export 'src/widgets/fx_speed_dial.dart' show FxSpeedDial;
+export 'src/widgets/fx_step_progress.dart' show FxStepProgress;
 export 'src/widgets/fx_swipe.dart' show FxSwipeToDismiss;
 export 'src/widgets/fx_switcher.dart' show FxSwitcher, FxSwitcherEffect;
 export 'src/widgets/fx_typing_indicator.dart' show FxTypingIndicator;

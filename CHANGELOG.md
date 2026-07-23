@@ -1,3 +1,14 @@
+## 0.21.0
+
+Progress & control widgets.
+
+### Added
+- `FxStepProgress` — an animated horizontal step indicator with filling
+  connectors.
+- `FxAnimatedToggle` — a custom switch with a sliding thumb and morphing track.
+- `FxCircularCountdown` — a depleting ring timer with a center label and
+  `onComplete`.
+
 ## 0.20.0
 
 Interactive controls & separators.

@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Step progress, toggle & countdown ring
+
+```dart
+FxStepProgress(count: 4, currentStep: step);           // animated step dots
+
+FxAnimatedToggle(value: on, onChanged: (v) => …);      // custom switch
+
+FxCircularCountdown(duration: 10.seconds);             // depleting ring timer
+```
+
 ### Morph icon, ripple & wave divider
 
 ```dart

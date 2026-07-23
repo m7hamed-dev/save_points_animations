@@ -43,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _score = 1234;
   int _segment = 0;
   bool _menuOpen = false;
+  bool _toggle = true;
+  int _step = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -401,6 +403,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'Steps · Toggle · Countdown',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          FxStepProgress(count: 4, currentStep: _step),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              OutlinedButton(
+                onPressed: () => setState(() => _step = (_step + 1) % 4),
+                child: const Text('Next step'),
+              ),
+              FxAnimatedToggle(
+                value: _toggle,
+                onChanged: (v) => setState(() => _toggle = v),
+              ),
+              const FxCircularCountdown(duration: Duration(seconds: 20)),
+            ],
           ),
 
           const SizedBox(height: 32),
