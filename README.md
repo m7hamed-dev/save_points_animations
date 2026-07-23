@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Circular menu, tilt-glare card & nav bar
+
+```dart
+FxCircularMenu(icon: const Icon(Icons.add), children: actions); // radial fan menu
+
+FxTiltGlareCard(child: card);                                   // 3D tilt + glare
+
+FxAnimatedNavBar(items: icons, currentIndex: i, onTap: setIndex); // sliding indicator
+```
+
 ### Gauge, scratch card & parallax layers
 
 ```dart

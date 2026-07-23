@@ -49,6 +49,7 @@ export 'src/transitions/fx_page_route.dart'
 export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
 export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
+export 'src/widgets/fx_animated_nav_bar.dart' show FxAnimatedNavBar;
 export 'src/widgets/fx_animated_toggle.dart' show FxAnimatedToggle;
 export 'src/widgets/fx_animated_visibility.dart'
     show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;
@@ -57,6 +58,7 @@ export 'src/widgets/fx_badge.dart' show FxBadge, FxBadgeExtension;
 export 'src/widgets/fx_blob.dart' show FxBlob;
 export 'src/widgets/fx_border_beam.dart' show FxBorderBeam;
 export 'src/widgets/fx_circular_countdown.dart' show FxCircularCountdown;
+export 'src/widgets/fx_circular_menu.dart' show FxCircularMenu;
 export 'src/widgets/fx_color_cycle.dart' show FxColorCycle;
 export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
@@ -99,6 +101,7 @@ export 'src/widgets/fx_step_progress.dart' show FxStepProgress;
 export 'src/widgets/fx_swipe.dart' show FxSwipeToDismiss;
 export 'src/widgets/fx_swipe_cards.dart' show FxSwipeCards;
 export 'src/widgets/fx_switcher.dart' show FxSwitcher, FxSwitcherEffect;
+export 'src/widgets/fx_tilt_glare_card.dart' show FxTiltGlareCard;
 export 'src/widgets/fx_typing_indicator.dart' show FxTypingIndicator;
 export 'src/widgets/fx_wave_divider.dart' show FxWaveDivider;
 export 'src/widgets/fx_wave_progress.dart' show FxWaveProgress;

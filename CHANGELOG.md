@@ -1,3 +1,14 @@
+## 0.27.0
+
+Menus, cards & navigation.
+
+### Added
+- `FxCircularMenu` — a main button that fans its children out along an arc.
+- `FxTiltGlareCard` — a pointer-driven 3D tilt card with a moving glare
+  highlight.
+- `FxAnimatedNavBar` — a bottom nav bar with an indicator that glides behind the
+  selected item (which lifts).
+
 ## 0.26.0
 
 Gauges, reveals & depth.

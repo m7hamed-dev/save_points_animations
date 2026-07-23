@@ -48,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _step = 1;
   bool _liked = false;
   FxButtonState _btnState = FxButtonState.idle;
+  int _navIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -406,6 +407,68 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'CircularMenu · TiltGlare · NavBar',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxCircularMenu(
+                size: 48,
+                icon: const Icon(Icons.add, color: Colors.white),
+                children: [
+                  for (final ic in const [Icons.share, Icons.edit, Icons.star])
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Color(0x22000000), blurRadius: 6),
+                        ],
+                      ),
+                      child: Icon(ic, size: 20, color: Colors.indigo),
+                    ),
+                ],
+              ),
+              FxTiltGlareCard(
+                child: Container(
+                  width: 120,
+                  height: 76,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Text(
+                    'Tilt me',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: FxAnimatedNavBar(
+              currentIndex: _navIndex,
+              onTap: (i) => setState(() => _navIndex = i),
+              items: const [
+                Icon(Icons.home),
+                Icon(Icons.search),
+                Icon(Icons.favorite),
+                Icon(Icons.person),
+              ],
             ),
           ),
 
