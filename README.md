@@ -221,6 +221,19 @@ FxGooeyNavBar(items: navItems, currentIndex: i, onTap: setIndex);
 // where navItems are FxNavItem(icon: ..., label: ...)
 ```
 
+### Slider, stepper & toast
+
+```dart
+// Thumb grows + glows while dragging, with a floating value bubble:
+FxAnimatedSlider(value: v, onChanged: (x) => setState(() => v = x));
+
+// −/+ stepper; buttons press in, the value rolls vertically on change:
+FxStepper(value: qty, onChanged: (n) => setState(() => qty = n), max: 10);
+
+// Declarative slide-and-fade toast — drive it with a bool, place in a Stack:
+Stack(children: [content, FxToast(visible: show, child: Text('Saved'))]);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart

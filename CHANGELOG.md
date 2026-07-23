@@ -1,3 +1,15 @@
+## 0.37.0
+
+Animated input controls & feedback.
+
+### Added
+- `FxAnimatedSlider` — a draggable slider whose thumb grows and glows while
+  dragging, with an optional floating value bubble.
+- `FxStepper` — a compact `−`/`+` numeric stepper; buttons press in on tap and
+  the value rolls vertically (up or down) as it changes.
+- `FxToast` — a declarative slide-and-fade toast/banner driven by a `visible`
+  flag; slides from the top or bottom, manages no overlay of its own.
+
 ## 0.36.0
 
 More animated bottom navigation bar styles.
