@@ -415,6 +415,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 32),
+          Text(
+            'Orbit · Snow · CircularText',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FxOrbitLoader(),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const SizedBox(
+                  width: 120,
+                  height: 80,
+                  child: FxSnow(child: ColoredBox(color: Color(0xFF1B2A4A))),
+                ),
+              ),
+              FxCircularText(
+                '• SAVE POINTS ',
+                radius: 32,
+                style: theme.textTheme.labelLarge!.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
           Text('Hold · Skeleton · Radio', style: theme.textTheme.titleMedium),
           const SizedBox(height: 12),
           Row(

@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Orbit loader, snow & circular text
+
+```dart
+const FxOrbitLoader();                      // dots orbiting a center
+
+FxSnow(child: hero);                        // falling particles
+
+FxCircularText('• NOW OPEN ');              // rotating text ring
+```
+
 ### Hold-to-confirm, skeleton text & radio
 
 ```dart

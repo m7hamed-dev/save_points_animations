@@ -1,3 +1,13 @@
+## 0.31.0
+
+Loaders & decorative motion.
+
+### Added
+- `FxOrbitLoader` — dots that orbit a center, pulsing as they travel.
+- `FxSnow` — falling, gently swaying particles (snow / rain / embers) over a
+  child (reduced-motion aware).
+- `FxCircularText` — text laid out around a circle that can slowly spin.
+
 ## 0.30.0
 
 Confirm, load & choose.
