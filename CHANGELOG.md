@@ -1,3 +1,14 @@
+## 0.23.0
+
+Gesture-driven actions.
+
+### Added
+- `FxSlideToConfirm` — a drag-to-confirm/unlock control with spring-back.
+- `FxProgressButton` (+ `FxButtonState`) — a button that morphs to a spinner
+  then a success check / error cross.
+- `FxSwipeCards` — a Tinder-style swipeable card deck with rotation and the next
+  card scaling up.
+
 ## 0.22.0
 
 Social & call-to-action widgets.

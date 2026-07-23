@@ -46,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _toggle = true;
   int _step = 1;
   bool _liked = false;
+  FxButtonState _btnState = FxButtonState.idle;
 
   @override
   Widget build(BuildContext context) {
@@ -403,6 +404,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Slide · Progress · Swipe', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          FxSlideToConfirm(
+            label: const Text('Slide to confirm'),
+            onConfirmed: () {},
+          ),
+          const SizedBox(height: 12),
+          FxProgressButton(
+            state: _btnState,
+            child: const Text('Submit'),
+            onPressed: () async {
+              setState(() => _btnState = FxButtonState.loading);
+              await Future<void>.delayed(const Duration(seconds: 1));
+              if (!mounted) return;
+              setState(() => _btnState = FxButtonState.success);
+              await Future<void>.delayed(const Duration(seconds: 1));
+              if (!mounted) return;
+              setState(() => _btnState = FxButtonState.idle);
+            },
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 140,
+            child: FxSwipeCards(
+              cards: [
+                for (final c in [Colors.pink, Colors.teal, Colors.amber])
+                  Card(
+                    color: c.withValues(alpha: 0.85),
+                    child: const Center(
+                      child: Text(
+                        'Swipe me',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
 

@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Slide to confirm, progress button & swipe deck
+
+```dart
+FxSlideToConfirm(label: const Text('Slide to pay'), onConfirmed: pay);
+
+FxProgressButton(state: _state, onPressed: submit, child: const Text('Submit'));
+
+FxSwipeCards(cards: cards, onSwiped: (i, right) => …);  // Tinder-style deck
+```
+
 ### Heart button, neon text & CTA
 
 ```dart
