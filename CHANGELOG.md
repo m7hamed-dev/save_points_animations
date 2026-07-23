@@ -1,3 +1,13 @@
+## 0.25.0
+
+Accents & scroll feedback.
+
+### Added
+- `FxBorderBeam` — a glowing comet beam that travels around a rounded border.
+- `FxSpotlight` — a drifting radial highlight over content (or `followPointer`).
+- `FxScrollProgress` — a reading-progress bar tied to a `ScrollController` or the
+  nearest `Scrollable`.
+
 ## 0.24.0
 
 Text & number motion.

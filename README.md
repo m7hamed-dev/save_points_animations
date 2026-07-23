@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Border beam, spotlight & scroll progress
+
+```dart
+FxBorderBeam(child: card);                       // comet beam around the border
+
+FxSpotlight(child: darkPanel);                   // drifting light (or followPointer)
+
+FxScrollProgress(controller: _scroll);           // reading-progress bar
+```
+
 ### Rotating words, flip clock & color cycle
 
 ```dart

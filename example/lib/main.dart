@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FxController _card = FxController();
   final FxConfettiController _confetti = FxConfettiController();
   final PageController _pageController = PageController();
+  final ScrollController _scrollController = ScrollController();
   bool _showBanner = true;
   int _rating = 3;
   double _progress = 0.4;
@@ -63,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.refresh),
       ).animate().scale(begin: 0.0).curve(FxCurves.elastic),
       body: ListView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(24),
         children: [
           // 1. Headline: several effects composed in parallel.
@@ -406,6 +408,43 @@ class _HomeScreenState extends State<HomeScreen> {
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
           ),
+
+          const SizedBox(height: 32),
+          Text(
+            'BorderBeam · Spotlight · ScrollBar',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxBorderBeam(
+                child: Container(
+                  width: 110,
+                  height: 64,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Text('New'),
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: const SizedBox(
+                  width: 110,
+                  height: 64,
+                  child: FxSpotlight(
+                    child: ColoredBox(color: Color(0xFF1A1A2E)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Reading progress for this whole list.
+          FxScrollProgress(controller: _scrollController),
 
           const SizedBox(height: 32),
           Text(
