@@ -1,3 +1,15 @@
+## 0.42.0
+
+Pickers & surfaces.
+
+### Added
+- `FxWheelPicker` — an iOS-style scrolling wheel picker; items curve away with
+  perspective and snap to a highlighted center band.
+- `FxGlassCard` — a frosted-glass surface that blurs what's behind it and sweeps
+  a soft diagonal sheen across the face.
+- `FxScrollToTop` — a floating button that fades and scales in once a
+  `ScrollController` passes a threshold, and smooth-scrolls to the top on tap.
+
 ## 0.41.0
 
 Forms & pointer interaction.

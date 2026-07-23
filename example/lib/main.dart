@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _pinEntry = '';
   int? _reaction = 1;
   int _wizard = 1;
+  int _wheel2 = 1;
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1658,6 +1659,64 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 32),
+              Text('Wheel picker · Glass', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: FxWheelPicker(
+                      items: const ['Low', 'Medium', 'High', 'Ultra', 'Max'],
+                      selectedIndex: _wheel2,
+                      onChanged: (i) => setState(() => _wheel2 = i),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Glass card floats over a gradient so the blur reads.
+                  Expanded(
+                    child: SizedBox(
+                      height: 160,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFF7B2FF7),
+                                    Color(0xFFF107A3),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(16),
+                              child: FxGlassCard(
+                                child: Center(
+                                  child: Text(
+                                    'Frosted\nglass',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
               Text(
                 'Wizard · Field · Magnetic',
                 style: theme.textTheme.titleMedium,
@@ -1854,6 +1913,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () => setState(() => _toast = false),
             child: Text('Added $_qty item${_qty == 1 ? '' : 's'} to cart'),
           ),
+          FxScrollToTop(controller: _scrollController),
         ],
       ),
     );

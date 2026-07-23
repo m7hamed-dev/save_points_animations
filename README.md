@@ -292,6 +292,20 @@ FxMagneticButton(onTap: go, child: myButton);
 FxWizardSteps(steps: const ['Cart', 'Address', 'Pay'], currentStep: step);
 ```
 
+### Wheel picker, glass card & scroll-to-top
+
+```dart
+// iOS-style scrolling wheel picker:
+FxWheelPicker(items: const ['Low', 'Medium', 'High'], selectedIndex: i,
+    onChanged: (v) => setState(() => i = v));
+
+// Frosted-glass surface with a sweeping sheen (place over content):
+Stack(children: [background, FxGlassCard(child: content)]);
+
+// Floating "scroll to top" button — appears past a scroll threshold:
+Stack(children: [listView, FxScrollToTop(controller: _scroll)]);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart
