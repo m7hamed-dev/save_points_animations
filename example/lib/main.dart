@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _menuOpen = false;
   bool _toggle = true;
   int _step = 1;
+  bool _liked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -403,6 +404,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Heart · Neon · CTA', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF12121A),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: FxNeonText(
+                'NEON',
+                color: const Color(0xFFFF3CAC),
+                style: const TextStyle(fontSize: 40),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxHeartButton(
+                isLiked: _liked,
+                size: 36,
+                onChanged: (v) => setState(() => _liked = v),
+              ),
+              FxShimmerButton(
+                onPressed: () {},
+                child: const Text('Get started'),
+              ),
+            ],
           ),
 
           const SizedBox(height: 32),

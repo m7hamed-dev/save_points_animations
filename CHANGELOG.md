@@ -1,3 +1,12 @@
+## 0.22.0
+
+Social & call-to-action widgets.
+
+### Added
+- `FxHeartButton` — a "like" heart that pops and emits a burst when toggled on.
+- `FxNeonText` — glowing neon-sign text with an irregular flicker.
+- `FxShimmerButton` — a gradient CTA button with a continuously sweeping sheen.
+
 ## 0.21.0
 
 Progress & control widgets.

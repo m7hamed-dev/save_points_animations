@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Heart button, neon text & CTA
+
+```dart
+FxHeartButton(isLiked: liked, onChanged: (v) => …);    // like pop + burst
+
+FxNeonText('OPEN', color: Colors.pink);                // glowing flicker sign
+
+FxShimmerButton(onPressed: go, child: const Text('Go')); // sweeping-sheen CTA
+```
+
 ### Step progress, toggle & countdown ring
 
 ```dart
