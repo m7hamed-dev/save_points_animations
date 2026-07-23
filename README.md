@@ -306,6 +306,19 @@ Stack(children: [background, FxGlassCard(child: content)]);
 Stack(children: [listView, FxScrollToTop(controller: _scroll)]);
 ```
 
+### Gradient button, theme toggle & loading overlay
+
+```dart
+// Pill button with a rotating aurora gradient:
+FxGradientButton(onPressed: submit, child: const Text('Continue'));
+
+// Animated day/night switch (sun ↔ crescent moon):
+FxThemeToggle(isDark: dark, onChanged: (v) => setState(() => dark = v));
+
+// Full-surface blur + spinner while busy:
+Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart

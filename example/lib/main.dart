@@ -68,6 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int? _reaction = 1;
   int _wizard = 1;
   int _wheel2 = 1;
+  bool _dark = false;
+  bool _busy = false;
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1659,6 +1661,26 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 32),
+              Text(
+                'Gradient button · Theme toggle',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FxGradientButton(
+                    onPressed: () => setState(() => _busy = true),
+                    child: const Text('Save'),
+                  ),
+                  FxThemeToggle(
+                    isDark: _dark,
+                    onChanged: (v) => setState(() => _dark = v),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
               Text('Wheel picker · Glass', style: theme.textTheme.titleMedium),
               const SizedBox(height: 12),
               Row(
@@ -1914,6 +1936,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text('Added $_qty item${_qty == 1 ? '' : 's'} to cart'),
           ),
           FxScrollToTop(controller: _scrollController),
+          FxLoadingOverlay(visible: _busy, message: 'Saving…'),
+          // Demo-only: tap anywhere to dismiss the overlay.
+          if (_busy)
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _busy = false),
+              ),
+            ),
         ],
       ),
     );

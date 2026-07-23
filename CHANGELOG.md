@@ -1,3 +1,15 @@
+## 0.43.0
+
+Interactive UI: buttons, toggles & overlays.
+
+### Added
+- `FxGradientButton` — a pill button with a slowly rotating "aurora" gradient
+  fill that dips on press.
+- `FxThemeToggle` — an animated day/night switch; the thumb slides between a sun
+  and a crescent moon while the track cross-fades from sky to starry night.
+- `FxLoadingOverlay` — a full-surface overlay that blurs and dims the background
+  and shows a sweeping spinner (with an optional message) while `visible`.
+
 ## 0.42.0
 
 Pickers & surfaces.
