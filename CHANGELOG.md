@@ -1,3 +1,15 @@
+## 0.40.0
+
+Comparison, keypad & reactions.
+
+### Added
+- `FxImageCompare` — a before/after slider; drag the divider to wipe the "after"
+  layer over the "before".
+- `FxNumberPad` — a dial-pad keypad whose keys dip and highlight on tap; emits
+  digits and backspace.
+- `FxReactionBar` — a Facebook-style emoji reaction row; the selected reaction
+  pops up larger with its label.
+
 ## 0.39.0
 
 Media & range controls.

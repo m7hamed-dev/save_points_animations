@@ -261,6 +261,24 @@ FxRangeSlider(values: r, onChanged: (v) => setState(() => r = v)); // r is FxRan
 FxWaveform(playing: isPlaying, color: Colors.pink);
 ```
 
+### Compare, keypad & reactions
+
+```dart
+// Before/after wipe slider:
+FxImageCompare(before: Image.asset('a.jpg'), after: Image.asset('b.jpg'));
+
+// Numeric keypad — keys dip on tap:
+FxNumberPad(onDigit: (d) => append(d), onBackspace: removeLast);
+
+// Facebook-style reaction picker (selected pops up with its label):
+FxReactionBar(
+  reactions: const ['👍', '❤️', '😂', '😮', '😢'],
+  labels: const ['Like', 'Love', 'Haha', 'Wow', 'Sad'],
+  selected: reaction,
+  onChanged: (i) => setState(() => reaction = i),
+);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart

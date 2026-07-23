@@ -64,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
   FxRange _range = const FxRange(0.2, 0.7);
   int _carousel = 0;
   bool _playing = true;
+  String _pinEntry = '';
+  int? _reaction = 1;
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1651,6 +1653,63 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+              Text(
+                'Compare · Keypad · Reactions',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              const FxImageCompare(
+                height: 160,
+                before: ColoredBox(color: Color(0xFF37474F)),
+                after: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFFF8A65), Color(0xFFFFD54F)],
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'AFTER',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: FxReactionBar(
+                  reactions: const ['👍', '❤️', '😂', '😮', '😢'],
+                  labels: const ['Like', 'Love', 'Haha', 'Wow', 'Sad'],
+                  selected: _reaction,
+                  onChanged: (i) => setState(() => _reaction = i),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Text(
+                  _pinEntry.isEmpty ? '— — — —' : _pinEntry,
+                  style: const TextStyle(fontSize: 24, letterSpacing: 6),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: FxNumberPad(
+                  onDigit: (d) => setState(() {
+                    if (_pinEntry.length < 4) _pinEntry += '$d';
+                  }),
+                  onBackspace: () => setState(() {
+                    if (_pinEntry.isNotEmpty) {
+                      _pinEntry = _pinEntry.substring(0, _pinEntry.length - 1);
+                    }
+                  }),
                 ),
               ),
 
