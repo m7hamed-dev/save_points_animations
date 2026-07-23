@@ -67,7 +67,14 @@ class _FxMarqueeState extends State<FxMarquee>
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
+    // A horizontal viewport fills the available width, shrink-wraps to the
+    // child's height, and grants the row unbounded horizontal extent — so the
+    // wider-than-viewport content lays out without overflowing and is clipped
+    // to the box. The transform drives the scroll; the viewport itself is
+    // static (NeverScrollableScrollPhysics).
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const NeverScrollableScrollPhysics(),
       child: Transform.translate(
         offset: Offset(-_offset, 0),
         child: Row(

@@ -70,22 +70,32 @@ class _OdometerDigit extends StatelessWidget {
       width: width,
       height: height,
       child: ClipRect(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(end: digit.toDouble()),
-          duration: duration,
-          curve: curve,
-          builder: (context, v, child) =>
-              Transform.translate(offset: Offset(0, -v * height), child: child),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < 10; i++)
-                SizedBox(
-                  width: width,
-                  height: height,
-                  child: Center(child: Text('$i', style: style)),
-                ),
-            ],
+        // The 10-digit strip is taller than the single-digit window, so give
+        // it unbounded height (top-aligned) and slide it with the transform;
+        // the ClipRect keeps only the active digit visible.
+        child: OverflowBox(
+          minHeight: 0,
+          maxHeight: double.infinity,
+          alignment: Alignment.topCenter,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: digit.toDouble()),
+            duration: duration,
+            curve: curve,
+            builder: (context, v, child) => Transform.translate(
+              offset: Offset(0, -v * height),
+              child: child,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < 10; i++)
+                  SizedBox(
+                    width: width,
+                    height: height,
+                    child: Center(child: Text('$i', style: style)),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
