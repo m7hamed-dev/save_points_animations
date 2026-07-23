@@ -50,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
   FxButtonState _btnState = FxButtonState.idle;
   int _navIndex = 0;
   bool _checked = true;
+  int _tab = 0;
+  int _pin = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -409,6 +411,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Avatars · Tabs · PIN', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          FxAvatarStack(
+            avatars: [
+              for (final c in [
+                Colors.pink,
+                Colors.teal,
+                Colors.amber,
+                Colors.indigo,
+              ])
+                ColoredBox(color: c),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FxAnimatedTabBar(
+            tabs: const ['Overview', 'Activity', 'Settings'],
+            selectedIndex: _tab,
+            onChanged: (i) => setState(() => _tab = i),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxPinDots(length: 4, filled: _pin),
+              OutlinedButton(
+                onPressed: () => setState(() => _pin = (_pin + 1) % 5),
+                child: const Text('Type'),
+              ),
+            ],
           ),
 
           const SizedBox(height: 32),

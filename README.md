@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Avatar stack, tab bar & PIN dots
+
+```dart
+FxAvatarStack(avatars: photos);                    // spread on hover
+
+FxAnimatedTabBar(tabs: labels, selectedIndex: i, onChanged: setTab); // sliding underline
+
+FxPinDots(length: 4, filled: entered, error: wrong); // OTP dots, shake on error
+```
+
 ### Animated checkbox, timeline & dot grid
 
 ```dart

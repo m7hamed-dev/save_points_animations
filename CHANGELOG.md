@@ -1,3 +1,14 @@
+## 0.29.0
+
+Social & input widgets.
+
+### Added
+- `FxAvatarStack` — overlapping circular avatars that spread apart on hover.
+- `FxAnimatedTabBar` — a text tab bar with an underline that glides to the
+  selected tab.
+- `FxPinDots` — an animated PIN/OTP indicator: dots pop as they fill and the row
+  shakes on error.
+
 ## 0.28.0
 
 Forms, feeds & backdrops.

@@ -51,10 +51,12 @@ export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_checkbox.dart' show FxAnimatedCheckbox;
 export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
 export 'src/widgets/fx_animated_nav_bar.dart' show FxAnimatedNavBar;
+export 'src/widgets/fx_animated_tab_bar.dart' show FxAnimatedTabBar;
 export 'src/widgets/fx_animated_toggle.dart' show FxAnimatedToggle;
 export 'src/widgets/fx_animated_visibility.dart'
     show FxAnimatedVisibility, FxEntranceBuilder, FxVisibility;
 export 'src/widgets/fx_aurora.dart' show FxAurora;
+export 'src/widgets/fx_avatar_stack.dart' show FxAvatarStack;
 export 'src/widgets/fx_badge.dart' show FxBadge, FxBadgeExtension;
 export 'src/widgets/fx_blob.dart' show FxBlob;
 export 'src/widgets/fx_border_beam.dart' show FxBorderBeam;
@@ -82,6 +84,7 @@ export 'src/widgets/fx_page_indicator.dart' show FxPageIndicator;
 export 'src/widgets/fx_parallax_layers.dart'
     show FxParallaxLayer, FxParallaxLayers;
 export 'src/widgets/fx_particles.dart' show FxParticles;
+export 'src/widgets/fx_pin_dots.dart' show FxPinDots;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_progress_button.dart'
     show FxButtonState, FxProgressButton;
