@@ -61,6 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Color _wheelColor = const Color(0xFFE91E63);
   static final DateTime _dayBase = DateTime(2026, 7, 20);
   DateTime _day = DateTime(2026, 7, 22);
+  FxRange _range = const FxRange(0.2, 0.7);
+  int _carousel = 0;
+  bool _playing = true;
   static const List<FxNavItem> _navItems = [
     FxNavItem(icon: Icon(Icons.home), label: 'Home'),
     FxNavItem(icon: Icon(Icons.search), label: 'Search'),
@@ -1649,6 +1652,57 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
+              ),
+
+              const SizedBox(height: 32),
+              Text(
+                'Carousel · Range · Waveform',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              FxCarousel(
+                height: 160,
+                onPageChanged: (i) => setState(() => _carousel = i),
+                children: [
+                  for (final c in [
+                    Colors.pink,
+                    Colors.teal,
+                    Colors.indigo,
+                    Colors.orange,
+                  ])
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: c,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Center(child: FxCarouselDots(count: 4, page: _carousel)),
+              const SizedBox(height: 16),
+              FxRangeSlider(
+                values: _range,
+                onChanged: (v) => setState(() => _range = v),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Range: ${(_range.start * 100).round()}–'
+                '${(_range.end * 100).round()}',
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  FxWaveform(
+                    playing: _playing,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 16),
+                  OutlinedButton(
+                    onPressed: () => setState(() => _playing = !_playing),
+                    child: Text(_playing ? 'Pause' : 'Play'),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 32),

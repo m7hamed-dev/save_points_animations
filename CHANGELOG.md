@@ -1,3 +1,16 @@
+## 0.39.0
+
+Media & range controls.
+
+### Added
+- `FxRangeSlider` (+ `FxRange`) — a dual-thumb range slider; thumbs can't cross,
+  the active one grows and glows while dragging.
+- `FxCarousel` (+ `FxCarouselDots`) — a cover-flow page carousel where the
+  centered page is full-size and neighbours shrink and fade; the dots track the
+  page with the active one stretching into a pill.
+- `FxWaveform` — an animated audio-style bar visualizer that bounces while
+  `playing` and settles to an idle line when paused.
+
 ## 0.38.0
 
 Pickers & sheets.

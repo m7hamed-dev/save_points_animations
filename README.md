@@ -247,6 +247,20 @@ FxColorWheel(color: c, onChanged: (v) => setState(() => c = v));
 FxDateStrip(days: days, selected: picked, onChanged: (d) => setState(() => picked = d));
 ```
 
+### Carousel, range slider & waveform
+
+```dart
+// Cover-flow carousel — centered page full-size, neighbours shrink & fade:
+FxCarousel(children: cards, onPageChanged: (i) => setState(() => page = i));
+FxCarouselDots(count: cards.length, page: page);   // active dot stretches to a pill
+
+// Dual-thumb range slider:
+FxRangeSlider(values: r, onChanged: (v) => setState(() => r = v)); // r is FxRange(start, end)
+
+// Animated audio-style bar visualizer:
+FxWaveform(playing: isPlaying, color: Colors.pink);
+```
+
 ### Starfield, bubbles & spin wheel
 
 ```dart
