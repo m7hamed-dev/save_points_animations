@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _liked = false;
   FxButtonState _btnState = FxButtonState.idle;
   int _navIndex = 0;
+  bool _checked = true;
 
   @override
   Widget build(BuildContext context) {
@@ -407,6 +408,46 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: Text('Reveals on scroll #$i'),
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'Checkbox · Timeline · DotGrid',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            children: [
+              FxAnimatedCheckbox(
+                value: _checked,
+                onChanged: (v) => setState(() => _checked = v),
+              ),
+              const SizedBox(width: 12),
+              const Text('Animated checkbox'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const FxTimeline(
+            items: [
+              Text('Order placed'),
+              Text('Shipped'),
+              Text('Out for delivery'),
+              Text('Delivered'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: 90,
+              width: double.infinity,
+              child: FxDotGrid(
+                child: Center(
+                  child: Text('Dot grid', style: theme.textTheme.titleLarge),
+                ),
+              ),
             ),
           ),
 

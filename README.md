@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Animated checkbox, timeline & dot grid
+
+```dart
+FxAnimatedCheckbox(value: on, onChanged: (v) => …);  // fill + draw-in check
+
+FxTimeline(items: const [Text('Ordered'), Text('Shipped'), Text('Delivered')]);
+
+FxDotGrid(child: dashboard);                          // rippling dot backdrop
+```
+
 ### Circular menu, tilt-glare card & nav bar
 
 ```dart

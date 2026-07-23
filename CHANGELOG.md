@@ -1,3 +1,13 @@
+## 0.28.0
+
+Forms, feeds & backdrops.
+
+### Added
+- `FxAnimatedCheckbox` — a checkbox whose box fills and whose check draws in.
+- `FxTimeline` — a vertical dot-and-connector timeline with staggered content
+  reveal.
+- `FxDotGrid` — an animated dot-grid background with a diagonal ripple.
+
 ## 0.27.0
 
 Menus, cards & navigation.
