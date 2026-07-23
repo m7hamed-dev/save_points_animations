@@ -55,6 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
   int _radio = 0;
   final Set<int> _chips = {0};
   final FxSpinWheelController _wheel = FxSpinWheelController();
+  static const List<FxNavItem> _navItems = [
+    FxNavItem(icon: Icon(Icons.home), label: 'Home'),
+    FxNavItem(icon: Icon(Icons.search), label: 'Search'),
+    FxNavItem(icon: Icon(Icons.favorite), label: 'Likes'),
+    FxNavItem(icon: Icon(Icons.person), label: 'Profile'),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -749,12 +755,41 @@ class _HomeScreenState extends State<HomeScreen> {
           FxCurvedNavBar(
             currentIndex: _navIndex,
             onTap: (i) => setState(() => _navIndex = i),
-            items: const [
-              FxNavItem(icon: Icon(Icons.home), label: 'Home'),
-              FxNavItem(icon: Icon(Icons.search), label: 'Search'),
-              FxNavItem(icon: Icon(Icons.favorite), label: 'Likes'),
-              FxNavItem(icon: Icon(Icons.person), label: 'Profile'),
-            ],
+            items: _navItems,
+          ),
+          const SizedBox(height: 12),
+          FxDotNavBar(
+            currentIndex: _navIndex,
+            onTap: (i) => setState(() => _navIndex = i),
+            items: _navItems,
+          ),
+          const SizedBox(height: 12),
+          FxGooeyNavBar(
+            currentIndex: _navIndex,
+            onTap: (i) => setState(() => _navIndex = i),
+            items: _navItems,
+          ),
+          const SizedBox(height: 12),
+          // Frosted bar floats over content — shown over a gradient.
+          ClipRRect(
+            borderRadius: BorderRadius.circular(32),
+            child: Stack(
+              children: [
+                Container(
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    ),
+                  ),
+                ),
+                FxFrostedNavBar(
+                  currentIndex: _navIndex,
+                  onTap: (i) => setState(() => _navIndex = i),
+                  items: _navItems,
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 32),

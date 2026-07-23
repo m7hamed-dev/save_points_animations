@@ -209,6 +209,15 @@ FxPillNavBar(items: navItems, currentIndex: i, onTap: setIndex);
 
 // Floating icon over a sliding curved notch:
 FxCurvedNavBar(items: navItems, currentIndex: i, onTap: setIndex);
+
+// Icon scale-up + sliding dot:
+FxDotNavBar(items: navItems, currentIndex: i, onTap: setIndex);
+
+// Frosted-glass floating bar (blur + sliding highlight):
+FxFrostedNavBar(items: navItems, currentIndex: i, onTap: setIndex);
+
+// Gooey blob that stretches as it moves:
+FxGooeyNavBar(items: navItems, currentIndex: i, onTap: setIndex);
 // where navItems are FxNavItem(icon: ..., label: ...)
 ```
 

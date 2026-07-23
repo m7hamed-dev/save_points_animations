@@ -1,3 +1,15 @@
+## 0.36.0
+
+More animated bottom navigation bar styles.
+
+### Added
+- `FxDotNavBar` — icons scale up when selected while a dot slides beneath the
+  active item.
+- `FxFrostedNavBar` — a floating frosted-glass bar (backdrop blur + translucent
+  tint) with a sliding highlight; place it over content so the blur shows.
+- `FxGooeyNavBar` — a "gooey" blob highlight that stretches as it travels
+  between destinations, then settles.
+
 ## 0.35.0
 
 Animated bottom navigation bars.
