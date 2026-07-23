@@ -1,3 +1,13 @@
+## 0.32.0
+
+Data viz & text.
+
+### Added
+- `FxSparkline` — a self-drawing mini line chart with an optional filled area.
+- `FxBarChart` — bars that grow to their values (and re-animate on change).
+- `FxTypeLoop` — a looping typewriter that types, pauses, deletes, and advances
+  through phrases.
+
 ## 0.31.0
 
 Loaders & decorative motion.

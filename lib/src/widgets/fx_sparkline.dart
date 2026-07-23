@@ -102,8 +102,7 @@ class _SparkPainter extends CustomPainter {
         Offset(
           i / (values.length - 1) * size.width,
           size.height -
-              ((values[i] - minV) / range) *
-                  (size.height - strokeWidth) -
+              ((values[i] - minV) / range) * (size.height - strokeWidth) -
               strokeWidth / 2,
         ),
     ];
@@ -126,7 +125,10 @@ class _SparkPainter extends CustomPainter {
 
     final drawn = Path();
     for (final metric in line.computeMetrics()) {
-      drawn.addPath(metric.extractPath(0, metric.length * progress), Offset.zero);
+      drawn.addPath(
+        metric.extractPath(0, metric.length * progress),
+        Offset.zero,
+      );
     }
     canvas.drawPath(
       drawn,

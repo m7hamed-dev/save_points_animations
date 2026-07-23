@@ -155,10 +155,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: const Text('Open detail'),
                 subtitle: const Text('shared-axis transition + Hero'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => context.fxPush(
-                  const DetailScreen(),
-                  transition: FxPageTransition.sharedAxisHorizontal,
-                ),
+                onTap: () {
+                  if (!mounted) return;
+
+                  context.fxPush<void>(
+                    const DetailScreen(),
+                    transition: FxPageTransition.sharedAxisHorizontal,
+                  );
+                },
               ),
             ),
           ),
@@ -183,8 +187,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ])
                   ActionChip(
                     label: Text(t.name),
-                    onPressed: () =>
-                        context.fxPush(const DetailScreen(), transition: t),
+                    onPressed: () => context.fxPush<void>(
+                      const DetailScreen(),
+                      transition: t,
+                    ),
                   ),
               ],
             ),
@@ -207,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final box =
                         key.currentContext!.findRenderObject() as RenderBox;
                     final rect = box.localToGlobal(Offset.zero) & box.size;
-                    context.fxPushFrom(const DetailScreen(), rect);
+                    context.fxPushFrom<void>(const DetailScreen(), rect);
                   },
                 ),
               );
@@ -219,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Spring-driven route: timing governed by a real SpringSimulation.
           Builder(
             builder: (context) => OutlinedButton.icon(
-              onPressed: () => context.fxPushSpring(
+              onPressed: () => context.fxPushSpring<void>(
                 const DetailScreen(),
                 stiffness: 220,
                 damping: 18,
@@ -414,6 +420,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
+            'Sparkline · BarChart · TypeLoop',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          const FxSparkline(values: [3, 5, 4, 8, 6, 9, 7, 10, 8]),
+          const SizedBox(height: 12),
+          const FxBarChart(values: [4, 7, 3, 9, 6, 8], height: 90),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text('It is ', style: theme.textTheme.titleMedium),
+              FxTypeLoop(
+                phrases: const ['fast.', 'fluid.', 'fun.'],
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 32),

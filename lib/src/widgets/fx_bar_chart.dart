@@ -39,7 +39,9 @@ class FxBarChart extends StatelessWidget {
             if (i > 0) SizedBox(width: spacing),
             Expanded(
               child: TweenAnimationBuilder<double>(
-                tween: Tween<double>(end: (values[i] / safeMax).clamp(0.0, 1.0)),
+                tween: Tween<double>(
+                  end: (values[i] / safeMax).clamp(0.0, 1.0),
+                ),
                 duration: duration,
                 curve: Curves.easeOutCubic,
                 builder: (context, v, _) => Align(

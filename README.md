@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Sparkline, bar chart & looping typewriter
+
+```dart
+FxSparkline(values: const [3, 5, 4, 8, 6, 9]);   // self-drawing trend line
+
+FxBarChart(values: const [4, 7, 3, 9, 6]);        // bars grow to value
+
+FxTypeLoop(phrases: const ['fast.', 'fluid.', 'fun.']); // type → erase → repeat
+```
+
 ### Orbit loader, snow & circular text
 
 ```dart
