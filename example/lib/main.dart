@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _tab = 0;
   int _pin = 2;
   int _radio = 0;
+  final Set<int> _chips = {0};
 
   @override
   Widget build(BuildContext context) {
@@ -420,6 +421,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Pie · Fireworks · Tags', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FxPieChart(
+                values: [5, 3, 2, 4],
+                colors: [Colors.pink, Colors.teal, Colors.amber, Colors.indigo],
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const SizedBox(
+                  width: 140,
+                  height: 120,
+                  child: FxFireworks(
+                    child: ColoredBox(color: Color(0xFF0D0D18)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FxTagChips(
+            tags: const ['All', 'Design', 'Code', 'Motion'],
+            selected: _chips,
+            onToggle: (i) => setState(() {
+              _chips.contains(i) ? _chips.remove(i) : _chips.add(i);
+            }),
           ),
 
           const SizedBox(height: 32),

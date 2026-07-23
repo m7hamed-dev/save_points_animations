@@ -129,12 +129,12 @@ class _FxParallaxState extends State<FxParallax> {
     if (box == null || viewport == null || !box.hasSize || !viewport.hasSize) {
       return;
     }
-    final vpSize = widget.axis == Axis.vertical
+    final vpSize = widget.axis == .vertical
         ? viewport.size.height
         : viewport.size.width;
     final offset = box.localToGlobal(Offset.zero, ancestor: viewport);
-    final itemPos = widget.axis == Axis.vertical ? offset.dy : offset.dx;
-    final itemExtent = widget.axis == Axis.vertical
+    final itemPos = widget.axis == .vertical ? offset.dy : offset.dx;
+    final itemExtent = widget.axis == .vertical
         ? box.size.height
         : box.size.width;
     final itemCenter = itemPos + itemExtent / 2;

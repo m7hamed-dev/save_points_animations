@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Pie chart, fireworks & tag chips
+
+```dart
+FxPieChart(values: const [5, 3, 2], colors: palette);   // donut sweeps in
+
+FxFireworks(child: congratsScreen);                     // celebratory bursts
+
+FxTagChips(tags: labels, selected: _sel, onToggle: toggle); // animated filters
+```
+
 ### Sparkline, bar chart & looping typewriter
 
 ```dart

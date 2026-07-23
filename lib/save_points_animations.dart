@@ -44,8 +44,9 @@ export 'src/text/fx_text_fx.dart'
 export 'src/themes/fx_theme.dart'
     show FxReducedMotionBehavior, FxTheme, FxThemeData;
 export 'src/transitions/fx_hero.dart' show FxArcRectTween, FxHero;
-export 'src/transitions/fx_page_route.dart'
-    show FxNavigator, FxPageRoute, FxPageTransition, buildFxTransition;
+export 'src/transitions/fx_page_route.dart' show FxNavigator, FxPageRoute;
+export 'src/transitions/fx_page_transition.dart' show FxPageTransition;
+export 'src/transitions/fx_transition_builder.dart' show buildFxTransition;
 export 'src/triggers/fx_triggers.dart' show FxTrigger, FxTriggerExtension;
 export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_checkbox.dart' show FxAnimatedCheckbox;
@@ -70,6 +71,7 @@ export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
 export 'src/widgets/fx_dot_grid.dart' show FxDotGrid;
 export 'src/widgets/fx_expandable.dart' show FxExpandable;
+export 'src/widgets/fx_fireworks.dart' show FxFireworks;
 export 'src/widgets/fx_flip_card.dart' show FxFlipCard, FxFlipCardController;
 export 'src/widgets/fx_flip_clock.dart' show FxFlipClock;
 export 'src/widgets/fx_gauge.dart' show FxGauge;
@@ -89,6 +91,7 @@ export 'src/widgets/fx_page_indicator.dart' show FxPageIndicator;
 export 'src/widgets/fx_parallax_layers.dart'
     show FxParallaxLayer, FxParallaxLayers;
 export 'src/widgets/fx_particles.dart' show FxParticles;
+export 'src/widgets/fx_pie_chart.dart' show FxPieChart;
 export 'src/widgets/fx_pin_dots.dart' show FxPinDots;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_progress_button.dart'
@@ -114,6 +117,7 @@ export 'src/widgets/fx_step_progress.dart' show FxStepProgress;
 export 'src/widgets/fx_swipe.dart' show FxSwipeToDismiss;
 export 'src/widgets/fx_swipe_cards.dart' show FxSwipeCards;
 export 'src/widgets/fx_switcher.dart' show FxSwitcher, FxSwitcherEffect;
+export 'src/widgets/fx_tag_chips.dart' show FxTagChips;
 export 'src/widgets/fx_tilt_glare_card.dart' show FxTiltGlareCard;
 export 'src/widgets/fx_timeline.dart' show FxTimeline;
 export 'src/widgets/fx_type_loop.dart' show FxTypeLoop;

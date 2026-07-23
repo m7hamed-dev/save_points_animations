@@ -1,3 +1,12 @@
+## 0.33.0
+
+More data viz + celebration.
+
+### Added
+- `FxPieChart` — an animated donut chart whose segments sweep in.
+- `FxFireworks` — periodic celebratory particle bursts over a child.
+- `FxTagChips` — a wrap of multi-selectable filter chips with animated selection.
+
 ## 0.32.0
 
 Data viz & text.
