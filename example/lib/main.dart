@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: _card.restart,
         label: const Text('Replay card'),
         icon: const Icon(Icons.refresh),
-      ).animate().scale(begin: 0.0).curve(FxCurves.elastic),
+      ).animate().scale().curve(FxCurves.elastic),
       body: ListView(
         controller: _scrollController,
         padding: const EdgeInsets.all(24),
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 24),
 
           // 2. Sequential timeline with .then().
-          _Chip(color: Colors.pink)
+          const _Chip(color: Colors.pink)
               .animate()
               .fade()
               .scale(begin: 0.6)
@@ -93,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 24),
 
           // 3. Imperatively-controlled card.
-          Card(
+          const Card(
             child: ListTile(
-              leading: const Icon(Icons.bolt),
-              title: const Text('Tap the FAB to replay me'),
-              subtitle: const Text('Driven by an FxController'),
+              leading: Icon(Icons.bolt),
+              title: Text('Tap the FAB to replay me'),
+              subtitle: Text('Driven by an FxController'),
             ),
           ).animate(controller: _card).fadeIn().scaleIn(begin: 0.9),
 
@@ -125,14 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
           // Spring-driven entrance (real SpringSimulation).
           Row(
             children: [
-              _Chip(
+              const _Chip(
                 color: Colors.teal,
-              ).animate().scale(begin: 0.0).spring(stiffness: 320, damping: 14),
+              ).animate().scale().spring(stiffness: 320, damping: 14),
               const SizedBox(width: 16),
-              _Chip(color: Colors.orange).animate().moveY(-120).gravity(),
+              const _Chip(color: Colors.orange).animate().moveY(-120).gravity(),
               const SizedBox(width: 16),
               // Debug overlay (debug builds only): FPS + frame bars + count.
-              _Chip(
+              const _Chip(
                 color: Colors.blueGrey,
               ).animate().float().looping().showPerformance(),
             ],
@@ -272,10 +272,12 @@ class _HomeScreenState extends State<HomeScreen> {
           // Grayscale → color reveal.
           Row(
             children: [
-              _Chip(color: Colors.pink).animate().saturate().duration(1500.ms),
+              const _Chip(
+                color: Colors.pink,
+              ).animate().saturate().duration(1500.ms),
               const SizedBox(width: 16),
               // Continuous hue cycle.
-              _Chip(color: Colors.green).animate().hueShift().looping(),
+              const _Chip(color: Colors.green).animate().hueShift().looping(),
             ],
           ),
 
@@ -323,8 +325,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(width: 16),
-              Card(
-                child: const SizedBox(
+              const Card(
+                child: SizedBox(
                   width: 90,
                   height: 60,
                   child: Center(child: Text('tilt me')),
@@ -380,8 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Card(
-            child: const ListTile(
+          const Card(
+            child: ListTile(
               leading: Icon(Icons.mouse),
               title: Text('hoverScale me (desktop/web)'),
             ),
@@ -454,7 +456,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
               const SizedBox(width: 16),
-              const Expanded(child: FxSkeletonText(lines: 3)),
+              const Expanded(child: FxSkeletonText()),
             ],
           ),
           const SizedBox(height: 12),
@@ -795,11 +797,11 @@ class _HomeScreenState extends State<HomeScreen> {
               color: const Color(0xFF12121A),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(
+            child: const Center(
               child: FxNeonText(
                 'NEON',
-                color: const Color(0xFFFF3CAC),
-                style: const TextStyle(fontSize: 40),
+                color: Color(0xFFFF3CAC),
+                style: TextStyle(fontSize: 40),
               ),
             ),
           ),
@@ -991,11 +993,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: SizedBox(
+            child: const SizedBox(
               height: 90,
               child: FxParticles(
-                color: const Color(0x66FFFFFF),
-                child: const ColoredBox(
+                color: Color(0x66FFFFFF),
+                child: ColoredBox(
                   color: Color(0xFF283593),
                   child: Center(
                     child: Text(
@@ -1019,7 +1021,6 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               FxGradientBorder(
-                borderRadius: 16,
                 child: Container(
                   width: 90,
                   height: 64,
@@ -1064,7 +1065,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const FxAnimatedCheck(size: 64),
+              const FxAnimatedCheck(),
               FxSpeedDial(
                 size: 48,
                 icon: const Icon(Icons.add, color: Colors.white),
@@ -1251,11 +1252,11 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 12),
 
           // Shimmer skeleton placeholders for a loading card.
-          Row(
+          const Row(
             children: [
               FxSkeleton.circle(size: 48),
-              const SizedBox(width: 12),
-              const Expanded(
+              SizedBox(width: 12),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1272,9 +1273,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // Living animated gradient background.
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: FxAnimatedGradient(
-              colors: const [Color(0xFF6A11CB), Color(0xFF2575FC)],
-              child: const SizedBox(
+            child: const FxAnimatedGradient(
+              colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+              child: SizedBox(
                 height: 80,
                 width: double.infinity,
                 child: Center(
@@ -1305,7 +1306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         colors: [Colors.indigo, Colors.purple.shade300],
                       ),
                     ),
-                  ).parallax(amount: 40),
+                  ).parallax(),
                   const Center(
                     child: Text(
                       'Parallax',
