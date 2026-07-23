@@ -196,6 +196,16 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Hold-to-confirm, skeleton text & radio
+
+```dart
+FxHoldButton(onConfirmed: delete, child: const Icon(Icons.delete)); // hold ring
+
+FxSkeletonText(lines: 3);                                           // paragraph loader
+
+FxAnimatedRadio<int>(value: 1, groupValue: sel, onChanged: (v) => …);
+```
+
 ### Avatar stack, tab bar & PIN dots
 
 ```dart

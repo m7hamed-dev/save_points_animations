@@ -51,6 +51,7 @@ export 'src/widgets/fx_animated_check.dart' show FxAnimatedCheck;
 export 'src/widgets/fx_animated_checkbox.dart' show FxAnimatedCheckbox;
 export 'src/widgets/fx_animated_gradient.dart' show FxAnimatedGradient;
 export 'src/widgets/fx_animated_nav_bar.dart' show FxAnimatedNavBar;
+export 'src/widgets/fx_animated_radio.dart' show FxAnimatedRadio;
 export 'src/widgets/fx_animated_tab_bar.dart' show FxAnimatedTabBar;
 export 'src/widgets/fx_animated_toggle.dart' show FxAnimatedToggle;
 export 'src/widgets/fx_animated_visibility.dart'
@@ -73,6 +74,7 @@ export 'src/widgets/fx_gauge.dart' show FxGauge;
 export 'src/widgets/fx_glitch.dart' show FxGlitch;
 export 'src/widgets/fx_gradient_border.dart' show FxGradientBorder;
 export 'src/widgets/fx_heart_button.dart' show FxHeartButton;
+export 'src/widgets/fx_hold_button.dart' show FxHoldButton;
 export 'src/widgets/fx_ken_burns.dart' show FxKenBurns;
 export 'src/widgets/fx_loaders.dart'
     show FxBarsLoader, FxDotsLoader, FxProgressRing;
@@ -99,6 +101,7 @@ export 'src/widgets/fx_segmented_control.dart' show FxSegmentedControl;
 export 'src/widgets/fx_shimmer_button.dart' show FxShimmerButton;
 export 'src/widgets/fx_shine.dart' show FxShine;
 export 'src/widgets/fx_skeleton.dart' show FxSkeleton;
+export 'src/widgets/fx_skeleton_text.dart' show FxSkeletonText;
 export 'src/widgets/fx_slide_to_confirm.dart' show FxSlideToConfirm;
 export 'src/widgets/fx_speed_dial.dart' show FxSpeedDial;
 export 'src/widgets/fx_spotlight.dart' show FxSpotlight;

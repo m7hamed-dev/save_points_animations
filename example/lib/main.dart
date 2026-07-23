@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _checked = true;
   int _tab = 0;
   int _pin = 2;
+  int _radio = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -411,6 +412,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ).animate(autoPlay: false).fadeIn().slideX(0.1).onVisible(),
             ),
+          ),
+
+          const SizedBox(height: 32),
+          Text('Hold · Skeleton · Radio', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              FxHoldButton(
+                onConfirmed: () {},
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(child: FxSkeletonText(lines: 3)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              for (var i = 0; i < 3; i++) ...[
+                FxAnimatedRadio<int>(
+                  value: i,
+                  groupValue: _radio,
+                  onChanged: (v) => setState(() => _radio = v),
+                ),
+                const SizedBox(width: 4),
+                Text('Option $i'),
+                const SizedBox(width: 16),
+              ],
+            ],
           ),
 
           const SizedBox(height: 32),

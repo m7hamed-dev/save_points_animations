@@ -1,3 +1,13 @@
+## 0.30.0
+
+Confirm, load & choose.
+
+### Added
+- `FxHoldButton` — press-and-hold to confirm; a ring fills while held and
+  rewinds if released early.
+- `FxSkeletonText` — a multi-line shimmering placeholder paragraph.
+- `FxAnimatedRadio` — a generic radio button whose dot scales in on selection.
+
 ## 0.29.0
 
 Social & input widgets.
