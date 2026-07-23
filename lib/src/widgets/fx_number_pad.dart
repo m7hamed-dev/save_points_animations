@@ -27,10 +27,7 @@ class FxNumberPad extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget row(List<Widget> children) => Padding(
       padding: EdgeInsets.only(bottom: spacing),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: children,
-      ),
+      child: Row(mainAxisAlignment: .spaceEvenly, children: children),
     );
 
     Widget digit(int n) => _PadKey(

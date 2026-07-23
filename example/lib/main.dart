@@ -339,7 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Circular reveal + loaders row.
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const FxDotsLoader(),
                   const FxBarsLoader(color: Colors.pink),
@@ -478,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
@@ -537,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const FxPieChart(
                     values: [5, 3, 2, 4],
@@ -600,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const FxOrbitLoader(),
                   ClipRRect(
@@ -678,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxPinDots(length: 4, filled: _pin),
                   OutlinedButton(
@@ -738,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxCircularMenu(
                     size: 48,
@@ -849,7 +849,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxGauge(
                     value: _progress,
@@ -911,7 +911,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxBorderBeam(
                     child: Container(
@@ -962,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const FxFlipClock(value: '12:45'),
                   FxColorCycle(
@@ -1042,7 +1042,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxHeartButton(
                     isLiked: _liked,
@@ -1066,7 +1066,7 @@ class _HomeScreenState extends State<HomeScreen> {
               FxStepProgress(count: 4, currentStep: _step),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   OutlinedButton(
                     onPressed: () => setState(() => _step = (_step + 1) % 4),
@@ -1140,7 +1140,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const FxRadar(size: 120),
                   FxBlob(
@@ -1186,7 +1186,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxGlitch(
                     child: Text('GLITCH', style: theme.textTheme.headlineSmall),
@@ -1263,7 +1263,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxGradientBorder(
                     child: Container(
@@ -1297,7 +1297,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   SizedBox(
                     width: 96,
@@ -1397,7 +1397,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   // Count badge that pops when tapped (increments via FAB replay).
                   const Icon(Icons.notifications, size: 36).badge(3),
@@ -1667,7 +1667,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   FxGradientButton(
                     onPressed: () => setState(() => _busy = true),
