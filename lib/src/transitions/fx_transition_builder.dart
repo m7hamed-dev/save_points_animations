@@ -128,7 +128,94 @@ Widget buildFxTransition({
 
     case FxPageTransition.glass:
       return _glass(curve, animation, child);
+
+    case FxPageTransition.fadeUpwards:
+      return _fadeUpwards(curve, animation, child);
+
+    case FxPageTransition.flip:
+      return _flip(Axis.horizontal, curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.flipVertical:
+      return _flip(Axis.vertical, curve, animation, secondaryAnimation, child);
+
+    case FxPageTransition.shrink:
+      return _shrink(curve, animation, child);
   }
+}
+
+Widget _fadeUpwards(Curve curve, Animation<double> animation, Widget child) {
+  return FadeTransition(
+    opacity: animation.drive(CurveTween(curve: curve)),
+    child: SlideTransition(
+      position: animation.drive(
+        Tween<Offset>(
+          begin: const Offset(0, 0.25),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: curve)),
+      ),
+      child: child,
+    ),
+  );
+}
+
+Widget _shrink(Curve curve, Animation<double> animation, Widget child) {
+  return FadeTransition(
+    opacity: animation.drive(CurveTween(curve: curve)),
+    child: ScaleTransition(
+      scale: animation.drive(
+        Tween<double>(begin: 1.08, end: 1.0).chain(CurveTween(curve: curve)),
+      ),
+      child: child,
+    ),
+  );
+}
+
+Widget _flip(
+  Axis axis,
+  Curve curve,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  // Incoming page swings in from edge-on (90°) to flat.
+  final incoming = AnimatedBuilder(
+    animation: animation,
+    builder: (context, child) {
+      final deg = (1 - curve.transform(animation.value)) * 90;
+      final matrix = Matrix4.identity()..setEntry(3, 2, 0.0015);
+      if (axis == Axis.horizontal) {
+        matrix.rotateY(-deg * math.pi / 180);
+      } else {
+        matrix.rotateX(deg * math.pi / 180);
+      }
+      return Transform(
+        transform: matrix,
+        alignment: Alignment.center,
+        child: child,
+      );
+    },
+    child: child,
+  );
+
+  // Outgoing page swings away from flat to edge-on when a newer page pushes on.
+  return AnimatedBuilder(
+    animation: secondaryAnimation,
+    builder: (context, child) {
+      final deg = curve.transform(secondaryAnimation.value) * 90;
+      final matrix = Matrix4.identity()..setEntry(3, 2, 0.0015);
+      if (axis == Axis.horizontal) {
+        matrix.rotateY(deg * math.pi / 180);
+      } else {
+        matrix.rotateX(-deg * math.pi / 180);
+      }
+      return Transform(
+        transform: matrix,
+        alignment: Alignment.center,
+        child: child,
+      );
+    },
+    child: incoming,
+  );
 }
 
 Widget _fadeThrough(

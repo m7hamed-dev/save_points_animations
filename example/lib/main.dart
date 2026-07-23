@@ -185,6 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   FxPageTransition.cube3D,
                   FxPageTransition.blur,
                   FxPageTransition.glass,
+                  FxPageTransition.fadeUpwards,
+                  FxPageTransition.flip,
+                  FxPageTransition.flipVertical,
+                  FxPageTransition.shrink,
                 ])
                   ActionChip(
                     label: Text(t.name),

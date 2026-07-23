@@ -54,4 +54,16 @@ enum FxPageTransition {
   /// Frosted glass: the incoming page materializes through a blur that peaks
   /// mid-transition and clears.
   glass,
+
+  /// Fade + short upward slide (Material-style fade-upwards).
+  fadeUpwards,
+
+  /// 3D horizontal card flip between pages (rotation about the Y axis).
+  flip,
+
+  /// 3D vertical card flip between pages (rotation about the X axis).
+  flipVertical,
+
+  /// Pull-in: the incoming page eases in from slightly enlarged while fading.
+  shrink,
 }
