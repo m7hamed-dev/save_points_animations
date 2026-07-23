@@ -33,13 +33,19 @@ class FxSwipeCards extends StatefulWidget {
 
 class _FxSwipeCardsState extends State<FxSwipeCards>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-  );
+  late final AnimationController _controller;
   int _top = 0;
   Offset _drag = Offset.zero;
   double _width = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+  }
 
   void _update(DragUpdateDetails d) {
     _controller.stop();

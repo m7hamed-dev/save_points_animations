@@ -34,13 +34,19 @@ class FxSlideToConfirm extends StatefulWidget {
 
 class _FxSlideToConfirmState extends State<FxSlideToConfirm>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
-  );
+  late final AnimationController _controller;
   double _x = 0;
   double _max = 1;
   bool _confirmed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+  }
 
   void _update(DragUpdateDetails d) {
     if (_confirmed) return;

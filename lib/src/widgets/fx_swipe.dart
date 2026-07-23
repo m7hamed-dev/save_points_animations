@@ -34,12 +34,18 @@ class FxSwipeToDismiss extends StatefulWidget {
 
 class _FxSwipeToDismissState extends State<FxSwipeToDismiss>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
-  );
+  late final AnimationController _controller;
   double _drag = 0;
   double _width = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+  }
 
   void _onUpdate(DragUpdateDetails details) {
     _controller.stop();
