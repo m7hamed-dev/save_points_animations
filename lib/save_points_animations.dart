@@ -63,6 +63,7 @@ export 'src/widgets/fx_countdown.dart' show FxCountdown;
 export 'src/widgets/fx_expandable.dart' show FxExpandable;
 export 'src/widgets/fx_flip_card.dart' show FxFlipCard, FxFlipCardController;
 export 'src/widgets/fx_flip_clock.dart' show FxFlipClock;
+export 'src/widgets/fx_gauge.dart' show FxGauge;
 export 'src/widgets/fx_glitch.dart' show FxGlitch;
 export 'src/widgets/fx_gradient_border.dart' show FxGradientBorder;
 export 'src/widgets/fx_heart_button.dart' show FxHeartButton;
@@ -74,6 +75,8 @@ export 'src/widgets/fx_morph_icon.dart' show FxMorphIcon;
 export 'src/widgets/fx_neon_text.dart' show FxNeonText;
 export 'src/widgets/fx_odometer.dart' show FxOdometer;
 export 'src/widgets/fx_page_indicator.dart' show FxPageIndicator;
+export 'src/widgets/fx_parallax_layers.dart'
+    show FxParallaxLayer, FxParallaxLayers;
 export 'src/widgets/fx_particles.dart' show FxParticles;
 export 'src/widgets/fx_progress_bar.dart' show FxProgressBar;
 export 'src/widgets/fx_progress_button.dart'
@@ -83,6 +86,7 @@ export 'src/widgets/fx_radar.dart' show FxRadar;
 export 'src/widgets/fx_rating.dart' show FxRating;
 export 'src/widgets/fx_ripple.dart' show FxRipple;
 export 'src/widgets/fx_rotating_words.dart' show FxRotatingWords;
+export 'src/widgets/fx_scratch_card.dart' show FxScratchCard;
 export 'src/widgets/fx_scroll_progress.dart' show FxScrollProgress;
 export 'src/widgets/fx_segmented_control.dart' show FxSegmentedControl;
 export 'src/widgets/fx_shimmer_button.dart' show FxShimmerButton;

@@ -1,3 +1,14 @@
+## 0.26.0
+
+Gauges, reveals & depth.
+
+### Added
+- `FxGauge` — an animated arc gauge / speedometer that eases to its value.
+- `FxScratchCard` — drag-to-scratch reveal (coupons, spoilers) via a
+  `BlendMode.clear` mask.
+- `FxParallaxLayers` (+ `FxParallaxLayer`) — a pointer-tilt parallax stack where
+  layers shift by depth for a 3D effect.
+
 ## 0.25.0
 
 Accents & scroll feedback.

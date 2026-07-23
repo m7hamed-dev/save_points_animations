@@ -196,6 +196,19 @@ Hero flights (with an optional curved-arc path):
 Image.asset('a.png').heroAnimate('photo');   // same tag on both screens
 ```
 
+### Gauge, scratch card & parallax layers
+
+```dart
+FxGauge(value: 0.72, child: const Text('72%'));   // animated speedometer arc
+
+FxScratchCard(child: const Text('You won!'));      // drag to reveal
+
+FxParallaxLayers(layers: [                          // pointer-tilt depth
+  FxParallaxLayer(child: bg, depth: 0.3),
+  FxParallaxLayer(child: subject, depth: 1.2),
+]);
+```
+
 ### Border beam, spotlight & scroll progress
 
 ```dart

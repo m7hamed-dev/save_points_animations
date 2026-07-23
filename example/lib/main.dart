@@ -411,6 +411,69 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 32),
           Text(
+            'Gauge · Scratch · Parallax',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              FxGauge(
+                value: _progress,
+                size: 110,
+                child: Text('${(_progress * 100).round()}%'),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SizedBox(
+                  width: 130,
+                  height: 80,
+                  child: FxScratchCard(
+                    child: ColoredBox(
+                      color: theme.colorScheme.primaryContainer,
+                      child: const Center(child: Text('You won! 🎁')),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: SizedBox(
+              width: 200,
+              height: 100,
+              child: FxParallaxLayers(
+                layers: [
+                  FxParallaxLayer(
+                    depth: 0.3,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.indigo.shade200,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                  const FxParallaxLayer(
+                    depth: 1.4,
+                    child: Center(
+                      child: Text(
+                        'Move me',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 32),
+          Text(
             'BorderBeam · Spotlight · ScrollBar',
             style: theme.textTheme.titleMedium,
           ),
