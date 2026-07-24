@@ -50,7 +50,7 @@ class FxTagChips extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: selected.contains(i) ? selectedColor : color,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: .circular(20),
               ),
               child: AnimatedDefaultTextStyle(
                 duration: duration,

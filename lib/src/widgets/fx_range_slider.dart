@@ -111,7 +111,7 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
                     height: widget.trackHeight,
                     decoration: BoxDecoration(
                       color: widget.trackColor,
-                      borderRadius: BorderRadius.circular(widget.trackHeight),
+                      borderRadius: .circular(widget.trackHeight),
                     ),
                   ),
                 ),
@@ -122,7 +122,7 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
                     height: widget.trackHeight,
                     decoration: BoxDecoration(
                       color: widget.activeColor,
-                      borderRadius: BorderRadius.circular(widget.trackHeight),
+                      borderRadius: .circular(widget.trackHeight),
                     ),
                   ),
                 ),

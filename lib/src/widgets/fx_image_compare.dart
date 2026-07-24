@@ -45,7 +45,7 @@ class _FxImageCompareState extends State<FxImageCompare> {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         return ClipRRect(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
+          borderRadius: .circular(widget.borderRadius),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onHorizontalDragStart: (d) {

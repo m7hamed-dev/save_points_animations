@@ -37,7 +37,7 @@ class FxThemeToggle extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: isDark ? nightColor : dayColor,
-          borderRadius: BorderRadius.circular(height),
+          borderRadius: .circular(height),
         ),
         child: Stack(
           children: [

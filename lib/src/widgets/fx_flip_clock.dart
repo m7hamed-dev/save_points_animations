@@ -62,10 +62,7 @@ class _FlipCard extends StatelessWidget {
             .copyWith(color: const Color(0xFFFFFFFF));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(6),
-      ),
+      decoration: BoxDecoration(color: background, borderRadius: .circular(6)),
       child: AnimatedSwitcher(
         duration: duration,
         transitionBuilder: (child, animation) {

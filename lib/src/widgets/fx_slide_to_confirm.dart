@@ -101,7 +101,7 @@ class _FxSlideToConfirmState extends State<FxSlideToConfirm>
           height: widget.height,
           decoration: BoxDecoration(
             color: widget.trackColor,
-            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderRadius: .circular(widget.borderRadius),
           ),
           child: Stack(
             alignment: Alignment.center,

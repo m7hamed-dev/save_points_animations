@@ -41,7 +41,7 @@ class FxAnimatedToggle extends StatelessWidget {
         padding: EdgeInsets.all(inset),
         decoration: BoxDecoration(
           color: value ? activeColor : inactiveColor,
-          borderRadius: BorderRadius.circular(height / 2),
+          borderRadius: .circular(height / 2),
         ),
         child: AnimatedAlign(
           duration: duration,

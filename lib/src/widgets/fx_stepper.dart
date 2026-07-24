@@ -56,7 +56,7 @@ class _FxStepperState extends State<FxStepper> {
     return Container(
       decoration: BoxDecoration(
         color: widget.background,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: .circular(14),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -148,7 +148,7 @@ class _StepButtonState extends State<_StepButton> {
             color: active
                 ? widget.color.withValues(alpha: 0.12)
                 : const Color(0x11000000),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: .circular(10),
           ),
           child: Text(
             widget.icon,

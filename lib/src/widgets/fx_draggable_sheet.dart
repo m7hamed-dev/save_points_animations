@@ -105,7 +105,7 @@ class _FxDraggableSheetState extends State<FxDraggableSheet> {
                       height: 5,
                       decoration: BoxDecoration(
                         color: widget.handleColor,
-                        borderRadius: BorderRadius.circular(3),
+                        borderRadius: .circular(3),
                       ),
                     ),
                   ),

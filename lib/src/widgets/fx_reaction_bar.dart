@@ -34,7 +34,7 @@ class FxReactionBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: background,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: .circular(30),
         boxShadow: const [
           BoxShadow(
             color: Color(0x22000000),
@@ -93,7 +93,7 @@ class _Reaction extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: const Color(0xE6222222),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: .circular(8),
                 ),
                 child: Text(
                   label ?? '',

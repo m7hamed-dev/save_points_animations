@@ -123,7 +123,7 @@ class _FxBarsLoaderState extends State<FxBarsLoader>
                     height: widget.height * _scale(i),
                     decoration: BoxDecoration(
                       color: widget.color,
-                      borderRadius: BorderRadius.circular(widget.barWidth / 2),
+                      borderRadius: .circular(widget.barWidth / 2),
                     ),
                   ),
                 ),

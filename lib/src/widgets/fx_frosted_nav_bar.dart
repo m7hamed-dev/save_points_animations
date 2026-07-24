@@ -43,7 +43,7 @@ class FxFrostedNavBar extends StatelessWidget {
     final n = items.length;
     final alignX = n <= 1 ? 0.0 : -1 + 2 * currentIndex / (n - 1);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
+      borderRadius: .circular(borderRadius),
       child: BackdropFilter(
         filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
@@ -62,7 +62,7 @@ class FxFrostedNavBar extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: highlightColor,
-                      borderRadius: BorderRadius.circular(borderRadius),
+                      borderRadius: .circular(borderRadius),
                     ),
                   ),
                 ),

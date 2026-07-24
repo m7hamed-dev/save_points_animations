@@ -66,7 +66,7 @@ class FxPillNavBar extends StatelessWidget {
           color: selected
               ? selectedColor.withValues(alpha: 0.15)
               : const Color(0x00000000),
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: .circular(30),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

@@ -96,9 +96,7 @@ class FxProgressButton extends StatelessWidget {
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: _bg,
-                borderRadius: BorderRadius.circular(
-                  circle ? height / 2 : borderRadius,
-                ),
+                borderRadius: .circular(circle ? height / 2 : borderRadius),
               ),
               child: AnimatedSwitcher(duration: duration, child: _content()),
             ),

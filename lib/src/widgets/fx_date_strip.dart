@@ -65,7 +65,7 @@ class FxDateStrip extends StatelessWidget {
               width: 52,
               decoration: BoxDecoration(
                 color: isSelected ? accent : const Color(0x00000000),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 border: Border.all(
                   color: isSelected ? accent : const Color(0xFFE0E0E0),
                 ),

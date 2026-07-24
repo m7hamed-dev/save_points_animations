@@ -79,10 +79,7 @@ class _FxWaveProgressState extends State<FxWaveProgress>
 
     return widget.shape == BoxShape.circle
         ? ClipOval(child: box)
-        : ClipRRect(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            child: box,
-          );
+        : ClipRRect(borderRadius: .circular(widget.borderRadius), child: box);
   }
 }
 

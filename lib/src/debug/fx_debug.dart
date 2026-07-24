@@ -157,7 +157,7 @@ class _FxPerfOverlayState extends State<_FxPerfOverlay>
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xCC000000),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: .circular(6),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

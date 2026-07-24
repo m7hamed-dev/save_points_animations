@@ -73,7 +73,7 @@ class _FxWheelPickerState extends State<FxWheelPicker> {
               height: widget.itemExtent,
               decoration: BoxDecoration(
                 color: widget.highlightColor,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: .circular(10),
               ),
             ),
           ),

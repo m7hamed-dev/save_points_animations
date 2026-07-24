@@ -70,7 +70,7 @@ class _FxProgressBarState extends State<FxProgressBar>
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.radius),
+      borderRadius: .circular(widget.radius),
       child: SizedBox(
         height: widget.height,
         child: Stack(

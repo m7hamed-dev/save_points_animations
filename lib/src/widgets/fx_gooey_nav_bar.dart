@@ -92,7 +92,7 @@ class _FxGooeyNavBarState extends State<FxGooeyNavBar>
                       height: blob,
                       decoration: BoxDecoration(
                         color: widget.color,
-                        borderRadius: BorderRadius.circular(blob / 2),
+                        borderRadius: .circular(blob / 2),
                       ),
                     ),
                   ),

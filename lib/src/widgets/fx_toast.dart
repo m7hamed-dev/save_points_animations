@@ -58,7 +58,7 @@ class FxToast extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: background,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: .circular(14),
                   boxShadow: const [
                     BoxShadow(
                       color: Color(0x33000000),

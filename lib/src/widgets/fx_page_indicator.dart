@@ -91,7 +91,7 @@ class _FxPageIndicatorState extends State<FxPageIndicator> {
       height: widget.size,
       decoration: BoxDecoration(
         color: Color.lerp(widget.color, widget.activeColor, selected),
-        borderRadius: BorderRadius.circular(widget.size / 2),
+        borderRadius: .circular(widget.size / 2),
       ),
     );
     if (widget.onDotTapped == null) return dot;

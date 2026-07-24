@@ -72,7 +72,7 @@ class _FxScrollProgressState extends State<FxScrollProgress> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.borderRadius),
+      borderRadius: .circular(widget.borderRadius),
       child: SizedBox(
         height: widget.height,
         child: Stack(

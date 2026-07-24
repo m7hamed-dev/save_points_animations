@@ -96,7 +96,7 @@ class _FxWaveformState extends State<FxWaveform>
       height: barHeight,
       decoration: BoxDecoration(
         color: widget.color,
-        borderRadius: BorderRadius.circular(widget.barWidth),
+        borderRadius: .circular(widget.barWidth),
       ),
     );
   }

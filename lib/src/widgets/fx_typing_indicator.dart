@@ -68,7 +68,7 @@ class _FxTypingIndicatorState extends State<FxTypingIndicator>
       ),
       decoration: BoxDecoration(
         color: widget.bubbleColor,
-        borderRadius: BorderRadius.circular(widget.dotSize * 2),
+        borderRadius: .circular(widget.dotSize * 2),
       ),
       child: dots,
     );

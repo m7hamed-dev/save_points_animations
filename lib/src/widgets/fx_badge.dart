@@ -95,7 +95,7 @@ class _FxBadgeState extends State<FxBadge> with SingleTickerProviderStateMixin {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: widget.color,
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: .circular(9),
       ),
       child: Text(
         label,

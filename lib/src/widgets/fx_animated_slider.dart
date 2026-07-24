@@ -77,7 +77,7 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
                     height: widget.trackHeight,
                     decoration: BoxDecoration(
                       color: widget.trackColor,
-                      borderRadius: BorderRadius.circular(widget.trackHeight),
+                      borderRadius: .circular(widget.trackHeight),
                     ),
                   ),
                 ),
@@ -90,7 +90,7 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
                       height: widget.trackHeight,
                       decoration: BoxDecoration(
                         color: widget.activeColor,
-                        borderRadius: BorderRadius.circular(widget.trackHeight),
+                        borderRadius: .circular(widget.trackHeight),
                       ),
                     ),
                   ),
@@ -155,10 +155,7 @@ class _Bubble extends StatelessWidget {
       width: 36,
       padding: const EdgeInsets.symmetric(vertical: 3),
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: color, borderRadius: .circular(8)),
       child: Text(
         text,
         textAlign: TextAlign.center,

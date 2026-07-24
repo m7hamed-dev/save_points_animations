@@ -115,7 +115,7 @@ class FxCarouselDots extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               color: i == page ? activeColor : color,
-              borderRadius: BorderRadius.circular(size),
+              borderRadius: .circular(size),
             ),
           ),
       ],

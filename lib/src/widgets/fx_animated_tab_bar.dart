@@ -80,7 +80,7 @@ class FxAnimatedTabBar extends StatelessWidget {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: BorderRadius.circular(indicatorHeight),
+                      borderRadius: .circular(indicatorHeight),
                     ),
                   ),
                 ),

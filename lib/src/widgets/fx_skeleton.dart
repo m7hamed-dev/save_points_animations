@@ -49,7 +49,7 @@ class FxSkeleton extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: baseColor,
-        borderRadius: BorderRadius.circular(borderRadius),
+        borderRadius: .circular(borderRadius),
       ),
     ).animate().shimmer(color: highlightColor).looping();
   }

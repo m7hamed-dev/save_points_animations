@@ -47,7 +47,7 @@ class _FxShimmerButtonState extends State<FxShimmerButton>
     return GestureDetector(
       onTap: widget.onPressed,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.borderRadius),
+        borderRadius: .circular(widget.borderRadius),
         child: Stack(
           children: [
             DecoratedBox(

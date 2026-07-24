@@ -70,7 +70,7 @@ class _FxGradientButtonState extends State<FxGradientButton>
           builder: (context, child) {
             return DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderRadius: .circular(widget.borderRadius),
                 gradient: SweepGradient(
                   colors: loop,
                   transform: GradientRotation(_controller.value * 2 * math.pi),

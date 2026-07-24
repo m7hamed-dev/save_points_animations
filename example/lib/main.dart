@@ -145,9 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: ListTile(
                     tileColor: theme.colorScheme.surfaceContainerHighest,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: .circular(12)),
                     title: Text('Staggered item #$i'),
                   ),
                 ),
@@ -186,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 44,
                       decoration: BoxDecoration(
                         color: Colors.deepPurple,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: .circular(12),
                       ),
                     ).heroAnimate('detail-hero'),
                     title: const Text('Open detail'),
@@ -288,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 20,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: .circular(6),
                 ),
               ).animate().shimmer().looping(),
 
@@ -334,10 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 32),
-              Text(
-                'Widgets as extensions',
-                style: theme.textTheme.titleMedium,
-              ),
+              Text('Widgets as extensions', style: theme.textTheme.titleMedium),
               const SizedBox(height: 12),
 
               // Decorate any widget inline with `.fx…()` methods.
@@ -364,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Backdrop effect: content layered on top of an aurora.
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: const SizedBox(
                   height: 90,
                   child: Center(
@@ -527,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: .spaceEvenly,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: .circular(12),
                     child: const SizedBox(
                       width: 120,
                       height: 110,
@@ -537,7 +532,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: .circular(12),
                     child: const SizedBox(
                       width: 120,
                       height: 110,
@@ -595,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: .circular(12),
                     child: const SizedBox(
                       width: 140,
                       height: 120,
@@ -650,7 +645,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const FxOrbitLoader(),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: .circular(12),
                     child: const SizedBox(
                       width: 120,
                       height: 80,
@@ -762,7 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: SizedBox(
                   height: 90,
                   width: double.infinity,
@@ -821,7 +816,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         gradient: const LinearGradient(
                           colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
                         ),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: .circular(14),
                       ),
                       child: const Text(
                         'Tilt me',
@@ -833,7 +828,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: FxAnimatedNavBar(
                   currentIndex: _navIndex,
                   onTap: (i) => setState(() => _navIndex = i),
@@ -867,7 +862,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
               // Frosted bar floats over content — shown over a gradient.
               ClipRRect(
-                borderRadius: BorderRadius.circular(32),
+                borderRadius: .circular(32),
                 child: Stack(
                   children: [
                     Container(
@@ -903,7 +898,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('${(_progress * 100).round()}%'),
                   ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: .circular(12),
                     child: SizedBox(
                       width: 130,
                       height: 80,
@@ -929,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Colors.indigo.shade200,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: .circular(16),
                           ),
                         ),
                       ),
@@ -966,13 +961,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: .circular(14),
                       ),
                       child: const Text('New'),
                     ),
                   ),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: .circular(14),
                     child: const SizedBox(
                       width: 110,
                       height: 64,
@@ -1076,7 +1071,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: const Color(0xFF12121A),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: .circular(16),
                 ),
                 child: const Center(
                   child: FxNeonText(
@@ -1149,7 +1144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: .circular(12),
                         ),
                         child: const Text('Tap for ripples'),
                       ),
@@ -1159,7 +1154,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: .circular(12),
                 child: const FxWaveDivider(),
               ),
 
@@ -1169,7 +1164,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Aurora background.
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: const SizedBox(
                   height: 110,
                   width: double.infinity,
@@ -1209,7 +1204,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Ken Burns zoom/pan over a gradient "image".
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: SizedBox(
                   height: 110,
                   child: FxKenBurns(
@@ -1245,7 +1240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: .circular(12),
                       ),
                       child: const Text(
                         'Shine',
@@ -1283,7 +1278,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 12),
 
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: const SizedBox(
                   height: 90,
                   child: FxParticles(
@@ -1318,7 +1313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(13),
+                        borderRadius: .circular(13),
                       ),
                       child: const Text('AI'),
                     ),
@@ -1477,7 +1472,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: c.withValues(alpha: 0.85),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: .circular(12),
                           ),
                         ),
                       ),
@@ -1573,7 +1568,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Living animated gradient background.
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: const FxAnimatedGradient(
                   colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
                   child: SizedBox(
@@ -1595,7 +1590,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Parallax banner — moves as you scroll.
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: .circular(16),
                 child: SizedBox(
                   height: 120,
                   child: Stack(
@@ -1666,7 +1661,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 80,
                       decoration: BoxDecoration(
                         color: _wheelColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: .circular(16),
                       ),
                     ),
                   ),
@@ -1679,7 +1674,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: .circular(16),
                   ),
                   child: Stack(
                     children: [
@@ -1744,7 +1739,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: SizedBox(
                       height: 160,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: .circular(20),
                         child: const Stack(
                           fit: StackFit.expand,
                           children: [
@@ -1824,7 +1819,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: .circular(30),
                     ),
                     child: const Text(
                       'Hover / tap me',
@@ -1913,7 +1908,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     DecoratedBox(
                       decoration: BoxDecoration(
                         color: c,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: .circular(20),
                       ),
                     ),
                 ],
@@ -2005,10 +2000,7 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     width: 80,
     height: 80,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(20),
-    ),
+    decoration: BoxDecoration(color: color, borderRadius: .circular(20)),
   );
 }
 
@@ -2029,7 +2021,7 @@ class DetailScreen extends StatelessWidget {
               height: 160,
               decoration: BoxDecoration(
                 color: Colors.deepPurple,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: .circular(28),
               ),
             ).heroAnimate('detail-hero'),
             const SizedBox(height: 24),

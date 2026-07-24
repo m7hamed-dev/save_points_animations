@@ -44,7 +44,7 @@ class FxSegmentedControl extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(height / 2),
+        borderRadius: .circular(height / 2),
       ),
       child: Stack(
         children: [
@@ -60,7 +60,7 @@ class FxSegmentedControl extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: selectedColor,
-                    borderRadius: BorderRadius.circular(height / 2),
+                    borderRadius: .circular(height / 2),
                   ),
                 ),
               ),
