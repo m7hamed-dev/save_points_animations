@@ -103,6 +103,5 @@ class _RadioPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RadioPainter oldDelegate) =>
-      oldDelegate.color != color ||
-      oldDelegate.borderColor != borderColor;
+      oldDelegate.color != color || oldDelegate.borderColor != borderColor;
 }

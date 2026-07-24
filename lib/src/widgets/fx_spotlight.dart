@@ -50,48 +50,48 @@ class _FxSpotlightState extends State<FxSpotlight>
       child: LayoutBuilder(
         builder: (context, constraints) {
           final overlay = Positioned.fill(
-          child: IgnorePointer(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final align = widget.followPointer
-                    ? _pointer
-                    : Alignment(
-                        math.sin(_controller.value * 2 * math.pi),
-                        math.cos(_controller.value * 2 * math.pi * 1.3),
-                      );
-                return CustomPaint(
-                  painter: _SpotPainter(
-                    align: align,
-                    color: widget.color,
-                    radius: widget.radius,
-                  ),
-                );
-              },
+            child: IgnorePointer(
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, _) {
+                  final align = widget.followPointer
+                      ? _pointer
+                      : Alignment(
+                          math.sin(_controller.value * 2 * math.pi),
+                          math.cos(_controller.value * 2 * math.pi * 1.3),
+                        );
+                  return CustomPaint(
+                    painter: _SpotPainter(
+                      align: align,
+                      color: widget.color,
+                      radius: widget.radius,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        );
+          );
 
-        final stack = Stack(
-          fit: StackFit.passthrough,
-          children: [widget.child, overlay],
-        );
+          final stack = Stack(
+            fit: StackFit.passthrough,
+            children: [widget.child, overlay],
+          );
 
-        if (!widget.followPointer) return stack;
+          if (!widget.followPointer) return stack;
 
-        final size = constraints.biggest;
-        return MouseRegion(
-          onHover: (event) {
-            if (size.isEmpty) return;
-            setState(() {
-              _pointer = Alignment(
-                (event.localPosition.dx / size.width) * 2 - 1,
-                (event.localPosition.dy / size.height) * 2 - 1,
-              );
-            });
-          },
-          child: stack,
-        );
+          final size = constraints.biggest;
+          return MouseRegion(
+            onHover: (event) {
+              if (size.isEmpty) return;
+              setState(() {
+                _pointer = Alignment(
+                  (event.localPosition.dx / size.width) * 2 - 1,
+                  (event.localPosition.dy / size.height) * 2 - 1,
+                );
+              });
+            },
+            child: stack,
+          );
         },
       ),
     );

@@ -71,49 +71,49 @@ class _FxGlassCardState extends State<FxGlassCard>
       child: ClipRRect(
         borderRadius: radius,
         child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: widget.blur, sigmaY: widget.blur),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: widget.tint,
-            borderRadius: radius,
-            border: Border.all(color: widget.borderColor),
-          ),
-          child: Stack(
-            children: [
-              if (widget.sheen)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, _) {
-                        // A soft band that travels corner to corner.
-                        final t = _controller.value * 2 - 0.5;
-                        return DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: const [
-                                Color(0x00FFFFFF),
-                                Color(0x33FFFFFF),
-                                Color(0x00FFFFFF),
-                              ],
-                              stops: [
-                                (t - 0.15).clamp(0.0, 1.0),
-                                t.clamp(0.0, 1.0),
-                                (t + 0.15).clamp(0.0, 1.0),
-                              ],
+          filter: ui.ImageFilter.blur(sigmaX: widget.blur, sigmaY: widget.blur),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: widget.tint,
+              borderRadius: radius,
+              border: Border.all(color: widget.borderColor),
+            ),
+            child: Stack(
+              children: [
+                if (widget.sheen)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (context, _) {
+                          // A soft band that travels corner to corner.
+                          final t = _controller.value * 2 - 0.5;
+                          return DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: const [
+                                  Color(0x00FFFFFF),
+                                  Color(0x33FFFFFF),
+                                  Color(0x00FFFFFF),
+                                ],
+                                stops: [
+                                  (t - 0.15).clamp(0.0, 1.0),
+                                  t.clamp(0.0, 1.0),
+                                  (t + 0.15).clamp(0.0, 1.0),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-              Padding(padding: widget.padding, child: widget.child),
-            ],
+                Padding(padding: widget.padding, child: widget.child),
+              ],
+            ),
           ),
-        ),
         ),
       ),
     );

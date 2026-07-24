@@ -50,21 +50,21 @@ class _FxBlobState extends State<FxBlob> with SingleTickerProviderStateMixin {
       child: SizedBox.square(
         dimension: widget.size,
         child: AnimatedBuilder(
-        animation: _controller,
-        child: widget.child,
-        builder: (context, child) {
-          final clipper = _BlobClipper(
-            phase: _controller.value * 2 * math.pi,
-            amplitude: widget.amplitude,
-          );
-          return ClipPath(
-            clipper: clipper,
-            child: ColoredBox(
-              color: widget.color,
-              child: child == null ? null : Center(child: child),
-            ),
-          );
-        },
+          animation: _controller,
+          child: widget.child,
+          builder: (context, child) {
+            final clipper = _BlobClipper(
+              phase: _controller.value * 2 * math.pi,
+              amplitude: widget.amplitude,
+            );
+            return ClipPath(
+              clipper: clipper,
+              child: ColoredBox(
+                color: widget.color,
+                child: child == null ? null : Center(child: child),
+              ),
+            );
+          },
         ),
       ),
     );

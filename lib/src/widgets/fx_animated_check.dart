@@ -128,6 +128,5 @@ class _CheckPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckPainter oldDelegate) =>
-      oldDelegate.color != color ||
-      oldDelegate.strokeWidth != strokeWidth;
+      oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
 }

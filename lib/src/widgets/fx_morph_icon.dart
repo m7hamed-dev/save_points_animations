@@ -125,6 +125,5 @@ class _MorphIconPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_MorphIconPainter oldDelegate) =>
-      oldDelegate.color != color ||
-      oldDelegate.strokeWidth != strokeWidth;
+      oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
 }

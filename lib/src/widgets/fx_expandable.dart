@@ -65,21 +65,21 @@ class _FxExpandableState extends State<FxExpandable>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: _toggle,
-          child: Row(
-            children: [
-              Expanded(child: widget.header),
-              RotationTransition(
-                turns: Tween<double>(begin: 0, end: 0.5).animate(_curved),
-                child: CustomPaint(
-                  size: const Size(14, 14),
-                  painter: _ChevronPainter(widget.chevronColor),
+            behavior: HitTestBehavior.opaque,
+            onTap: _toggle,
+            child: Row(
+              children: [
+                Expanded(child: widget.header),
+                RotationTransition(
+                  turns: Tween<double>(begin: 0, end: 0.5).animate(_curved),
+                  child: CustomPaint(
+                    size: const Size(14, 14),
+                    painter: _ChevronPainter(widget.chevronColor),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
           SizeTransition(
             sizeFactor: _curved,
             alignment: Alignment.topCenter,

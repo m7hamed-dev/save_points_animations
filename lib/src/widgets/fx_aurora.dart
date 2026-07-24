@@ -49,46 +49,46 @@ class _FxAuroraState extends State<FxAurora>
     return RepaintBoundary(
       child: ClipRect(
         child: Stack(
-        fit: StackFit.passthrough,
-        children: [
-          Positioned.fill(
-            child: ImageFiltered(
-              imageFilter: ui.ImageFilter.blur(
-                sigmaX: widget.blur,
-                sigmaY: widget.blur,
-              ),
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, _) {
-                  final t = _controller.value * 2 * math.pi;
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      for (var i = 0; i < widget.colors.length; i++)
-                        Align(
-                          alignment: Alignment(
-                            math.cos(t + i * 2.1) * 0.8,
-                            math.sin(t * 1.3 + i * 1.7) * 0.8,
-                          ),
-                          child: FractionallySizedBox(
-                            widthFactor: 0.7,
-                            heightFactor: 0.7,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: widget.colors[i],
+          fit: StackFit.passthrough,
+          children: [
+            Positioned.fill(
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(
+                  sigmaX: widget.blur,
+                  sigmaY: widget.blur,
+                ),
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final t = _controller.value * 2 * math.pi;
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        for (var i = 0; i < widget.colors.length; i++)
+                          Align(
+                            alignment: Alignment(
+                              math.cos(t + i * 2.1) * 0.8,
+                              math.sin(t * 1.3 + i * 1.7) * 0.8,
+                            ),
+                            child: FractionallySizedBox(
+                              widthFactor: 0.7,
+                              heightFactor: 0.7,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: widget.colors[i],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-          if (widget.child != null) widget.child!,
-        ],
+            if (widget.child != null) widget.child!,
+          ],
         ),
       ),
     );

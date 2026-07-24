@@ -22,6 +22,21 @@ Widgets as extensions, more page transitions & lifecycle fixes.
 - `FxMarquee` no longer overflows horizontally — it now scrolls inside a
   clipping viewport that grants the content unbounded width.
 
+### Performance
+- Every continuously-animating widget (56 in total) now wraps its animating
+  subtree in a `RepaintBoundary`, so its per-frame repaints no longer invalidate
+  the paint of ancestors and siblings.
+- 14 `CustomPainter`-based widgets (dot grid, radar, pulse, orbit loader,
+  sparkline, pie chart, wave divider/progress, hold button, gradient/beam
+  borders, circular text, animated check/checkbox/radio, morph icon) now repaint
+  through `super(repaint: animation)` instead of an `AnimatedBuilder` — the
+  painter repaints directly on each tick without rebuilding the widget subtree,
+  and their `child`/label subtrees are no longer rebuilt every frame.
+- `FxMarquee` now drives its scroll offset through a `ValueNotifier` +
+  `ValueListenableBuilder` with the row as a cached `child`, so only the
+  `Transform.translate` updates per frame instead of rebuilding the row.
+  All visuals are unchanged (verified against the golden tests).
+
 ### Changed
 - Split `fx_page_route.dart` into `fx_page_transition.dart` (the enum),
   `fx_transition_builder.dart` (`buildFxTransition` + per-style builders), and
