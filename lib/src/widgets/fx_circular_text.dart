@@ -30,14 +30,15 @@ class FxCircularText extends StatefulWidget {
 
 class _FxCircularTextState extends State<FxCircularText>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.spinDuration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.spinDuration,
+    );
     if (widget.spin) _controller.repeat();
   }
 

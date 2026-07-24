@@ -29,10 +29,14 @@ class FxOrbitLoader extends StatefulWidget {
 
 class _FxOrbitLoaderState extends State<FxOrbitLoader>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {

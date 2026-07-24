@@ -32,14 +32,12 @@ class FxSparkline extends StatefulWidget {
 
 class _FxSparklineState extends State<FxSparkline>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     _controller.forward();
   }
 

@@ -33,13 +33,18 @@ class FxSnow extends StatefulWidget {
 
 class _FxSnowState extends State<FxSnow> with SingleTickerProviderStateMixin {
   final math.Random _random = math.Random();
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   late List<_Flake> _flakes;
   Duration _last = Duration.zero;
+
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the flake list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
 
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     _flakes = List.generate(widget.count, (_) {
       return _Flake(
         x: _random.nextDouble(),
@@ -60,21 +65,21 @@ class _FxSnowState extends State<FxSnow> with SingleTickerProviderStateMixin {
   void _tick(Duration elapsed) {
     final dt = (elapsed - _last).inMicroseconds / 1e6;
     _last = elapsed;
-    setState(() {
-      for (final f in _flakes) {
-        f.y += f.fall * dt;
-        f.sway += dt;
-        if (f.y > 1) {
-          f.y = 0;
-          f.x = _random.nextDouble();
-        }
+    for (final f in _flakes) {
+      f.y += f.fall * dt;
+      f.sway += dt;
+      if (f.y > 1) {
+        f.y = 0;
+        f.x = _random.nextDouble();
       }
-    });
+    }
+    _frame.value++;
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -86,7 +91,9 @@ class _FxSnowState extends State<FxSnow> with SingleTickerProviderStateMixin {
         children: [
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(painter: _SnowPainter(_flakes, widget.color)),
+              child: CustomPaint(
+                painter: _SnowPainter(_flakes, widget.color, repaint: _frame),
+              ),
             ),
           ),
           if (widget.child != null) widget.child!,
@@ -113,7 +120,8 @@ class _Flake {
 }
 
 class _SnowPainter extends CustomPainter {
-  _SnowPainter(this.flakes, this.color);
+  _SnowPainter(this.flakes, this.color, {required Listenable repaint})
+    : super(repaint: repaint);
 
   final List<_Flake> flakes;
   final Color color;
@@ -128,5 +136,6 @@ class _SnowPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SnowPainter oldDelegate) => true;
+  bool shouldRepaint(_SnowPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.flakes != flakes;
 }

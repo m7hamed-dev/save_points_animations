@@ -23,10 +23,14 @@ class FxDotsLoader extends StatefulWidget {
 
 class _FxDotsLoaderState extends State<FxDotsLoader>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {
@@ -94,10 +98,14 @@ class FxBarsLoader extends StatefulWidget {
 
 class _FxBarsLoaderState extends State<FxBarsLoader>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {
@@ -169,10 +177,14 @@ class FxProgressRing extends StatefulWidget {
 
 class _FxProgressRingState extends State<FxProgressRing>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {

@@ -36,15 +36,20 @@ class FxFireworks extends StatefulWidget {
 class _FxFireworksState extends State<FxFireworks>
     with SingleTickerProviderStateMixin {
   final math.Random _random = math.Random();
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   final List<_Burst> _bursts = [];
   double _now = 0;
   double _lastSpawn = 0;
   static const double _life = 1.5;
 
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the burst list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
+
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (!(MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
@@ -61,7 +66,7 @@ class _FxFireworksState extends State<FxFireworks>
       _spawn();
     }
     _bursts.removeWhere((b) => _now - b.birth > _life);
-    setState(() {});
+    _frame.value++;
   }
 
   void _spawn() {
@@ -85,6 +90,7 @@ class _FxFireworksState extends State<FxFireworks>
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -101,6 +107,7 @@ class _FxFireworksState extends State<FxFireworks>
                   bursts: _bursts,
                   now: _now,
                   life: _life,
+                  repaint: _frame,
                 ),
               ),
             ),
@@ -136,7 +143,8 @@ class _FireworksPainter extends CustomPainter {
     required this.bursts,
     required this.now,
     required this.life,
-  });
+    required Listenable repaint,
+  }) : super(repaint: repaint);
 
   final List<_Burst> bursts;
   final double now;
@@ -167,5 +175,8 @@ class _FireworksPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_FireworksPainter oldDelegate) => true;
+  bool shouldRepaint(_FireworksPainter oldDelegate) =>
+      oldDelegate.bursts != bursts ||
+      oldDelegate.now != now ||
+      oldDelegate.life != life;
 }

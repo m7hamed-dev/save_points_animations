@@ -29,14 +29,12 @@ class FxNeonText extends StatefulWidget {
 
 class _FxNeonTextState extends State<FxNeonText>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     if (widget.flicker) _controller.repeat();
   }
 

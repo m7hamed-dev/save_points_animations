@@ -33,7 +33,7 @@ class FxMarquee extends StatefulWidget {
 class _FxMarqueeState extends State<FxMarquee>
     with SingleTickerProviderStateMixin {
   final GlobalKey _key = GlobalKey();
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
   Duration _last = Duration.zero;
   final ValueNotifier<double> _offset = ValueNotifier<double>(0);
   double _childWidth = 0;
@@ -41,6 +41,7 @@ class _FxMarqueeState extends State<FxMarquee>
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_onTick);
     WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
   }
 

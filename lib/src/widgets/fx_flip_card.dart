@@ -46,14 +46,12 @@ class FxFlipCard extends StatefulWidget {
 
 class _FxFlipCardState extends State<FxFlipCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     widget.controller?._attach(_flip);
   }
 

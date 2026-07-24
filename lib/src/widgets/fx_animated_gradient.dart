@@ -32,10 +32,14 @@ class FxAnimatedGradient extends StatefulWidget {
 
 class _FxAnimatedGradientState extends State<FxAnimatedGradient>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {

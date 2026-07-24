@@ -35,10 +35,13 @@ class FxSpeedDial extends StatefulWidget {
 
 class _FxSpeedDialState extends State<FxSpeedDial>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
 
   void _toggle() {
     if (_controller.isCompleted || _controller.value > 0.5) {

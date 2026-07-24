@@ -35,11 +35,17 @@ class FxRating extends StatefulWidget {
 
 class _FxRatingState extends State<FxRating>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 360),
-  );
+  late final AnimationController _controller;
   int _popped = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 360),
+    );
+  }
 
   void _select(int index) {
     if (widget.onChanged == null) return;

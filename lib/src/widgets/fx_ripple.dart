@@ -27,9 +27,19 @@ class FxRipple extends StatefulWidget {
 
 class _FxRippleState extends State<FxRipple>
     with SingleTickerProviderStateMixin {
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
   final List<_Ripple> _ripples = [];
   Duration _elapsed = Duration.zero;
+
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the ripple list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker(_onTick);
+  }
 
   void _onTick(Duration elapsed) {
     _elapsed = elapsed;
@@ -38,19 +48,20 @@ class _FxRippleState extends State<FxRipple>
       _ticker.stop();
       return;
     }
-    setState(() {});
+    _frame.value++;
   }
 
   void _addRipple(Offset position) {
     _ripples.add(_Ripple(position: position, start: _elapsed));
     if (!_ticker.isActive) _ticker.start();
-    setState(() {});
+    _frame.value++;
     widget.onTap?.call();
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -67,6 +78,7 @@ class _FxRippleState extends State<FxRipple>
               elapsed: _elapsed,
               duration: widget.duration,
               color: widget.color,
+              repaint: _frame,
             ),
             child: widget.child,
           ),
@@ -89,7 +101,8 @@ class _RipplePainter extends CustomPainter {
     required this.elapsed,
     required this.duration,
     required this.color,
-  });
+    required Listenable repaint,
+  }) : super(repaint: repaint);
 
   final List<_Ripple> ripples;
   final Duration elapsed;
@@ -112,5 +125,9 @@ class _RipplePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_RipplePainter oldDelegate) => true;
+  bool shouldRepaint(_RipplePainter oldDelegate) =>
+      oldDelegate.color != color ||
+      oldDelegate.duration != duration ||
+      oldDelegate.elapsed != elapsed ||
+      oldDelegate.ripples != ripples;
 }

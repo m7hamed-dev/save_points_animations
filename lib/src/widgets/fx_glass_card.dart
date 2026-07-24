@@ -37,14 +37,15 @@ class FxGlassCard extends StatefulWidget {
 
 class _FxGlassCardState extends State<FxGlassCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.sheenDuration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.sheenDuration,
+    );
     if (widget.sheen) _controller.repeat();
   }
 

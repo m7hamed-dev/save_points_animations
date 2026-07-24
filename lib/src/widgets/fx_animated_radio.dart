@@ -31,11 +31,17 @@ class FxAnimatedRadio<T> extends StatefulWidget {
 
 class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-    value: widget.value == widget.groupValue ? 1 : 0,
-  );
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      value: widget.value == widget.groupValue ? 1 : 0,
+    );
+  }
 
   @override
   void didUpdateWidget(covariant FxAnimatedRadio<T> oldWidget) {

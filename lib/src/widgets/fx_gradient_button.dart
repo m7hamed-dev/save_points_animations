@@ -38,11 +38,15 @@ class FxGradientButton extends StatefulWidget {
 
 class _FxGradientButtonState extends State<FxGradientButton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
   bool _down = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {

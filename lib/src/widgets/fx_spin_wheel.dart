@@ -50,10 +50,7 @@ class FxSpinWheel extends StatefulWidget {
 
 class _FxSpinWheelState extends State<FxSpinWheel>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
   final math.Random _random = math.Random();
   double _from = 0;
   double _to = 0;
@@ -62,6 +59,7 @@ class _FxSpinWheelState extends State<FxSpinWheel>
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     widget.controller?._attach(_spin);
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {

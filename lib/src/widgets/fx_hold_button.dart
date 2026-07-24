@@ -34,14 +34,15 @@ class FxHoldButton extends StatefulWidget {
 
 class _FxHoldButtonState extends State<FxHoldButton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.holdDuration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.holdDuration,
+    );
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onConfirmed();

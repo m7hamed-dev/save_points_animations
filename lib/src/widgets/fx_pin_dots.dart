@@ -35,14 +35,21 @@ class FxPinDots extends StatefulWidget {
 }
 
 class _FxPinDotsState extends State<FxPinDots> with TickerProviderStateMixin {
-  late final AnimationController _pop = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 260),
-  );
-  late final AnimationController _shake = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 400),
-  );
+  late final AnimationController _pop;
+  late final AnimationController _shake;
+
+  @override
+  void initState() {
+    super.initState();
+    _pop = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+    );
+    _shake = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+  }
 
   @override
   void didUpdateWidget(covariant FxPinDots oldWidget) {

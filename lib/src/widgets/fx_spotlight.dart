@@ -32,11 +32,15 @@ class FxSpotlight extends StatefulWidget {
 
 class _FxSpotlightState extends State<FxSpotlight>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  )..repeat();
+  late final AnimationController _controller;
   Alignment _pointer = Alignment.center;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
+  }
 
   @override
   void dispose() {

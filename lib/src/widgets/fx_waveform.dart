@@ -36,7 +36,7 @@ class FxWaveform extends StatefulWidget {
 
 class _FxWaveformState extends State<FxWaveform>
     with SingleTickerProviderStateMixin {
-  late final Ticker _ticker = createTicker(_onTick)..start();
+  late final Ticker _ticker;
   double _t = 0;
 
   // A fixed phase + frequency per bar so the pattern looks organic, not synced.
@@ -48,6 +48,12 @@ class _FxWaveformState extends State<FxWaveform>
     widget.barCount,
     (i) => 2.2 + (i % 3) * 0.9,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = createTicker(_onTick)..start();
+  }
 
   void _onTick(Duration elapsed) {
     setState(() => _t = elapsed.inMicroseconds / 1e6 * widget.speed);

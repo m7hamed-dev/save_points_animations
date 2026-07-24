@@ -36,14 +36,15 @@ class FxProgressBar extends StatefulWidget {
 
 class _FxProgressBarState extends State<FxProgressBar>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1200),
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
     if (widget.value == null) _controller.repeat();
   }
 

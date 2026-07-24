@@ -32,13 +32,18 @@ class FxStarField extends StatefulWidget {
 class _FxStarFieldState extends State<FxStarField>
     with SingleTickerProviderStateMixin {
   final math.Random _random = math.Random();
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   late List<_Star> _stars;
   Duration _last = Duration.zero;
+
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the star list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
 
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     _stars = List.generate(widget.count, (_) => _spawn());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -57,22 +62,22 @@ class _FxStarFieldState extends State<FxStarField>
   void _tick(Duration elapsed) {
     final dt = (elapsed - _last).inMicroseconds / 1e6;
     _last = elapsed;
-    setState(() {
-      for (final s in _stars) {
-        s.z -= widget.speed * dt;
-        if (s.z <= 0.05) {
-          s
-            ..z = 1
-            ..x = _random.nextDouble() * 2 - 1
-            ..y = _random.nextDouble() * 2 - 1;
-        }
+    for (final s in _stars) {
+      s.z -= widget.speed * dt;
+      if (s.z <= 0.05) {
+        s
+          ..z = 1
+          ..x = _random.nextDouble() * 2 - 1
+          ..y = _random.nextDouble() * 2 - 1;
       }
-    });
+    }
+    _frame.value++;
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -84,7 +89,9 @@ class _FxStarFieldState extends State<FxStarField>
         children: [
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(painter: _StarPainter(_stars, widget.color)),
+              child: CustomPaint(
+                painter: _StarPainter(_stars, widget.color, repaint: _frame),
+              ),
             ),
           ),
           if (widget.child != null) widget.child!,
@@ -102,7 +109,8 @@ class _Star {
 }
 
 class _StarPainter extends CustomPainter {
-  _StarPainter(this.stars, this.color);
+  _StarPainter(this.stars, this.color, {required Listenable repaint})
+    : super(repaint: repaint);
 
   final List<_Star> stars;
   final Color color;
@@ -124,5 +132,6 @@ class _StarPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_StarPainter oldDelegate) => true;
+  bool shouldRepaint(_StarPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.stars != stars;
 }

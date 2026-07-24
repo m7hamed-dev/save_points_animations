@@ -33,13 +33,18 @@ class FxBubbles extends StatefulWidget {
 class _FxBubblesState extends State<FxBubbles>
     with SingleTickerProviderStateMixin {
   final math.Random _random = math.Random();
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   late List<_Bubble> _bubbles;
   Duration _last = Duration.zero;
+
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the bubble list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
 
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     _bubbles = List.generate(widget.count, (_) => _spawn(_random.nextDouble()));
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -60,23 +65,23 @@ class _FxBubblesState extends State<FxBubbles>
   void _tick(Duration elapsed) {
     final dt = (elapsed - _last).inMicroseconds / 1e6;
     _last = elapsed;
-    setState(() {
-      for (final b in _bubbles) {
+    for (final b in _bubbles) {
+      b
+        ..y -= b.rise * dt
+        ..wobble += dt;
+      if (b.y < -0.1) {
         b
-          ..y -= b.rise * dt
-          ..wobble += dt;
-        if (b.y < -0.1) {
-          b
-            ..y = 1.1
-            ..x = _random.nextDouble();
-        }
+          ..y = 1.1
+          ..x = _random.nextDouble();
       }
-    });
+    }
+    _frame.value++;
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -89,7 +94,11 @@ class _FxBubblesState extends State<FxBubbles>
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(
-                painter: _BubblePainter(_bubbles, widget.color),
+                painter: _BubblePainter(
+                  _bubbles,
+                  widget.color,
+                  repaint: _frame,
+                ),
               ),
             ),
           ),
@@ -116,7 +125,8 @@ class _Bubble {
 }
 
 class _BubblePainter extends CustomPainter {
-  _BubblePainter(this.bubbles, this.color);
+  _BubblePainter(this.bubbles, this.color, {required Listenable repaint})
+    : super(repaint: repaint);
 
   final List<_Bubble> bubbles;
   final Color color;
@@ -138,5 +148,6 @@ class _BubblePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_BubblePainter oldDelegate) => true;
+  bool shouldRepaint(_BubblePainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.bubbles != bubbles;
 }

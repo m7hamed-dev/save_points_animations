@@ -32,11 +32,17 @@ class FxMorphIcon extends StatefulWidget {
 
 class _FxMorphIconState extends State<FxMorphIcon>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-    value: widget.isOpen ? 1 : 0,
-  );
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      value: widget.isOpen ? 1 : 0,
+    );
+  }
 
   @override
   void didUpdateWidget(covariant FxMorphIcon oldWidget) {

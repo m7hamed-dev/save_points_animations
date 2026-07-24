@@ -29,14 +29,12 @@ class FxAnimatedCheck extends StatefulWidget {
 
 class _FxAnimatedCheckState extends State<FxAnimatedCheck>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     if (widget.autoPlay) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;

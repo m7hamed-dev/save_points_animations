@@ -49,16 +49,14 @@ class FxConfetti extends StatefulWidget {
 
 class _FxConfettiState extends State<FxConfetti>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _anim = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _anim;
   final math.Random _random = math.Random();
   List<_Particle> _particles = const [];
 
   @override
   void initState() {
     super.initState();
+    _anim = AnimationController(vsync: this, duration: widget.duration);
     widget.controller?.addListener(_burst);
     if (widget.playOnStart) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

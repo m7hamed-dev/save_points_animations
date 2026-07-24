@@ -33,15 +33,21 @@ class FxExpandable extends StatefulWidget {
 
 class _FxExpandableState extends State<FxExpandable>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-    value: widget.initiallyExpanded ? 1 : 0,
-  );
+  late final AnimationController _controller;
   late final Animation<double> _curved = CurvedAnimation(
     parent: _controller,
     curve: widget.curve,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      value: widget.initiallyExpanded ? 1 : 0,
+    );
+  }
 
   void _toggle() {
     if (_controller.isCompleted || _controller.value > 0.5) {

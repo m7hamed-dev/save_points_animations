@@ -32,16 +32,17 @@ class FxBadge extends StatefulWidget {
 }
 
 class _FxBadgeState extends State<FxBadge> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 360),
-  );
+  late final AnimationController _controller;
 
   bool get _visible => widget.count > 0 || widget.showZero;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 360),
+    );
     if (_visible) _controller.value = 1;
   }
 

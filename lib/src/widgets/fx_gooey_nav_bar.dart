@@ -39,12 +39,18 @@ class FxGooeyNavBar extends StatefulWidget {
 
 class _FxGooeyNavBarState extends State<FxGooeyNavBar>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-    value: 1,
-  );
+  late final AnimationController _controller;
   late int _previous = widget.currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      value: 1,
+    );
+  }
 
   @override
   void didUpdateWidget(covariant FxGooeyNavBar oldWidget) {

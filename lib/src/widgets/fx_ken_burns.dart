@@ -34,14 +34,12 @@ class FxKenBurns extends StatefulWidget {
 
 class _FxKenBurnsState extends State<FxKenBurns>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: widget.duration,
-  );
+  late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {

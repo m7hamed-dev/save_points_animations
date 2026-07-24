@@ -29,10 +29,16 @@ class FxHeartButton extends StatefulWidget {
 
 class _FxHeartButtonState extends State<FxHeartButton>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 600),
-  );
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+  }
 
   void _tap() {
     final next = !widget.isLiked;

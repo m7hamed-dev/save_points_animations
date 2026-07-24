@@ -34,13 +34,18 @@ class FxParticles extends StatefulWidget {
 class _FxParticlesState extends State<FxParticles>
     with SingleTickerProviderStateMixin {
   final math.Random _random = math.Random();
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   late List<_Particle> _particles;
   Duration _last = Duration.zero;
+
+  // Bumped each tick to drive the painter's `repaint:` without rebuilding the
+  // widget subtree (the particle list is mutated in place).
+  final ValueNotifier<int> _frame = ValueNotifier<int>(0);
 
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     _particles = List.generate(widget.count, (_) {
       return _Particle(
         x: _random.nextDouble(),
@@ -60,17 +65,17 @@ class _FxParticlesState extends State<FxParticles>
   void _tick(Duration elapsed) {
     final dt = (elapsed - _last).inMicroseconds / 1e6;
     _last = elapsed;
-    setState(() {
-      for (final p in _particles) {
-        p.x = (p.x + p.vx * dt + 1) % 1;
-        p.y = (p.y + p.vy * dt + 1) % 1;
-      }
-    });
+    for (final p in _particles) {
+      p.x = (p.x + p.vx * dt + 1) % 1;
+      p.y = (p.y + p.vy * dt + 1) % 1;
+    }
+    _frame.value++;
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _frame.dispose();
     super.dispose();
   }
 
@@ -83,7 +88,11 @@ class _FxParticlesState extends State<FxParticles>
           Positioned.fill(
             child: IgnorePointer(
               child: CustomPaint(
-                painter: _ParticlePainter(_particles, widget.color),
+                painter: _ParticlePainter(
+                  _particles,
+                  widget.color,
+                  repaint: _frame,
+                ),
               ),
             ),
           ),
@@ -111,7 +120,8 @@ class _Particle {
 }
 
 class _ParticlePainter extends CustomPainter {
-  _ParticlePainter(this.particles, this.color);
+  _ParticlePainter(this.particles, this.color, {required Listenable repaint})
+    : super(repaint: repaint);
 
   final List<_Particle> particles;
   final Color color;
@@ -129,5 +139,6 @@ class _ParticlePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ParticlePainter oldDelegate) => true;
+  bool shouldRepaint(_ParticlePainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.particles != particles;
 }
