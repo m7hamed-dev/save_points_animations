@@ -60,32 +60,37 @@ class _FxCircularMenuState extends State<FxCircularMenu>
   @override
   Widget build(BuildContext context) {
     final n = widget.children.length;
-    return Stack(
-      alignment: Alignment.center,
-      clipBehavior: Clip.none,
-      children: [
-        for (var i = 0; i < n; i++) _item(i, n),
-        GestureDetector(
-          onTap: _toggle,
-          child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-              shape: BoxShape.circle,
-              boxShadow: const [
-                BoxShadow(color: Color(0x33000000), blurRadius: 8),
-              ],
-            ),
-            child: Center(
-              child: RotationTransition(
-                turns: Tween<double>(begin: 0, end: 0.375).animate(_controller),
-                child: widget.icon,
+    return RepaintBoundary(
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = 0; i < n; i++) _item(i, n),
+          GestureDetector(
+            onTap: _toggle,
+            child: Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(color: Color(0x33000000), blurRadius: 8),
+                ],
+              ),
+              child: Center(
+                child: RotationTransition(
+                  turns: Tween<double>(
+                    begin: 0,
+                    end: 0.375,
+                  ).animate(_controller),
+                  child: widget.icon,
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

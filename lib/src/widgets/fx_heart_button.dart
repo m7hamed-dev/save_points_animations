@@ -48,33 +48,35 @@ class _FxHeartButtonState extends State<FxHeartButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _tap,
-      child: SizedBox.square(
-        dimension: widget.size * 1.8,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            final v = _controller.value;
-            final scale = 1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
-            return CustomPaint(
-              painter: _BurstPainter(progress: v, color: widget.color),
-              child: Center(
-                child: Transform.scale(
-                  scale: widget.isLiked ? scale : 1.0,
-                  child: CustomPaint(
-                    size: Size.square(widget.size),
-                    painter: _HeartPainter(
-                      color: widget.isLiked
-                          ? widget.color
-                          : widget.inactiveColor,
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _tap,
+        child: SizedBox.square(
+          dimension: widget.size * 1.8,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              final v = _controller.value;
+              final scale = 1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
+              return CustomPaint(
+                painter: _BurstPainter(progress: v, color: widget.color),
+                child: Center(
+                  child: Transform.scale(
+                    scale: widget.isLiked ? scale : 1.0,
+                    child: CustomPaint(
+                      size: Size.square(widget.size),
+                      painter: _HeartPainter(
+                        color: widget.isLiked
+                            ? widget.color
+                            : widget.inactiveColor,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

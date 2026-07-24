@@ -55,27 +55,29 @@ class _FxNeonTextState extends State<FxNeonText>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final i = widget.flicker ? _intensity(_controller.value) : 1.0;
-        final base = (widget.style ?? const TextStyle(fontSize: 32)).copyWith(
-          color: const Color(0xFFFFFFFF),
-          fontWeight: FontWeight.bold,
-        );
-        return Text(
-          widget.text,
-          style: base.copyWith(
-            shadows: [
-              for (final blur in const [6.0, 14.0, 26.0])
-                Shadow(
-                  color: widget.color.withValues(alpha: i),
-                  blurRadius: blur * i,
-                ),
-            ],
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final i = widget.flicker ? _intensity(_controller.value) : 1.0;
+          final base = (widget.style ?? const TextStyle(fontSize: 32)).copyWith(
+            color: const Color(0xFFFFFFFF),
+            fontWeight: FontWeight.bold,
+          );
+          return Text(
+            widget.text,
+            style: base.copyWith(
+              shadows: [
+                for (final blur in const [6.0, 14.0, 26.0])
+                  Shadow(
+                    color: widget.color.withValues(alpha: i),
+                    blurRadius: blur * i,
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

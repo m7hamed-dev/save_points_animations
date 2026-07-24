@@ -53,48 +53,52 @@ class _FxGradientButtonState extends State<FxGradientButton>
   @override
   Widget build(BuildContext context) {
     final loop = [...widget.colors, widget.colors.first];
-    return GestureDetector(
-      onTapDown: widget.onPressed == null
-          ? null
-          : (_) => setState(() => _down = true),
-      onTapUp: widget.onPressed == null
-          ? null
-          : (_) => setState(() => _down = false),
-      onTapCancel: () => setState(() => _down = false),
-      onTap: widget.onPressed,
-      child: AnimatedScale(
-        scale: _down ? 0.95 : 1,
-        duration: const Duration(milliseconds: 120),
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: .circular(widget.borderRadius),
-                gradient: SweepGradient(
-                  colors: loop,
-                  transform: GradientRotation(_controller.value * 2 * math.pi),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: widget.colors.first.withValues(alpha: 0.4),
-                    blurRadius: 16,
-                    offset: const Offset(0, 6),
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTapDown: widget.onPressed == null
+            ? null
+            : (_) => setState(() => _down = true),
+        onTapUp: widget.onPressed == null
+            ? null
+            : (_) => setState(() => _down = false),
+        onTapCancel: () => setState(() => _down = false),
+        onTap: widget.onPressed,
+        child: AnimatedScale(
+          scale: _down ? 0.95 : 1,
+          duration: const Duration(milliseconds: 120),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: .circular(widget.borderRadius),
+                  gradient: SweepGradient(
+                    colors: loop,
+                    transform: GradientRotation(
+                      _controller.value * 2 * math.pi,
+                    ),
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: widget.colors.first.withValues(alpha: 0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: child,
+              );
+            },
+            child: Padding(
+              padding: widget.padding,
+              child: DefaultTextStyle.merge(
+                style: TextStyle(
+                  color: widget.textColor,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
+                child: widget.child,
               ),
-              child: child,
-            );
-          },
-          child: Padding(
-            padding: widget.padding,
-            child: DefaultTextStyle.merge(
-              style: TextStyle(
-                color: widget.textColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-              child: widget.child,
             ),
           ),
         ),

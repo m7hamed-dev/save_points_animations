@@ -46,8 +46,9 @@ class _FxAuroraState extends State<FxAurora>
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: Stack(
+    return RepaintBoundary(
+      child: ClipRect(
+        child: Stack(
         fit: StackFit.passthrough,
         children: [
           Positioned.fill(
@@ -88,6 +89,7 @@ class _FxAuroraState extends State<FxAurora>
           ),
           if (widget.child != null) widget.child!,
         ],
+        ),
       ),
     );
   }

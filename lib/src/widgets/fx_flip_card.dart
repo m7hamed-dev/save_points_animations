@@ -73,45 +73,47 @@ class _FxFlipCardState extends State<FxFlipCard>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.flipOnTap ? _flip : null,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final t = widget.curve.transform(_controller.value);
-          final angle = t * math.pi;
-          final showFront = angle <= math.pi / 2;
-          final matrix = Matrix4.identity()..setEntry(3, 2, 0.001);
-          if (widget.axis == Axis.horizontal) {
-            matrix.rotateY(angle);
-          } else {
-            matrix.rotateX(angle);
-          }
-
-          Widget face;
-          if (showFront) {
-            face = widget.front;
-          } else {
-            // Un-mirror the back face by pre-rotating it 180°.
-            final correction = Matrix4.identity();
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTap: widget.flipOnTap ? _flip : null,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final t = widget.curve.transform(_controller.value);
+            final angle = t * math.pi;
+            final showFront = angle <= math.pi / 2;
+            final matrix = Matrix4.identity()..setEntry(3, 2, 0.001);
             if (widget.axis == Axis.horizontal) {
-              correction.rotateY(math.pi);
+              matrix.rotateY(angle);
             } else {
-              correction.rotateX(math.pi);
+              matrix.rotateX(angle);
             }
-            face = Transform(
-              transform: correction,
-              alignment: Alignment.center,
-              child: widget.back,
-            );
-          }
 
-          return Transform(
-            transform: matrix,
-            alignment: Alignment.center,
-            child: face,
-          );
-        },
+            Widget face;
+            if (showFront) {
+              face = widget.front;
+            } else {
+              // Un-mirror the back face by pre-rotating it 180°.
+              final correction = Matrix4.identity();
+              if (widget.axis == Axis.horizontal) {
+                correction.rotateY(math.pi);
+              } else {
+                correction.rotateX(math.pi);
+              }
+              face = Transform(
+                transform: correction,
+                alignment: Alignment.center,
+                child: widget.back,
+              );
+            }
+
+            return Transform(
+              transform: matrix,
+              alignment: Alignment.center,
+              child: face,
+            );
+          },
+        ),
       ),
     );
   }

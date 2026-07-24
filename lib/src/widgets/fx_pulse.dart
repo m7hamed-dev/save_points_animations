@@ -42,46 +42,48 @@ class _FxPulseState extends State<FxPulse> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      clipBehavior: Clip.none,
-      children: [
-        Positioned.fill(
-          child: IgnorePointer(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
                 painter: _PulsePainter(
+                  repaint: _controller,
                   color: widget.color,
                   maxRadius: widget.maxRadius,
                   rings: widget.rings,
-                  t: _controller.value,
+                  controller: _controller,
                 ),
               ),
             ),
           ),
-        ),
-        widget.child,
-      ],
+          widget.child,
+        ],
+      ),
     );
   }
 }
 
 class _PulsePainter extends CustomPainter {
   _PulsePainter({
+    required Listenable repaint,
     required this.color,
     required this.maxRadius,
     required this.rings,
-    required this.t,
-  });
+    required this.controller,
+  }) : super(repaint: repaint);
 
   final Color color;
   final double maxRadius;
   final int rings;
-  final double t;
+  final Animation<double> controller;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = controller.value;
     final center = size.center(Offset.zero);
     final base = size.shortestSide / 2;
     for (var i = 0; i < rings; i++) {
@@ -95,7 +97,6 @@ class _PulsePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_PulsePainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.color != color ||
       oldDelegate.maxRadius != maxRadius ||
       oldDelegate.rings != rings;

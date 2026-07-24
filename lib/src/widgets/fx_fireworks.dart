@@ -90,22 +90,24 @@ class _FxFireworksState extends State<FxFireworks>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        Positioned.fill(
-          child: IgnorePointer(
-            child: CustomPaint(
-              painter: _FireworksPainter(
-                bursts: _bursts,
-                now: _now,
-                life: _life,
+    return RepaintBoundary(
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _FireworksPainter(
+                  bursts: _bursts,
+                  now: _now,
+                  life: _life,
+                ),
               ),
             ),
           ),
-        ),
-        if (widget.child != null) widget.child!,
-      ],
+          if (widget.child != null) widget.child!,
+        ],
+      ),
     );
   }
 }

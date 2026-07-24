@@ -56,18 +56,20 @@ class _FxRippleState extends State<FxRipple>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (details) => _addRipple(details.localPosition),
-      child: ClipRect(
-        child: CustomPaint(
-          foregroundPainter: _RipplePainter(
-            ripples: _ripples,
-            elapsed: _elapsed,
-            duration: widget.duration,
-            color: widget.color,
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (details) => _addRipple(details.localPosition),
+        child: ClipRect(
+          child: CustomPaint(
+            foregroundPainter: _RipplePainter(
+              ripples: _ripples,
+              elapsed: _elapsed,
+              duration: widget.duration,
+              color: widget.color,
+            ),
+            child: widget.child,
           ),
-          child: widget.child,
         ),
       ),
     );

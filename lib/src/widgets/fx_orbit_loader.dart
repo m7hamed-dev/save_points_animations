@@ -42,13 +42,13 @@ class _FxOrbitLoaderState extends State<FxOrbitLoader>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: CustomPaint(
           painter: _OrbitPainter(
-            t: _controller.value,
+            repaint: _controller,
+            controller: _controller,
             dotCount: widget.dotCount,
             dotRadius: widget.dotRadius,
             color: widget.color,
@@ -61,19 +61,21 @@ class _FxOrbitLoaderState extends State<FxOrbitLoader>
 
 class _OrbitPainter extends CustomPainter {
   _OrbitPainter({
-    required this.t,
+    required Listenable repaint,
+    required this.controller,
     required this.dotCount,
     required this.dotRadius,
     required this.color,
-  });
+  }) : super(repaint: repaint);
 
-  final double t;
+  final Animation<double> controller;
   final int dotCount;
   final double dotRadius;
   final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = controller.value;
     final center = size.center(Offset.zero);
     final orbit = size.shortestSide / 2 - dotRadius;
     for (var i = 0; i < dotCount; i++) {
@@ -86,7 +88,6 @@ class _OrbitPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_OrbitPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.dotCount != dotCount ||
       oldDelegate.dotRadius != dotRadius ||
       oldDelegate.color != color;

@@ -59,11 +59,12 @@ class _FxExpandableState extends State<FxExpandable>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        GestureDetector(
+    return RepaintBoundary(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: _toggle,
           child: Row(
@@ -79,12 +80,13 @@ class _FxExpandableState extends State<FxExpandable>
             ],
           ),
         ),
-        SizeTransition(
-          sizeFactor: _curved,
-          alignment: Alignment.topCenter,
-          child: widget.body,
-        ),
-      ],
+          SizeTransition(
+            sizeFactor: _curved,
+            alignment: Alignment.topCenter,
+            child: widget.body,
+          ),
+        ],
+      ),
     );
   }
 }

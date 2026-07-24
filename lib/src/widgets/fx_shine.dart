@@ -59,30 +59,32 @@ class _FxShineState extends State<FxShine> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: widget.child,
-      builder: (context, child) {
-        final w = widget.bandWidth;
-        final center = _controller.value * (1 + 2 * w) - w;
-        final s0 = (center - w).clamp(0.0, 1.0);
-        final s1 = center.clamp(0.0, 1.0);
-        final s2 = (center + w).clamp(0.0, 1.0);
-        return ShaderMask(
-          blendMode: BlendMode.srcATop,
-          shaderCallback: (bounds) => LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              widget.color.withValues(alpha: 0),
-              widget.color,
-              widget.color.withValues(alpha: 0),
-            ],
-            stops: [s0, s1, s2],
-          ).createShader(bounds),
-          child: child,
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) {
+          final w = widget.bandWidth;
+          final center = _controller.value * (1 + 2 * w) - w;
+          final s0 = (center - w).clamp(0.0, 1.0);
+          final s1 = center.clamp(0.0, 1.0);
+          final s2 = (center + w).clamp(0.0, 1.0);
+          return ShaderMask(
+            blendMode: BlendMode.srcATop,
+            shaderCallback: (bounds) => LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                widget.color.withValues(alpha: 0),
+                widget.color,
+                widget.color.withValues(alpha: 0),
+              ],
+              stops: [s0, s1, s2],
+            ).createShader(bounds),
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

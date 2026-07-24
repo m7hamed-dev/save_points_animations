@@ -50,20 +50,18 @@ class _FxGradientBorderState extends State<FxGradientBorder>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: Padding(
-        padding: EdgeInsets.all(widget.borderWidth),
-        child: widget.child,
-      ),
-      builder: (context, child) => CustomPaint(
+    return RepaintBoundary(
+      child: CustomPaint(
         painter: _GradientBorderPainter(
-          t: _controller.value,
+          animation: _controller,
           colors: widget.colors,
           borderWidth: widget.borderWidth,
           borderRadius: widget.borderRadius,
         ),
-        child: child,
+        child: Padding(
+          padding: EdgeInsets.all(widget.borderWidth),
+          child: widget.child,
+        ),
       ),
     );
   }
@@ -71,19 +69,20 @@ class _FxGradientBorderState extends State<FxGradientBorder>
 
 class _GradientBorderPainter extends CustomPainter {
   _GradientBorderPainter({
-    required this.t,
+    required this.animation,
     required this.colors,
     required this.borderWidth,
     required this.borderRadius,
-  });
+  }) : super(repaint: animation);
 
-  final double t;
+  final Animation<double> animation;
   final List<Color> colors;
   final double borderWidth;
   final double borderRadius;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = animation.value;
     final rect = Offset.zero & size;
     final shader = SweepGradient(
       colors: [...colors, colors.first],
@@ -102,7 +101,6 @@ class _GradientBorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GradientBorderPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.colors != colors ||
       oldDelegate.borderWidth != borderWidth ||
       oldDelegate.borderRadius != borderRadius;

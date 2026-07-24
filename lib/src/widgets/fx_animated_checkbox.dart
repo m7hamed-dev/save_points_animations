@@ -53,15 +53,14 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => widget.onChanged(!widget.value),
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => widget.onChanged(!widget.value),
+        child: CustomPaint(
           size: Size.square(widget.size),
           painter: _CheckboxPainter(
-            t: Curves.easeOut.transform(_controller.value),
+            animation: _controller,
             activeColor: widget.activeColor,
             borderColor: widget.borderColor,
             checkColor: widget.checkColor,
@@ -74,19 +73,20 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
 
 class _CheckboxPainter extends CustomPainter {
   _CheckboxPainter({
-    required this.t,
+    required this.animation,
     required this.activeColor,
     required this.borderColor,
     required this.checkColor,
-  });
+  }) : super(repaint: animation);
 
-  final double t;
+  final Animation<double> animation;
   final Color activeColor;
   final Color borderColor;
   final Color checkColor;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = Curves.easeOut.transform(animation.value);
     final rrect = RRect.fromRectAndRadius(
       Offset.zero & size,
       Radius.circular(size.width * 0.25),
@@ -132,7 +132,6 @@ class _CheckboxPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckboxPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.activeColor != activeColor ||
       oldDelegate.borderColor != borderColor ||
       oldDelegate.checkColor != checkColor;

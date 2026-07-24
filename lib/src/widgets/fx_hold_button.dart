@@ -64,23 +64,22 @@ class _FxHoldButtonState extends State<FxHoldButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _start(),
-      onTapUp: (_) => _cancel(),
-      onTapCancel: _cancel,
-      child: SizedBox.square(
-        dimension: widget.size,
-        child: AnimatedBuilder(
-          animation: _controller,
-          child: Center(child: widget.child),
-          builder: (context, child) => CustomPaint(
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTapDown: (_) => _start(),
+        onTapUp: (_) => _cancel(),
+        onTapCancel: _cancel,
+        child: SizedBox.square(
+          dimension: widget.size,
+          child: CustomPaint(
             painter: _HoldRingPainter(
-              progress: _controller.value,
+              repaint: _controller,
+              animation: _controller,
               color: widget.color,
               backgroundColor: widget.backgroundColor,
               strokeWidth: widget.strokeWidth,
             ),
-            child: child,
+            child: Center(child: widget.child),
           ),
         ),
       ),
@@ -90,19 +89,21 @@ class _FxHoldButtonState extends State<FxHoldButton>
 
 class _HoldRingPainter extends CustomPainter {
   _HoldRingPainter({
-    required this.progress,
+    required super.repaint,
+    required this.animation,
     required this.color,
     required this.backgroundColor,
     required this.strokeWidth,
   });
 
-  final double progress;
+  final Animation<double> animation;
   final Color color;
   final Color backgroundColor;
   final double strokeWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final progress = animation.value;
     final rect = (Offset.zero & size).deflate(strokeWidth / 2);
     canvas.drawArc(
       rect,
@@ -131,7 +132,6 @@ class _HoldRingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_HoldRingPainter oldDelegate) =>
-      oldDelegate.progress != progress ||
       oldDelegate.color != color ||
       oldDelegate.backgroundColor != backgroundColor ||
       oldDelegate.strokeWidth != strokeWidth;

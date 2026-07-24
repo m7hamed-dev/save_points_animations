@@ -55,15 +55,14 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => widget.onChanged(widget.value),
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => widget.onChanged(widget.value),
+        child: CustomPaint(
           size: Size.square(widget.size),
           painter: _RadioPainter(
-            t: Curves.easeOut.transform(_controller.value),
+            animation: _controller,
             color: widget.color,
             borderColor: widget.borderColor,
           ),
@@ -75,17 +74,18 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
 
 class _RadioPainter extends CustomPainter {
   _RadioPainter({
-    required this.t,
+    required this.animation,
     required this.color,
     required this.borderColor,
-  });
+  }) : super(repaint: animation);
 
-  final double t;
+  final Animation<double> animation;
   final Color color;
   final Color borderColor;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = Curves.easeOut.transform(animation.value);
     final center = size.center(Offset.zero);
     final r = size.shortestSide / 2 - 1;
     canvas.drawCircle(
@@ -103,7 +103,6 @@ class _RadioPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RadioPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.color != color ||
       oldDelegate.borderColor != borderColor;
 }

@@ -50,16 +50,15 @@ class _FxCircularTextState extends State<FxCircularText>
   @override
   Widget build(BuildContext context) {
     final dimension = (widget.radius + (widget.style.fontSize ?? 14)) * 2;
-    return SizedBox.square(
-      dimension: dimension,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: dimension,
+        child: CustomPaint(
           painter: _CircularTextPainter(
+            animation: _controller,
             text: widget.text,
             radius: widget.radius,
             style: widget.style,
-            rotation: _controller.value * 2 * math.pi,
           ),
         ),
       ),
@@ -69,19 +68,20 @@ class _FxCircularTextState extends State<FxCircularText>
 
 class _CircularTextPainter extends CustomPainter {
   _CircularTextPainter({
+    required this.animation,
     required this.text,
     required this.radius,
     required this.style,
-    required this.rotation,
-  });
+  }) : super(repaint: animation);
 
+  final Animation<double> animation;
   final String text;
   final double radius;
   final TextStyle style;
-  final double rotation;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final rotation = animation.value * 2 * math.pi;
     final center = size.center(Offset.zero);
     final n = text.length;
     if (n == 0) return;
@@ -104,7 +104,5 @@ class _CircularTextPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CircularTextPainter oldDelegate) =>
-      oldDelegate.rotation != rotation ||
-      oldDelegate.text != text ||
-      oldDelegate.radius != radius;
+      oldDelegate.text != text || oldDelegate.radius != radius;
 }

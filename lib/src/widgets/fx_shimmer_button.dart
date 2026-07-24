@@ -44,42 +44,44 @@ class _FxShimmerButtonState extends State<FxShimmerButton>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onPressed,
-      child: ClipRRect(
-        borderRadius: .circular(widget.borderRadius),
-        child: Stack(
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(gradient: widget.gradient),
-              child: Padding(
-                padding: widget.padding,
-                child: DefaultTextStyle.merge(
-                  style: const TextStyle(
-                    color: Color(0xFFFFFFFF),
-                    fontWeight: FontWeight.w600,
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: ClipRRect(
+          borderRadius: .circular(widget.borderRadius),
+          child: Stack(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(gradient: widget.gradient),
+                child: Padding(
+                  padding: widget.padding,
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(
+                      color: Color(0xFFFFFFFF),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    child: widget.child,
                   ),
-                  child: widget.child,
                 ),
               ),
-            ),
-            Positioned.fill(
-              child: IgnorePointer(
-                child: AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, _) => Align(
-                    alignment: Alignment(_controller.value * 3 - 1.5, 0),
-                    child: const FractionallySizedBox(
-                      widthFactor: 0.25,
-                      heightFactor: 1,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(0x00FFFFFF),
-                              Color(0x55FFFFFF),
-                              Color(0x00FFFFFF),
-                            ],
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, _) => Align(
+                      alignment: Alignment(_controller.value * 3 - 1.5, 0),
+                      child: const FractionallySizedBox(
+                        widthFactor: 0.25,
+                        heightFactor: 1,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Color(0x00FFFFFF),
+                                Color(0x55FFFFFF),
+                                Color(0x00FFFFFF),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -87,8 +89,8 @@ class _FxShimmerButtonState extends State<FxShimmerButton>
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

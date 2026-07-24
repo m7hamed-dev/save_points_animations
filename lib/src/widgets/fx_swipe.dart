@@ -92,19 +92,21 @@ class _FxSwipeToDismissState extends State<FxSwipeToDismiss>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        _width = constraints.maxWidth.isFinite ? constraints.maxWidth : 300;
-        final opacity = (1 - (_drag.abs() / _width)).clamp(0.0, 1.0);
-        return GestureDetector(
-          onHorizontalDragUpdate: _onUpdate,
-          onHorizontalDragEnd: _onEnd,
-          child: Transform.translate(
-            offset: Offset(_drag, 0),
-            child: Opacity(opacity: opacity, child: widget.child),
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          _width = constraints.maxWidth.isFinite ? constraints.maxWidth : 300;
+          final opacity = (1 - (_drag.abs() / _width)).clamp(0.0, 1.0);
+          return GestureDetector(
+            onHorizontalDragUpdate: _onUpdate,
+            onHorizontalDragEnd: _onEnd,
+            child: Transform.translate(
+              offset: Offset(_drag, 0),
+              child: Opacity(opacity: opacity, child: widget.child),
+            ),
+          );
+        },
+      ),
     );
   }
 }

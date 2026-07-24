@@ -76,18 +76,20 @@ class _FxParticlesState extends State<FxParticles>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        Positioned.fill(
-          child: IgnorePointer(
-            child: CustomPaint(
-              painter: _ParticlePainter(_particles, widget.color),
+    return RepaintBoundary(
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _ParticlePainter(_particles, widget.color),
+              ),
             ),
           ),
-        ),
-        if (widget.child != null) widget.child!,
-      ],
+          if (widget.child != null) widget.child!,
+        ],
+      ),
     );
   }
 }

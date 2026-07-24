@@ -61,15 +61,13 @@ class _FxWaveProgressState extends State<FxWaveProgress>
         fit: StackFit.expand,
         children: [
           ColoredBox(color: widget.backgroundColor),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) => CustomPaint(
-              painter: _WavePainter(
-                value: widget.value.clamp(0.0, 1.0),
-                phase: _controller.value * 2 * math.pi,
-                color: widget.color,
-                waveHeight: widget.waveHeight,
-              ),
+          CustomPaint(
+            painter: _WavePainter(
+              repaint: _controller,
+              value: widget.value.clamp(0.0, 1.0),
+              controller: _controller,
+              color: widget.color,
+              waveHeight: widget.waveHeight,
             ),
           ),
           if (widget.child != null) Center(child: widget.child),
@@ -77,27 +75,31 @@ class _FxWaveProgressState extends State<FxWaveProgress>
       ),
     );
 
-    return widget.shape == BoxShape.circle
-        ? ClipOval(child: box)
-        : ClipRRect(borderRadius: .circular(widget.borderRadius), child: box);
+    return RepaintBoundary(
+      child: widget.shape == BoxShape.circle
+          ? ClipOval(child: box)
+          : ClipRRect(borderRadius: .circular(widget.borderRadius), child: box),
+    );
   }
 }
 
 class _WavePainter extends CustomPainter {
   _WavePainter({
+    required Listenable repaint,
     required this.value,
-    required this.phase,
+    required this.controller,
     required this.color,
     required this.waveHeight,
-  });
+  }) : super(repaint: repaint);
 
   final double value;
-  final double phase;
+  final Animation<double> controller;
   final Color color;
   final double waveHeight;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final phase = controller.value * 2 * math.pi;
     final level = (1 - value) * size.height;
     final path = Path()
       ..moveTo(0, size.height)
@@ -116,7 +118,6 @@ class _WavePainter extends CustomPainter {
   @override
   bool shouldRepaint(_WavePainter oldDelegate) =>
       oldDelegate.value != value ||
-      oldDelegate.phase != phase ||
       oldDelegate.color != color ||
       oldDelegate.waveHeight != waveHeight;
 }

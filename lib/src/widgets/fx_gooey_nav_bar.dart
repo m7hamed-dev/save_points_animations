@@ -64,64 +64,66 @@ class _FxGooeyNavBarState extends State<FxGooeyNavBar>
   @override
   Widget build(BuildContext context) {
     final n = widget.items.length;
-    return SizedBox(
-      height: widget.height,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final itemWidth = constraints.maxWidth / n;
-          const blob = 46.0;
-          return AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              final t = Curves.easeInOut.transform(_controller.value);
-              final oldX = (_previous + 0.5) * itemWidth;
-              final newX = (widget.currentIndex + 0.5) * itemWidth;
-              final x = oldX + (newX - oldX) * t;
-              // Bulge horizontally at the midpoint of travel.
-              final travel = (newX - oldX).abs() / itemWidth;
-              final stretch = 1 + math.sin(t * math.pi) * travel * 0.6;
-              final w = blob * stretch;
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(
-                    left: x - w / 2,
-                    top: (widget.height - blob) / 2,
-                    child: Container(
-                      width: w,
-                      height: blob,
-                      decoration: BoxDecoration(
-                        color: widget.color,
-                        borderRadius: .circular(blob / 2),
+    return RepaintBoundary(
+      child: SizedBox(
+        height: widget.height,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final itemWidth = constraints.maxWidth / n;
+            const blob = 46.0;
+            return AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final t = Curves.easeInOut.transform(_controller.value);
+                final oldX = (_previous + 0.5) * itemWidth;
+                final newX = (widget.currentIndex + 0.5) * itemWidth;
+                final x = oldX + (newX - oldX) * t;
+                // Bulge horizontally at the midpoint of travel.
+                final travel = (newX - oldX).abs() / itemWidth;
+                final stretch = 1 + math.sin(t * math.pi) * travel * 0.6;
+                final w = blob * stretch;
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned(
+                      left: x - w / 2,
+                      top: (widget.height - blob) / 2,
+                      child: Container(
+                        width: w,
+                        height: blob,
+                        decoration: BoxDecoration(
+                          color: widget.color,
+                          borderRadius: .circular(blob / 2),
+                        ),
                       ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      for (var i = 0; i < n; i++)
-                        Expanded(
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => widget.onTap(i),
-                            child: Center(
-                              child: IconTheme.merge(
-                                data: IconThemeData(
-                                  color: i == widget.currentIndex
-                                      ? widget.selectedIconColor
-                                      : widget.iconColor,
+                    Row(
+                      children: [
+                        for (var i = 0; i < n; i++)
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () => widget.onTap(i),
+                              child: Center(
+                                child: IconTheme.merge(
+                                  data: IconThemeData(
+                                    color: i == widget.currentIndex
+                                        ? widget.selectedIconColor
+                                        : widget.iconColor,
+                                  ),
+                                  child: widget.items[i].icon,
                                 ),
-                                child: widget.items[i].icon,
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
-                ],
-              );
-            },
-          );
-        },
+                      ],
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

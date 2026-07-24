@@ -59,26 +59,26 @@ class _FxPieChartState extends State<FxPieChart>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
                 painter: _PiePainter(
+                  repaint: _controller,
+                  animation: _controller,
                   values: widget.values,
                   colors: widget.colors,
                   strokeWidth: widget.strokeWidth,
-                  progress: Curves.easeOutCubic.transform(_controller.value),
                 ),
               ),
             ),
-          ),
-          ?widget.child,
-        ],
+            ?widget.child,
+          ],
+        ),
       ),
     );
   }
@@ -86,21 +86,23 @@ class _FxPieChartState extends State<FxPieChart>
 
 class _PiePainter extends CustomPainter {
   _PiePainter({
+    required super.repaint,
+    required this.animation,
     required this.values,
     required this.colors,
     required this.strokeWidth,
-    required this.progress,
   });
 
+  final Animation<double> animation;
   final List<double> values;
   final List<Color> colors;
   final double strokeWidth;
-  final double progress;
 
   @override
   void paint(Canvas canvas, Size size) {
     final total = values.fold<double>(0, (a, b) => a + b);
     if (total <= 0) return;
+    final progress = Curves.easeOutCubic.transform(animation.value);
     final rect = (Offset.zero & size).deflate(strokeWidth / 2);
     final revealed = 2 * math.pi * progress;
     var start = -math.pi / 2;
@@ -127,7 +129,7 @@ class _PiePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_PiePainter oldDelegate) =>
-      oldDelegate.progress != progress ||
       oldDelegate.values != values ||
-      oldDelegate.colors != colors;
+      oldDelegate.colors != colors ||
+      oldDelegate.strokeWidth != strokeWidth;
 }

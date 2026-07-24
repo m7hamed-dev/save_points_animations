@@ -82,16 +82,20 @@ class _FxBubblesState extends State<FxBubbles>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        Positioned.fill(
-          child: IgnorePointer(
-            child: CustomPaint(painter: _BubblePainter(_bubbles, widget.color)),
+    return RepaintBoundary(
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _BubblePainter(_bubbles, widget.color),
+              ),
+            ),
           ),
-        ),
-        if (widget.child != null) widget.child!,
-      ],
+          if (widget.child != null) widget.child!,
+        ],
+      ),
     );
   }
 }

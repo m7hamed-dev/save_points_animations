@@ -63,21 +63,25 @@ class _FxCountdownState extends State<FxCountdown>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final remaining = _remaining;
-        if (widget.builder != null) return widget.builder!(context, remaining);
-        final seconds = remaining.inSeconds;
-        return FxSwitcher(
-          effect: FxSwitcherEffect.slideUp,
-          child: Text(
-            '$seconds',
-            key: ValueKey<int>(seconds),
-            style: widget.style,
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final remaining = _remaining;
+          if (widget.builder != null) {
+            return widget.builder!(context, remaining);
+          }
+          final seconds = remaining.inSeconds;
+          return FxSwitcher(
+            effect: FxSwitcherEffect.slideUp,
+            child: Text(
+              '$seconds',
+              key: ValueKey<int>(seconds),
+              style: widget.style,
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -67,9 +67,10 @@ class _FxGlassCardState extends State<FxGlassCard>
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(widget.borderRadius);
-    return ClipRRect(
-      borderRadius: radius,
-      child: BackdropFilter(
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: radius,
+        child: BackdropFilter(
         filter: ui.ImageFilter.blur(sigmaX: widget.blur, sigmaY: widget.blur),
         child: DecoratedBox(
           decoration: BoxDecoration(
@@ -112,6 +113,7 @@ class _FxGlassCardState extends State<FxGlassCard>
               Padding(padding: widget.padding, child: widget.child),
             ],
           ),
+        ),
         ),
       ),
     );

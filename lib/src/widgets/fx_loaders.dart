@@ -36,30 +36,32 @@ class _FxDotsLoaderState extends State<FxDotsLoader>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var i = 0; i < widget.count; i++)
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: widget.size * 0.25),
-                child: Transform.translate(
-                  offset: Offset(0, -_bounce(i) * widget.size),
-                  child: Container(
-                    width: widget.size,
-                    height: widget.size,
-                    decoration: BoxDecoration(
-                      color: widget.color,
-                      shape: BoxShape.circle,
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < widget.count; i++)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: widget.size * 0.25),
+                  child: Transform.translate(
+                    offset: Offset(0, -_bounce(i) * widget.size),
+                    child: Container(
+                      width: widget.size,
+                      height: widget.size,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -105,32 +107,34 @@ class _FxBarsLoaderState extends State<FxBarsLoader>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        return SizedBox(
-          height: widget.height,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < widget.count; i++)
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: widget.barWidth * 0.3,
-                  ),
-                  child: Container(
-                    width: widget.barWidth,
-                    height: widget.height * _scale(i),
-                    decoration: BoxDecoration(
-                      color: widget.color,
-                      borderRadius: .circular(widget.barWidth / 2),
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return SizedBox(
+            height: widget.height,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < widget.count; i++)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: widget.barWidth * 0.3,
+                    ),
+                    child: Container(
+                      width: widget.barWidth,
+                      height: widget.height * _scale(i),
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        borderRadius: .circular(widget.barWidth / 2),
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -178,16 +182,16 @@ class _FxProgressRingState extends State<FxProgressRing>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: CustomPaint(
           painter: _RingPainter(
+            repaint: _controller,
             color: widget.color,
             strokeWidth: widget.strokeWidth,
-            startAngle: _controller.value * 2 * math.pi,
+            controller: _controller,
             sweep: widget.sweep * 2 * math.pi,
           ),
         ),
@@ -198,19 +202,21 @@ class _FxProgressRingState extends State<FxProgressRing>
 
 class _RingPainter extends CustomPainter {
   _RingPainter({
+    required Listenable repaint,
     required this.color,
     required this.strokeWidth,
-    required this.startAngle,
+    required this.controller,
     required this.sweep,
-  });
+  }) : super(repaint: repaint);
 
   final Color color;
   final double strokeWidth;
-  final double startAngle;
+  final Animation<double> controller;
   final double sweep;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final startAngle = controller.value * 2 * math.pi;
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -228,7 +234,7 @@ class _RingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RingPainter oldDelegate) =>
-      oldDelegate.startAngle != startAngle ||
       oldDelegate.color != color ||
+      oldDelegate.strokeWidth != strokeWidth ||
       oldDelegate.sweep != sweep;
 }

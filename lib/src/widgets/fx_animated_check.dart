@@ -57,13 +57,12 @@ class _FxAnimatedCheckState extends State<FxAnimatedCheck>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: CustomPaint(
           painter: _CheckPainter(
-            progress: Curves.easeOut.transform(_controller.value),
+            animation: _controller,
             color: widget.color,
             strokeWidth: widget.strokeWidth,
           ),
@@ -75,17 +74,18 @@ class _FxAnimatedCheckState extends State<FxAnimatedCheck>
 
 class _CheckPainter extends CustomPainter {
   _CheckPainter({
-    required this.progress,
+    required this.animation,
     required this.color,
     required this.strokeWidth,
-  });
+  }) : super(repaint: animation);
 
-  final double progress;
+  final Animation<double> animation;
   final Color color;
   final double strokeWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final progress = Curves.easeOut.transform(animation.value);
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -128,7 +128,6 @@ class _CheckPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckPainter oldDelegate) =>
-      oldDelegate.progress != progress ||
       oldDelegate.color != color ||
       oldDelegate.strokeWidth != strokeWidth;
 }

@@ -57,15 +57,15 @@ class _FxSparklineState extends State<FxSparkline>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height,
-      width: double.infinity,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox(
+        height: widget.height,
+        width: double.infinity,
+        child: CustomPaint(
           painter: _SparkPainter(
+            repaint: _controller,
+            animation: _controller,
             values: widget.values,
-            progress: Curves.easeOut.transform(_controller.value),
             color: widget.color,
             strokeWidth: widget.strokeWidth,
             fill: widget.fill,
@@ -78,15 +78,16 @@ class _FxSparklineState extends State<FxSparkline>
 
 class _SparkPainter extends CustomPainter {
   _SparkPainter({
+    required super.repaint,
+    required this.animation,
     required this.values,
-    required this.progress,
     required this.color,
     required this.strokeWidth,
     required this.fill,
   });
 
+  final Animation<double> animation;
   final List<double> values;
-  final double progress;
   final Color color;
   final double strokeWidth;
   final bool fill;
@@ -94,6 +95,7 @@ class _SparkPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (values.length < 2) return;
+    final progress = Curves.easeOut.transform(animation.value);
     final minV = values.reduce(math.min);
     final maxV = values.reduce(math.max);
     final range = (maxV - minV) == 0 ? 1.0 : (maxV - minV);
@@ -143,7 +145,8 @@ class _SparkPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SparkPainter oldDelegate) =>
-      oldDelegate.progress != progress ||
       oldDelegate.values != values ||
-      oldDelegate.color != color;
+      oldDelegate.color != color ||
+      oldDelegate.strokeWidth != strokeWidth ||
+      oldDelegate.fill != fill;
 }

@@ -44,26 +44,25 @@ class _FxRadarState extends State<FxRadar> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
                 painter: _RadarPainter(
+                  repaint: _controller,
                   color: widget.color,
                   rings: widget.rings,
-                  angle: _controller.value * 2 * math.pi,
                 ),
               ),
             ),
-          ),
-          if (widget.child != null) widget.child!,
-        ],
+            if (widget.child != null) widget.child!,
+          ],
+        ),
       ),
     );
   }
@@ -71,17 +70,19 @@ class _FxRadarState extends State<FxRadar> with SingleTickerProviderStateMixin {
 
 class _RadarPainter extends CustomPainter {
   _RadarPainter({
+    required Animation<double> repaint,
     required this.color,
     required this.rings,
-    required this.angle,
-  });
+  }) : _animation = repaint,
+       super(repaint: repaint);
 
+  final Animation<double> _animation;
   final Color color;
   final int rings;
-  final double angle;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final angle = _animation.value * 2 * math.pi;
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2;
 
@@ -130,7 +131,5 @@ class _RadarPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RadarPainter oldDelegate) =>
-      oldDelegate.angle != angle ||
-      oldDelegate.color != color ||
-      oldDelegate.rings != rings;
+      oldDelegate.color != color || oldDelegate.rings != rings;
 }

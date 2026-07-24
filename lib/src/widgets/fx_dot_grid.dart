@@ -43,43 +43,44 @@ class _FxDotGridState extends State<FxDotGrid>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        Positioned.fill(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: Stack(
+        fit: StackFit.passthrough,
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
               painter: _DotGridPainter(
+                repaint: _controller,
                 spacing: widget.spacing,
                 dotRadius: widget.dotRadius,
                 color: widget.color,
-                phase: _controller.value * 2 * math.pi,
               ),
             ),
           ),
-        ),
-        if (widget.child != null) widget.child!,
-      ],
+          if (widget.child != null) widget.child!,
+        ],
+      ),
     );
   }
 }
 
 class _DotGridPainter extends CustomPainter {
   _DotGridPainter({
+    required Animation<double> repaint,
     required this.spacing,
     required this.dotRadius,
     required this.color,
-    required this.phase,
-  });
+  }) : _animation = repaint,
+       super(repaint: repaint);
 
+  final Animation<double> _animation;
   final double spacing;
   final double dotRadius;
   final Color color;
-  final double phase;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final phase = _animation.value * 2 * math.pi;
     for (var y = spacing / 2; y < size.height; y += spacing) {
       for (var x = spacing / 2; x < size.width; x += spacing) {
         final wave =
@@ -97,7 +98,6 @@ class _DotGridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_DotGridPainter oldDelegate) =>
-      oldDelegate.phase != phase ||
       oldDelegate.color != color ||
       oldDelegate.spacing != spacing ||
       oldDelegate.dotRadius != dotRadius;

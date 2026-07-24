@@ -46,9 +46,10 @@ class _FxBlobState extends State<FxBlob> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: AnimatedBuilder(
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: AnimatedBuilder(
         animation: _controller,
         child: widget.child,
         builder: (context, child) {
@@ -64,6 +65,7 @@ class _FxBlobState extends State<FxBlob> with SingleTickerProviderStateMixin {
             ),
           );
         },
+        ),
       ),
     );
   }

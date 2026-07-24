@@ -69,35 +69,37 @@ class _FxProgressBarState extends State<FxProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: .circular(widget.radius),
-      child: SizedBox(
-        height: widget.height,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            ColoredBox(color: widget.backgroundColor),
-            if (widget.value != null)
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(end: widget.value!.clamp(0.0, 1.0)),
-                duration: widget.duration,
-                curve: Curves.easeOutCubic,
-                builder: (context, v, child) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: FractionallySizedBox(widthFactor: v, child: child),
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: .circular(widget.radius),
+        child: SizedBox(
+          height: widget.height,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ColoredBox(color: widget.backgroundColor),
+              if (widget.value != null)
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(end: widget.value!.clamp(0.0, 1.0)),
+                  duration: widget.duration,
+                  curve: Curves.easeOutCubic,
+                  builder: (context, v, child) => Align(
+                    alignment: Alignment.centerLeft,
+                    child: FractionallySizedBox(widthFactor: v, child: child),
+                  ),
+                  child: _fill(),
+                )
+              else
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) => Align(
+                    alignment: Alignment(_controller.value * 2 - 1, 0),
+                    child: FractionallySizedBox(widthFactor: 0.3, child: child),
+                  ),
+                  child: _fill(),
                 ),
-                child: _fill(),
-              )
-            else
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) => Align(
-                  alignment: Alignment(_controller.value * 2 - 1, 0),
-                  child: FractionallySizedBox(widthFactor: 0.3, child: child),
-                ),
-                child: _fill(),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

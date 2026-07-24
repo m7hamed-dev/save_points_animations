@@ -95,23 +95,25 @@ class _FxSpinWheelState extends State<FxSpinWheel>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final t = Curves.easeOutCubic.transform(_controller.value);
-          final rotation = _from + (_to - _from) * t;
-          if (_controller.isAnimating) _rotation = rotation;
-          return CustomPaint(
-            painter: _WheelPainter(
-              items: widget.items,
-              colors: widget.colors,
-              rotation: rotation,
-              textStyle: widget.textStyle,
-            ),
-          );
-        },
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final t = Curves.easeOutCubic.transform(_controller.value);
+            final rotation = _from + (_to - _from) * t;
+            if (_controller.isAnimating) _rotation = rotation;
+            return CustomPaint(
+              painter: _WheelPainter(
+                items: widget.items,
+                colors: widget.colors,
+                rotation: rotation,
+                textStyle: widget.textStyle,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

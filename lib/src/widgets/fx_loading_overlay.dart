@@ -31,32 +31,34 @@ class FxLoadingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: !visible,
-      child: AnimatedOpacity(
-        opacity: visible ? 1 : 0,
-        duration: duration,
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            color: barrierColor,
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _Spinner(color: spinnerColor),
-                if (message != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    message!,
-                    style: TextStyle(
-                      color: spinnerColor,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+    return RepaintBoundary(
+      child: IgnorePointer(
+        ignoring: !visible,
+        child: AnimatedOpacity(
+          opacity: visible ? 1 : 0,
+          duration: duration,
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+            child: Container(
+              color: barrierColor,
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _Spinner(color: spinnerColor),
+                  if (message != null) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      message!,
+                      style: TextStyle(
+                        color: spinnerColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

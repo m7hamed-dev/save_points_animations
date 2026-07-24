@@ -45,17 +45,17 @@ class _FxWaveDividerState extends State<FxWaveDivider>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height,
-      width: double.infinity,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: SizedBox(
+        height: widget.height,
+        width: double.infinity,
+        child: CustomPaint(
           painter: _WaveDividerPainter(
+            repaint: _controller,
             color: widget.color,
             waveHeight: widget.waveHeight,
             waveCount: widget.waveCount,
-            phase: _controller.value * 2 * math.pi,
+            controller: _controller,
           ),
         ),
       ),
@@ -65,19 +65,21 @@ class _FxWaveDividerState extends State<FxWaveDivider>
 
 class _WaveDividerPainter extends CustomPainter {
   _WaveDividerPainter({
+    required Listenable repaint,
     required this.color,
     required this.waveHeight,
     required this.waveCount,
-    required this.phase,
-  });
+    required this.controller,
+  }) : super(repaint: repaint);
 
   final Color color;
   final double waveHeight;
   final double waveCount;
-  final double phase;
+  final Animation<double> controller;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final phase = controller.value * 2 * math.pi;
     final path = Path()..moveTo(0, size.height);
     path.lineTo(0, waveHeight);
     for (var x = 0.0; x <= size.width; x += 2) {
@@ -95,7 +97,6 @@ class _WaveDividerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_WaveDividerPainter oldDelegate) =>
-      oldDelegate.phase != phase ||
       oldDelegate.color != color ||
       oldDelegate.waveHeight != waveHeight ||
       oldDelegate.waveCount != waveCount;

@@ -56,34 +56,36 @@ class _FxRatingState extends State<FxRating>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < widget.count; i++)
-          GestureDetector(
-            onTap: () => _select(i),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: widget.spacing),
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  final scale = i == _popped
-                      ? 1 + math.sin(_controller.value * math.pi) * 0.4
-                      : 1.0;
-                  return Transform.scale(scale: scale, child: child);
-                },
-                child: CustomPaint(
-                  size: Size.square(widget.size),
-                  painter: _StarPainter(
-                    filled: i < widget.value,
-                    color: widget.color,
-                    emptyColor: widget.emptyColor,
+    return RepaintBoundary(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < widget.count; i++)
+            GestureDetector(
+              onTap: () => _select(i),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: widget.spacing),
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    final scale = i == _popped
+                        ? 1 + math.sin(_controller.value * math.pi) * 0.4
+                        : 1.0;
+                    return Transform.scale(scale: scale, child: child);
+                  },
+                  child: CustomPaint(
+                    size: Size.square(widget.size),
+                    painter: _StarPainter(
+                      filled: i < widget.value,
+                      color: widget.color,
+                      emptyColor: widget.emptyColor,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

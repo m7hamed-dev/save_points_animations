@@ -62,26 +62,28 @@ class _FxBadgeState extends State<FxBadge> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final a = widget.alignment;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        widget.child,
-        if (_visible)
-          Positioned(
-            top: a.y < 0 ? -6 : null,
-            bottom: a.y > 0 ? -6 : null,
-            left: a.x < 0 ? -6 : null,
-            right: a.x > 0 ? -6 : null,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) => Transform.scale(
-                scale: 1 + math.sin(_controller.value * math.pi) * 0.35,
-                child: child,
+    return RepaintBoundary(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          widget.child,
+          if (_visible)
+            Positioned(
+              top: a.y < 0 ? -6 : null,
+              bottom: a.y > 0 ? -6 : null,
+              left: a.x < 0 ? -6 : null,
+              right: a.x > 0 ? -6 : null,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) => Transform.scale(
+                  scale: 1 + math.sin(_controller.value * math.pi) * 0.35,
+                  child: child,
+                ),
+                child: _badge(),
               ),
-              child: _badge(),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -66,30 +66,32 @@ class _FxCircularCountdownState extends State<FxCircularCountdown>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: widget.size,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final remaining = _remaining;
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: _RingPainter(
-                    fraction: 1 - _controller.value,
-                    color: widget.color,
-                    backgroundColor: widget.backgroundColor,
-                    strokeWidth: widget.strokeWidth,
+    return RepaintBoundary(
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final remaining = _remaining;
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: _RingPainter(
+                      fraction: 1 - _controller.value,
+                      color: widget.color,
+                      backgroundColor: widget.backgroundColor,
+                      strokeWidth: widget.strokeWidth,
+                    ),
                   ),
                 ),
-              ),
-              widget.builder?.call(context, remaining) ??
-                  Text('${remaining.inSeconds}', style: widget.textStyle),
-            ],
-          );
-        },
+                widget.builder?.call(context, remaining) ??
+                    Text('${remaining.inSeconds}', style: widget.textStyle),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

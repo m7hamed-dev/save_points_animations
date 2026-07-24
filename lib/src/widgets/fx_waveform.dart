@@ -61,16 +61,18 @@ class _FxWaveformState extends State<FxWaveform>
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: widget.height,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < widget.barCount; i++) ...[
-            if (i > 0) SizedBox(width: widget.spacing),
-            _bar(i),
+    return RepaintBoundary(
+      child: SizedBox(
+        height: widget.height,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < widget.barCount; i++) ...[
+              if (i > 0) SizedBox(width: widget.spacing),
+              _bar(i),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

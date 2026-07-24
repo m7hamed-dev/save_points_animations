@@ -35,7 +35,7 @@ class _FxMarqueeState extends State<FxMarquee>
   final GlobalKey _key = GlobalKey();
   late final Ticker _ticker = createTicker(_onTick);
   Duration _last = Duration.zero;
-  double _offset = 0;
+  final ValueNotifier<double> _offset = ValueNotifier<double>(0);
   double _childWidth = 0;
 
   @override
@@ -56,12 +56,13 @@ class _FxMarqueeState extends State<FxMarquee>
     _last = elapsed;
     final span = _childWidth + widget.gap;
     if (span <= 0) return;
-    setState(() => _offset = (_offset + widget.velocity * dt) % span);
+    _offset.value = (_offset.value + widget.velocity * dt) % span;
   }
 
   @override
   void dispose() {
     _ticker.dispose();
+    _offset.dispose();
     super.dispose();
   }
 
@@ -72,18 +73,24 @@ class _FxMarqueeState extends State<FxMarquee>
     // wider-than-viewport content lays out without overflowing and is clipped
     // to the box. The transform drives the scroll; the viewport itself is
     // static (NeverScrollableScrollPhysics).
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Transform.translate(
-        offset: Offset(-_offset, 0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            KeyedSubtree(key: _key, child: widget.child),
-            SizedBox(width: widget.gap),
-            widget.child,
-          ],
+    return RepaintBoundary(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        // The row is built once and passed as the static `child`; only the
+        // Transform.translate offset updates per frame.
+        child: ValueListenableBuilder<double>(
+          valueListenable: _offset,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KeyedSubtree(key: _key, child: widget.child),
+              SizedBox(width: widget.gap),
+              widget.child,
+            ],
+          ),
+          builder: (context, offset, child) =>
+              Transform.translate(offset: Offset(-offset, 0), child: child),
         ),
       ),
     );

@@ -95,39 +95,41 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        _width = constraints.maxWidth.isFinite ? constraints.maxWidth : 300;
-        final children = <Widget>[];
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          _width = constraints.maxWidth.isFinite ? constraints.maxWidth : 300;
+          final children = <Widget>[];
 
-        if (_top + 1 < widget.cards.length) {
-          final t = (_drag.dx.abs() / _width).clamp(0.0, 1.0);
-          children.add(
-            Transform.scale(
-              scale: 0.92 + 0.08 * t,
-              child: widget.cards[_top + 1],
-            ),
-          );
-        }
+          if (_top + 1 < widget.cards.length) {
+            final t = (_drag.dx.abs() / _width).clamp(0.0, 1.0);
+            children.add(
+              Transform.scale(
+                scale: 0.92 + 0.08 * t,
+                child: widget.cards[_top + 1],
+              ),
+            );
+          }
 
-        if (_top < widget.cards.length) {
-          children.add(
-            Transform.translate(
-              offset: _drag,
-              child: Transform.rotate(
-                angle: _drag.dx / _width * 0.3,
-                child: GestureDetector(
-                  onPanUpdate: _update,
-                  onPanEnd: _end,
-                  child: widget.cards[_top],
+          if (_top < widget.cards.length) {
+            children.add(
+              Transform.translate(
+                offset: _drag,
+                child: Transform.rotate(
+                  angle: _drag.dx / _width * 0.3,
+                  child: GestureDetector(
+                    onPanUpdate: _update,
+                    onPanEnd: _end,
+                    child: widget.cards[_top],
+                  ),
                 ),
               ),
-            ),
-          );
-        }
+            );
+          }
 
-        return Stack(alignment: Alignment.center, children: children);
-      },
+          return Stack(alignment: Alignment.center, children: children);
+        },
+      ),
     );
   }
 }

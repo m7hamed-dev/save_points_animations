@@ -60,25 +60,29 @@ class _FxPinDotsState extends State<FxPinDots> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([_pop, _shake]),
-      builder: (context, _) {
-        final shakeX =
-            math.sin(_shake.value * math.pi * 4) * 8 * (1 - _shake.value);
-        return Transform.translate(
-          offset: Offset(shakeX, 0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < widget.length; i++)
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: widget.spacing / 2),
-                  child: _dot(i),
-                ),
-            ],
-          ),
-        );
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: Listenable.merge([_pop, _shake]),
+        builder: (context, _) {
+          final shakeX =
+              math.sin(_shake.value * math.pi * 4) * 8 * (1 - _shake.value);
+          return Transform.translate(
+            offset: Offset(shakeX, 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < widget.length; i++)
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: widget.spacing / 2,
+                    ),
+                    child: _dot(i),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 

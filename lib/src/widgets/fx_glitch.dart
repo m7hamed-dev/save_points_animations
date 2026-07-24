@@ -61,41 +61,43 @@ class _FxGlitchState extends State<FxGlitch>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: widget.child,
-      builder: (context, child) {
-        final b = _burst(_controller.value);
-        final dx = math.sin(_controller.value * 80) * widget.intensity * b;
-        final dy = b * widget.intensity * 0.4;
-        return Stack(
-          children: [
-            child!,
-            if (b > 0.01) ...[
-              Opacity(
-                opacity: 0.7,
-                child: Transform.translate(
-                  offset: Offset(-dx, 0),
-                  child: ColorFiltered(
-                    colorFilter: const ColorFilter.matrix(_redMatrix),
-                    child: child,
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) {
+          final b = _burst(_controller.value);
+          final dx = math.sin(_controller.value * 80) * widget.intensity * b;
+          final dy = b * widget.intensity * 0.4;
+          return Stack(
+            children: [
+              child!,
+              if (b > 0.01) ...[
+                Opacity(
+                  opacity: 0.7,
+                  child: Transform.translate(
+                    offset: Offset(-dx, 0),
+                    child: ColorFiltered(
+                      colorFilter: const ColorFilter.matrix(_redMatrix),
+                      child: child,
+                    ),
                   ),
                 ),
-              ),
-              Opacity(
-                opacity: 0.7,
-                child: Transform.translate(
-                  offset: Offset(dx, dy),
-                  child: ColorFiltered(
-                    colorFilter: const ColorFilter.matrix(_cyanMatrix),
-                    child: child,
+                Opacity(
+                  opacity: 0.7,
+                  child: Transform.translate(
+                    offset: Offset(dx, dy),
+                    child: ColorFiltered(
+                      colorFilter: const ColorFilter.matrix(_cyanMatrix),
+                      child: child,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

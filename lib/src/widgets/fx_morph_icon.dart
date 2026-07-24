@@ -54,15 +54,14 @@ class _FxMorphIconState extends State<FxMorphIcon>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) => CustomPaint(
+    return RepaintBoundary(
+      child: GestureDetector(
+        onTap: widget.onTap,
+        behavior: HitTestBehavior.opaque,
+        child: CustomPaint(
           size: Size.square(widget.size),
           painter: _MorphIconPainter(
-            t: Curves.easeInOut.transform(_controller.value),
+            animation: _controller,
             color: widget.color,
             strokeWidth: widget.strokeWidth,
           ),
@@ -74,19 +73,19 @@ class _FxMorphIconState extends State<FxMorphIcon>
 
 class _MorphIconPainter extends CustomPainter {
   _MorphIconPainter({
-    required this.t,
+    required this.animation,
     required this.color,
     required this.strokeWidth,
-  });
+  }) : super(repaint: animation);
 
-  final double t;
+  final Animation<double> animation;
   final Color color;
   final double strokeWidth;
 
-  double _lerp(double a, double b) => a + (b - a) * t;
-
   @override
   void paint(Canvas canvas, Size size) {
+    final t = Curves.easeInOut.transform(animation.value);
+    double lerp(double a, double b) => a + (b - a) * t;
     final w = size.width;
     final h = size.height;
     final cx = w / 2;
@@ -100,16 +99,16 @@ class _MorphIconPainter extends CustomPainter {
     // Top bar -> one diagonal of the X.
     canvas
       ..save()
-      ..translate(cx, _lerp(h * 0.28, cy))
-      ..rotate(_lerp(0, math.pi / 4))
+      ..translate(cx, lerp(h * 0.28, cy))
+      ..rotate(lerp(0, math.pi / 4))
       ..drawLine(Offset(-half, 0), Offset(half, 0), paint)
       ..restore();
 
     // Bottom bar -> other diagonal.
     canvas
       ..save()
-      ..translate(cx, _lerp(h * 0.72, cy))
-      ..rotate(_lerp(0, -math.pi / 4))
+      ..translate(cx, lerp(h * 0.72, cy))
+      ..rotate(lerp(0, -math.pi / 4))
       ..drawLine(Offset(-half, 0), Offset(half, 0), paint)
       ..restore();
 
@@ -126,7 +125,6 @@ class _MorphIconPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_MorphIconPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.color != color ||
       oldDelegate.strokeWidth != strokeWidth;
 }

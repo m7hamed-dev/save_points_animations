@@ -92,56 +92,58 @@ class _FxSlideToConfirmState extends State<FxSlideToConfirm>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final thumb = widget.height - 8;
-        _max = constraints.maxWidth - thumb - 8;
-        final progress = _max <= 0 ? 0.0 : (_x / _max).clamp(0.0, 1.0);
-        return Container(
-          height: widget.height,
-          decoration: BoxDecoration(
-            color: widget.trackColor,
-            borderRadius: .circular(widget.borderRadius),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Opacity(
-                opacity: 1 - progress,
-                child: DefaultTextStyle.merge(
-                  style: TextStyle(
-                    color: widget.textColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  child: widget.label,
-                ),
-              ),
-              Positioned(
-                left: 4 + _x,
-                top: 4,
-                child: GestureDetector(
-                  onHorizontalDragUpdate: _update,
-                  onHorizontalDragEnd: _end,
-                  child: Container(
-                    width: thumb,
-                    height: thumb,
-                    decoration: BoxDecoration(
-                      color: widget.thumbColor,
-                      shape: BoxShape.circle,
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final thumb = widget.height - 8;
+          _max = constraints.maxWidth - thumb - 8;
+          final progress = _max <= 0 ? 0.0 : (_x / _max).clamp(0.0, 1.0);
+          return Container(
+            height: widget.height,
+            decoration: BoxDecoration(
+              color: widget.trackColor,
+              borderRadius: .circular(widget.borderRadius),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Opacity(
+                  opacity: 1 - progress,
+                  child: DefaultTextStyle.merge(
+                    style: TextStyle(
+                      color: widget.textColor,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: CustomPaint(
-                      painter: _ThumbPainter(
-                        confirmed: _confirmed,
-                        color: widget.trackColor,
+                    child: widget.label,
+                  ),
+                ),
+                Positioned(
+                  left: 4 + _x,
+                  top: 4,
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: _update,
+                    onHorizontalDragEnd: _end,
+                    child: Container(
+                      width: thumb,
+                      height: thumb,
+                      decoration: BoxDecoration(
+                        color: widget.thumbColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: CustomPaint(
+                        painter: _ThumbPainter(
+                          confirmed: _confirmed,
+                          color: widget.trackColor,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

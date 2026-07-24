@@ -60,24 +60,26 @@ class _FxKenBurnsState extends State<FxKenBurns>
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: AnimatedBuilder(
-        animation: _controller,
-        child: widget.child,
-        builder: (context, child) {
-          final t = widget.curve.transform(_controller.value);
-          final scale = 1 + (widget.maxScale - 1) * t;
-          return Transform.scale(
-            scale: scale,
-            child: FractionalTranslation(
-              translation: Offset(
-                widget.panX * (t * 2 - 1),
-                widget.panY * (t * 2 - 1),
+    return RepaintBoundary(
+      child: ClipRect(
+        child: AnimatedBuilder(
+          animation: _controller,
+          child: widget.child,
+          builder: (context, child) {
+            final t = widget.curve.transform(_controller.value);
+            final scale = 1 + (widget.maxScale - 1) * t;
+            return Transform.scale(
+              scale: scale,
+              child: FractionalTranslation(
+                translation: Offset(
+                  widget.panX * (t * 2 - 1),
+                  widget.panY * (t * 2 - 1),
+                ),
+                child: child,
               ),
-              child: child,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

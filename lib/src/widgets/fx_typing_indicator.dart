@@ -59,18 +59,20 @@ class _FxTypingIndicatorState extends State<FxTypingIndicator>
       ),
     );
 
-    if (!widget.showBubble) return dots;
+    if (!widget.showBubble) return RepaintBoundary(child: dots);
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.dotSize * 1.4,
-        vertical: widget.dotSize,
+    return RepaintBoundary(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: widget.dotSize * 1.4,
+          vertical: widget.dotSize,
+        ),
+        decoration: BoxDecoration(
+          color: widget.bubbleColor,
+          borderRadius: .circular(widget.dotSize * 2),
+        ),
+        child: dots,
       ),
-      decoration: BoxDecoration(
-        color: widget.bubbleColor,
-        borderRadius: .circular(widget.dotSize * 2),
-      ),
-      child: dots,
     );
   }
 

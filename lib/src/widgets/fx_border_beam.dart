@@ -43,20 +43,18 @@ class _FxBorderBeamState extends State<FxBorderBeam>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: Padding(
-        padding: EdgeInsets.all(widget.borderWidth),
-        child: widget.child,
-      ),
-      builder: (context, child) => CustomPaint(
+    return RepaintBoundary(
+      child: CustomPaint(
         painter: _BeamPainter(
-          t: _controller.value,
+          animation: _controller,
           color: widget.color,
           borderWidth: widget.borderWidth,
           borderRadius: widget.borderRadius,
         ),
-        child: child,
+        child: Padding(
+          padding: EdgeInsets.all(widget.borderWidth),
+          child: widget.child,
+        ),
       ),
     );
   }
@@ -64,19 +62,20 @@ class _FxBorderBeamState extends State<FxBorderBeam>
 
 class _BeamPainter extends CustomPainter {
   _BeamPainter({
-    required this.t,
+    required this.animation,
     required this.color,
     required this.borderWidth,
     required this.borderRadius,
-  });
+  }) : super(repaint: animation);
 
-  final double t;
+  final Animation<double> animation;
   final Color color;
   final double borderWidth;
   final double borderRadius;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final t = animation.value;
     final rect = Offset.zero & size;
     // A short bright band that clamps to transparent everywhere else, rotated
     // around the perimeter over time.
@@ -99,7 +98,6 @@ class _BeamPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BeamPainter oldDelegate) =>
-      oldDelegate.t != t ||
       oldDelegate.color != color ||
       oldDelegate.borderWidth != borderWidth ||
       oldDelegate.borderRadius != borderRadius;

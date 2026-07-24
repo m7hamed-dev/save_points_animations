@@ -84,36 +84,41 @@ class _FxSpeedDialState extends State<FxSpeedDial>
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        ...items,
-        GestureDetector(
-          onTap: _toggle,
-          child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-              shape: BoxShape.circle,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x33000000),
-                  blurRadius: 8,
-                  offset: Offset(0, 4),
+    return RepaintBoundary(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ...items,
+          GestureDetector(
+            onTap: _toggle,
+            child: Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: RotationTransition(
+                  turns: Tween<double>(
+                    begin: 0,
+                    end: 0.125,
+                  ).animate(_controller),
+                  child: widget.icon,
                 ),
-              ],
-            ),
-            child: Center(
-              child: RotationTransition(
-                turns: Tween<double>(begin: 0, end: 0.125).animate(_controller),
-                child: widget.icon,
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

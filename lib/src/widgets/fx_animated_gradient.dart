@@ -45,24 +45,26 @@ class _FxAnimatedGradientState extends State<FxAnimatedGradient>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      child: widget.child,
-      builder: (context, child) {
-        final angle = _controller.value * 2 * math.pi;
-        final dx = math.cos(angle);
-        final dy = math.sin(angle);
-        return DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: widget.colors,
-              begin: Alignment(-dx, -dy),
-              end: Alignment(dx, dy),
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) {
+          final angle = _controller.value * 2 * math.pi;
+          final dx = math.cos(angle);
+          final dy = math.sin(angle);
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: widget.colors,
+                begin: Alignment(-dx, -dy),
+                end: Alignment(dx, dy),
+              ),
             ),
-          ),
-          child: child,
-        );
-      },
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

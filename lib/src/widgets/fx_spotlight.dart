@@ -46,9 +46,10 @@ class _FxSpotlightState extends State<FxSpotlight>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final overlay = Positioned.fill(
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final overlay = Positioned.fill(
           child: IgnorePointer(
             child: AnimatedBuilder(
               animation: _controller,
@@ -91,7 +92,8 @@ class _FxSpotlightState extends State<FxSpotlight>
           },
           child: stack,
         );
-      },
+        },
+      ),
     );
   }
 }

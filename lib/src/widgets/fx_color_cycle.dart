@@ -40,22 +40,24 @@ class _FxColorCycleState extends State<FxColorCycle>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) {
-        final n = widget.colors.length;
-        if (n == 0) return widget.builder(context, const Color(0xFF000000));
-        if (n == 1) return widget.builder(context, widget.colors.first);
-        final scaled = _controller.value * n;
-        final i = scaled.floor() % n;
-        final frac = scaled - scaled.floor();
-        final color = Color.lerp(
-          widget.colors[i],
-          widget.colors[(i + 1) % n],
-          frac,
-        )!;
-        return widget.builder(context, color);
-      },
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final n = widget.colors.length;
+          if (n == 0) return widget.builder(context, const Color(0xFF000000));
+          if (n == 1) return widget.builder(context, widget.colors.first);
+          final scaled = _controller.value * n;
+          final i = scaled.floor() % n;
+          final frac = scaled - scaled.floor();
+          final color = Color.lerp(
+            widget.colors[i],
+            widget.colors[(i + 1) % n],
+            frac,
+          )!;
+          return widget.builder(context, color);
+        },
+      ),
     );
   }
 }
