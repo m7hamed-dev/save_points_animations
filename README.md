@@ -66,6 +66,26 @@ Image.asset('logo.png')
     .curve(FxCurves.elastic);
 ```
 
+### Widgets as extensions
+
+Every child-wrapping widget is also a `.fx…()` method on `Widget`, so you can
+decorate inline instead of nesting constructors:
+
+```dart
+Text('Sale').fxShine();                          // glossy sweep
+card.fxGradientBorder(borderRadius: 20);         // rotating gradient border
+Text('Hold').fxHoldButton(onConfirmed: submit);  // press-and-hold ring
+photo.fxKenBurns();                              // slow cinematic pan/zoom
+```
+
+Backdrop effects layer your widget *on top* of a full-bleed animation:
+
+```dart
+content.fxAurora();                 // drifting aurora clouds behind content
+page.fxSnow(count: 60);             // snow falling over the page
+banner.fxAnimatedGradient(colors: [Colors.purple, Colors.blue]);
+```
+
 ### Timelines — sequence with `.then()`
 
 ```dart
@@ -176,7 +196,7 @@ Transitions: `fade` · `scale` · `zoom` · `slide` (any `AxisDirection`) ·
 `rotation` · `sharedAxisHorizontal` · `sharedAxisVertical` — plus the modern
 set: `fadeThrough` (Material 3) · `cupertino` (iOS parallax) · `depth` ·
 `sheet` (modal) · `circularReveal` · `cube3D` · `blur` · `containerTransform` ·
-`glass`.
+`glass` · `fadeUpwards` · `flip` · `flipVertical` · `shrink`.
 
 Reveal from a tap point, expand from a card's bounds, or spring in:
 

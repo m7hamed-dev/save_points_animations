@@ -1,3 +1,32 @@
+## 0.44.0
+
+Widgets as extensions, more page transitions & lifecycle fixes.
+
+### Added
+- `FxWrap` extension on `Widget` — apply any child-wrapping or backdrop widget
+  fluently, the same way effects already chain. Decorators wrap the receiver
+  (`Text('Sale').fxShine()`, `card.fxGradientBorder()`, `label.fxHoldButton(...)`),
+  and backdrop effects layer it on top (`content.fxAurora()`, `page.fxSnow()`).
+  31 methods in total.
+- Four new `FxPageTransition` styles: `fadeUpwards` (Material fade-up), `flip`
+  and `flipVertical` (3D card flip), and `shrink` (pull-in from slightly
+  enlarged).
+
+### Fixed
+- `FxSwipeCards`, `FxSwipeToDismiss`, and `FxSlideToConfirm` no longer throw
+  *"Looking up a deactivated widget's ancestor is unsafe"* when disposed before
+  any interaction — their `AnimationController`s are now created in `initState`
+  instead of lazily inside `dispose`.
+- `FxOdometer` no longer overflows vertically — the rolling digit strip lays out
+  in unbounded height and is clipped to the single-digit window.
+- `FxMarquee` no longer overflows horizontally — it now scrolls inside a
+  clipping viewport that grants the content unbounded width.
+
+### Changed
+- Split `fx_page_route.dart` into `fx_page_transition.dart` (the enum),
+  `fx_transition_builder.dart` (`buildFxTransition` + per-style builders), and
+  `fx_page_route.dart` (`FxPageRoute` + `FxNavigator`). Public API unchanged.
+
 ## 0.43.0
 
 Interactive UI: buttons, toggles & overlays.

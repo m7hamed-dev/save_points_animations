@@ -30,6 +30,7 @@ export 'src/effects/transform_effects.dart';
 export 'src/effects/visual_effects.dart';
 export 'src/extensions/fx_list_extensions.dart';
 export 'src/extensions/fx_widget_extensions.dart';
+export 'src/extensions/fx_wrapper_extensions.dart' show FxWrap;
 export 'src/extensions/num_duration_extensions.dart';
 export 'src/gestures/fx_gestures.dart' show FxGestures;
 export 'src/gestures/fx_tilt.dart' show FxTilt, FxTiltExtension;

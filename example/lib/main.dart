@@ -334,6 +334,52 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               const SizedBox(height: 32),
+              Text(
+                'Widgets as extensions',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+
+              // Decorate any widget inline with `.fx…()` methods.
+              Row(
+                children: [
+                  Expanded(
+                    child: const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: Text('.fxShine()')),
+                      ),
+                    ).fxShine(),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: Text('.fxGradientBorder()')),
+                    ).fxGradientBorder(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Backdrop effect: content layered on top of an aurora.
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: const SizedBox(
+                  height: 90,
+                  child: Center(
+                    child: Text(
+                      'content.fxAurora()',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ).fxAurora(),
+              ),
+
+              const SizedBox(height: 32),
               Text('Reveal · Loaders · FX', style: theme.textTheme.titleMedium),
               const SizedBox(height: 12),
 
