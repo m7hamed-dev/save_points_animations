@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A soft radial spotlight that drifts over [child] (or follows the pointer),
 /// adding a moving highlight. Best over darker content.
 ///
@@ -31,15 +33,24 @@ class FxSpotlight extends StatefulWidget {
 }
 
 class _FxSpotlightState extends State<FxSpotlight>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
   Alignment _pointer = Alignment.center;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    if (!widget.followPointer) _controller.repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller.stop();
+    } else if (!widget.followPointer) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -58,12 +69,17 @@ class _FxSpotlightState extends State<FxSpotlight>
               child: AnimatedBuilder(
                 animation: _controller,
                 builder: (context, _) {
-                  final align = widget.followPointer
-                      ? _pointer
-                      : Alignment(
-                          math.sin(_controller.value * 2 * math.pi),
-                          math.cos(_controller.value * 2 * math.pi * 1.3),
-                        );
+                  final Alignment align;
+                  if (widget.followPointer) {
+                    align = _pointer;
+                  } else if (reduceMotion) {
+                    align = Alignment.center;
+                  } else {
+                    align = Alignment(
+                      math.sin(_controller.value * 2 * math.pi),
+                      math.cos(_controller.value * 2 * math.pi * 1.3),
+                    );
+                  }
                   return CustomPaint(
                     painter: _SpotPainter(
                       align: align,
@@ -103,15 +119,17 @@ class _FxSpotlightState extends State<FxSpotlight>
 }
 
 class _SpotPainter extends CustomPainter {
-  _SpotPainter({
-    required this.align,
-    required this.color,
-    required this.radius,
-  });
+  _SpotPainter({required this.align, required this.color, required this.radius})
+    : _gradient = RadialGradient(colors: [color, color.withValues(alpha: 0)]);
 
   final Alignment align;
   final Color color;
   final double radius;
+
+  // The gradient's colors are constant for the life of the painter; only the
+  // shader's rect changes each frame, so we cache the gradient and the Paint.
+  final RadialGradient _gradient;
+  final Paint _paint = Paint()..blendMode = BlendMode.plus;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -119,15 +137,10 @@ class _SpotPainter extends CustomPainter {
         size.center(Offset.zero) +
         Offset(align.x * size.width / 2, align.y * size.height / 2);
     final r = radius * size.shortestSide;
-    final shader = RadialGradient(
-      colors: [color, color.withValues(alpha: 0)],
-    ).createShader(Rect.fromCircle(center: center, radius: r));
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()
-        ..shader = shader
-        ..blendMode = BlendMode.plus,
+    _paint.shader = _gradient.createShader(
+      Rect.fromCircle(center: center, radius: r),
     );
+    canvas.drawRect(Offset.zero & size, _paint);
   }
 
   @override

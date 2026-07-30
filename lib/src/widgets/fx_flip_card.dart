@@ -8,6 +8,10 @@ class FxFlipCardController {
 
   void _attach(VoidCallback flip) => _flip = flip;
 
+  void _detach(VoidCallback flip) {
+    if (_flip == flip) _flip = null;
+  }
+
   /// Toggle between the front and back faces.
   void flip() => _flip?.call();
 }
@@ -30,6 +34,7 @@ class FxFlipCard extends StatefulWidget {
     this.curve = Curves.easeInOut,
     this.flipOnTap = true,
     this.controller,
+    this.perspective = 0.001,
   });
 
   final Widget front;
@@ -39,6 +44,10 @@ class FxFlipCard extends StatefulWidget {
   final Curve curve;
   final bool flipOnTap;
   final FxFlipCardController? controller;
+
+  /// Depth of the 3D perspective applied to the flip (matrix entry (3, 2)).
+  /// Larger values exaggerate the fold; the default keeps the original look.
+  final double perspective;
 
   @override
   State<FxFlipCard> createState() => _FxFlipCardState();
@@ -55,6 +64,18 @@ class _FxFlipCardState extends State<FxFlipCard>
     widget.controller?._attach(_flip);
   }
 
+  @override
+  void didUpdateWidget(covariant FxFlipCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._detach(_flip);
+      widget.controller?._attach(_flip);
+    }
+  }
+
   void _flip() {
     if (_controller.value < 0.5) {
       _controller.forward();
@@ -65,6 +86,7 @@ class _FxFlipCardState extends State<FxFlipCard>
 
   @override
   void dispose() {
+    widget.controller?._detach(_flip);
     _controller.dispose();
     super.dispose();
   }
@@ -80,7 +102,8 @@ class _FxFlipCardState extends State<FxFlipCard>
             final t = widget.curve.transform(_controller.value);
             final angle = t * math.pi;
             final showFront = angle <= math.pi / 2;
-            final matrix = Matrix4.identity()..setEntry(3, 2, 0.001);
+            final matrix = Matrix4.identity()
+              ..setEntry(3, 2, widget.perspective);
             if (widget.axis == Axis.horizontal) {
               matrix.rotateY(angle);
             } else {

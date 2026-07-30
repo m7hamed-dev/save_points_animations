@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A rotating radar / sonar scan — concentric rings with a sweeping trail.
 /// Great for "scanning", "searching", or live-tracking states.
@@ -30,14 +31,32 @@ class FxRadar extends StatefulWidget {
   State<FxRadar> createState() => _FxRadarState();
 }
 
-class _FxRadarState extends State<FxRadar> with SingleTickerProviderStateMixin {
+class _FxRadarState extends State<FxRadar>
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxRadar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -78,11 +97,24 @@ class _RadarPainter extends CustomPainter {
     required this.color,
     required this.rings,
   }) : _animation = repaint,
+       _ringPaint = Paint()
+         ..color = color.withValues(alpha: 0.3)
+         ..style = PaintingStyle.stroke
+         ..strokeWidth = 1,
+       _edgePaint = Paint()
+         ..color = color
+         ..strokeWidth = 1.5,
+       _sweepPaint = Paint(),
        super(repaint: repaint);
 
   final Animation<double> _animation;
   final Color color;
   final int rings;
+
+  // Cached paints; only the sweep shader is rebuilt per frame.
+  final Paint _ringPaint;
+  final Paint _edgePaint;
+  final Paint _sweepPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -90,47 +122,36 @@ class _RadarPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2;
 
-    final ringPaint = Paint()
-      ..color = color.withValues(alpha: 0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
     for (var i = 1; i <= rings; i++) {
-      canvas.drawCircle(center, radius * i / rings, ringPaint);
+      canvas.drawCircle(center, radius * i / rings, _ringPaint);
     }
     // Cross hairs.
     canvas
       ..drawLine(
         Offset(center.dx - radius, center.dy),
         Offset(center.dx + radius, center.dy),
-        ringPaint,
+        _ringPaint,
       )
       ..drawLine(
         Offset(center.dx, center.dy - radius),
         Offset(center.dx, center.dy + radius),
-        ringPaint,
+        _ringPaint,
       );
 
     // Sweeping trail via a rotated sweep gradient.
-    final sweepPaint = Paint()
-      ..shader = SweepGradient(
-        colors: [color.withValues(alpha: 0), color.withValues(alpha: 0.5)],
-        stops: const [0.75, 1],
-        transform: GradientRotation(angle),
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
-    canvas.drawCircle(center, radius, sweepPaint);
+    _sweepPaint.shader = SweepGradient(
+      colors: [color.withValues(alpha: 0), color.withValues(alpha: 0.5)],
+      stops: const [0.75, 1],
+      transform: GradientRotation(angle),
+    ).createShader(Rect.fromCircle(center: center, radius: radius));
+    canvas.drawCircle(center, radius, _sweepPaint);
 
     // Leading edge line.
     final edge = Offset(
       center.dx + radius * math.cos(angle),
       center.dy + radius * math.sin(angle),
     );
-    canvas.drawLine(
-      center,
-      edge,
-      Paint()
-        ..color = color
-        ..strokeWidth = 1.5,
-    );
+    canvas.drawLine(center, edge, _edgePaint);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/widgets/fx_animated_check.dart';
 import 'package:save_points_animations/src/widgets/fx_loaders.dart';
@@ -45,6 +46,13 @@ class FxProgressButton extends StatelessWidget {
     _ => color,
   };
 
+  String get _semanticLabel => switch (state) {
+    FxButtonState.loading => 'Loading',
+    FxButtonState.success => 'Success',
+    FxButtonState.error => 'Error',
+    FxButtonState.idle => '',
+  };
+
   Widget _content() {
     switch (state) {
       case FxButtonState.idle:
@@ -85,20 +93,31 @@ class FxProgressButton extends StatelessWidget {
         final fullWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : 220.0;
-        return Align(
-          child: GestureDetector(
-            onTap: state == FxButtonState.idle ? onPressed : null,
-            child: AnimatedContainer(
-              duration: duration,
-              curve: Curves.easeInOut,
-              width: circle ? height : fullWidth,
-              height: height,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: _bg,
-                borderRadius: .circular(circle ? height / 2 : borderRadius),
+        return Semantics(
+          button: true,
+          enabled: state == FxButtonState.idle,
+          liveRegion: true,
+          label: _semanticLabel.isEmpty ? null : _semanticLabel,
+          child: Align(
+            child: GestureDetector(
+              onTap: state == FxButtonState.idle
+                  ? () {
+                      HapticFeedback.selectionClick();
+                      onPressed();
+                    }
+                  : null,
+              child: AnimatedContainer(
+                duration: duration,
+                curve: Curves.easeInOut,
+                width: circle ? height : fullWidth,
+                height: height,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: _bg,
+                  borderRadius: .circular(circle ? height / 2 : borderRadius),
+                ),
+                child: AnimatedSwitcher(duration: duration, child: _content()),
               ),
-              child: AnimatedSwitcher(duration: duration, child: _content()),
             ),
           ),
         );

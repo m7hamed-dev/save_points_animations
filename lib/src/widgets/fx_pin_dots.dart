@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// An animated PIN / OTP progress indicator — filled dots pop as digits are
 /// entered, and the whole row shakes on [error].
 ///
@@ -54,8 +56,13 @@ class _FxPinDotsState extends State<FxPinDots> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant FxPinDots oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.filled > oldWidget.filled) _pop.forward(from: 0);
-    if (widget.error && !oldWidget.error) _shake.forward(from: 0);
+    final reduceMotion = fxReduceMotion(context);
+    if (widget.filled > oldWidget.filled && !reduceMotion) {
+      _pop.forward(from: 0);
+    }
+    if (widget.error && !oldWidget.error && !reduceMotion) {
+      _shake.forward(from: 0);
+    }
   }
 
   @override
@@ -67,28 +74,27 @@ class _FxPinDotsState extends State<FxPinDots> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final row = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < widget.length; i++)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: widget.spacing / 2),
+            child: _dot(i),
+          ),
+      ],
+    );
+    // Only the outer translate listens to the shake controller, so the whole
+    // row isn't rebuilt for the per-dot pop (each dot listens to _pop itself).
     return RepaintBoundary(
       child: AnimatedBuilder(
-        animation: Listenable.merge([_pop, _shake]),
-        builder: (context, _) {
+        animation: _shake,
+        builder: (context, child) {
           final shakeX =
               math.sin(_shake.value * math.pi * 4) * 8 * (1 - _shake.value);
-          return Transform.translate(
-            offset: Offset(shakeX, 0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < widget.length; i++)
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: widget.spacing / 2,
-                    ),
-                    child: _dot(i),
-                  ),
-              ],
-            ),
-          );
+          return Transform.translate(offset: Offset(shakeX, 0), child: child);
         },
+        child: row,
       ),
     );
   }
@@ -96,17 +102,23 @@ class _FxPinDotsState extends State<FxPinDots> with TickerProviderStateMixin {
   Widget _dot(int i) {
     final isFilled = i < widget.filled;
     final isLastFilled = i == widget.filled - 1;
-    final scale = isLastFilled ? 1 + math.sin(_pop.value * math.pi) * 0.4 : 1.0;
     final color = widget.error
         ? widget.errorColor
         : (isFilled ? widget.color : widget.inactiveColor);
-    return Transform.scale(
-      scale: scale,
-      child: Container(
-        width: widget.size,
-        height: widget.size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      ),
+    final dot = Container(
+      width: widget.size,
+      height: widget.size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+    // Only the currently-popping dot rebuilds on each _pop tick.
+    if (!isLastFilled) return dot;
+    return AnimatedBuilder(
+      animation: _pop,
+      builder: (context, child) {
+        final scale = 1 + math.sin(_pop.value * math.pi) * 0.4;
+        return Transform.scale(scale: scale, child: child);
+      },
+      child: dot,
     );
   }
 }

@@ -43,6 +43,16 @@ class _FxScrollToTopState extends State<FxScrollToTop> {
     widget.controller.addListener(_onScroll);
   }
 
+  @override
+  void didUpdateWidget(covariant FxScrollToTop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller.removeListener(_onScroll);
+      widget.controller.addListener(_onScroll);
+      _onScroll();
+    }
+  }
+
   void _onScroll() {
     final show =
         widget.controller.hasClients &&
@@ -77,34 +87,38 @@ class _FxScrollToTopState extends State<FxScrollToTop> {
           child: AnimatedOpacity(
             opacity: _visible ? 1 : 0,
             duration: const Duration(milliseconds: 200),
-            child: GestureDetector(
-              onTap: _toTop,
-              child: Container(
-                width: widget.size,
-                height: widget.size,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: widget.color,
-                  shape: BoxShape.circle,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x33000000),
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child:
-                    widget.child ??
-                    Text(
-                      '↑',
-                      style: TextStyle(
-                        color: widget.iconColor,
-                        fontSize: widget.size * 0.5,
-                        fontWeight: FontWeight.w700,
-                        height: 1,
+            child: Semantics(
+              button: true,
+              label: 'Scroll to top',
+              child: GestureDetector(
+                onTap: _toTop,
+                child: Container(
+                  width: widget.size,
+                  height: widget.size,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: widget.color,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x33000000),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
                       ),
-                    ),
+                    ],
+                  ),
+                  child:
+                      widget.child ??
+                      Text(
+                        '↑',
+                        style: TextStyle(
+                          color: widget.iconColor,
+                          fontSize: widget.size * 0.5,
+                          fontWeight: FontWeight.w700,
+                          height: 1,
+                        ),
+                      ),
+                ),
               ),
             ),
           ),

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// Periodic firework bursts over [child] — celebratory particles that radiate,
 /// arc under gravity, and fade.
 ///
@@ -21,12 +23,17 @@ class FxFireworks extends StatefulWidget {
     ],
     this.interval = const Duration(milliseconds: 850),
     this.particlesPerBurst = 26,
+    this.seed,
     this.child,
   });
 
   final List<Color> colors;
   final Duration interval;
   final int particlesPerBurst;
+
+  /// Optional seed for the random bursts, so they're reproducible.
+  /// When null (the default) bursts are random each time.
+  final int? seed;
   final Widget? child;
 
   @override
@@ -34,8 +41,8 @@ class FxFireworks extends StatefulWidget {
 }
 
 class _FxFireworksState extends State<FxFireworks>
-    with SingleTickerProviderStateMixin {
-  final math.Random _random = math.Random();
+    with SingleTickerProviderStateMixin, FxMotionAware {
+  late final math.Random _random = math.Random(widget.seed);
   late final Ticker _ticker;
   final List<_Burst> _bursts = [];
   double _now = 0;
@@ -50,12 +57,19 @@ class _FxFireworksState extends State<FxFireworks>
   void initState() {
     super.initState();
     _ticker = createTicker(_tick);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (!(MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
-        _ticker.start();
-      }
-    });
+    _ticker.start();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _ticker.stop();
+      // Settle to a static, empty frame — no lingering half-faded bursts.
+      _bursts.clear();
+      _frame.value++;
+    } else if (!_ticker.isTicking) {
+      _ticker.start();
+    }
   }
 
   void _tick(Duration elapsed) {
@@ -150,6 +164,9 @@ class _FireworksPainter extends CustomPainter {
   final double now;
   final double life;
 
+  // One Paint reused for every spark every frame; only its color is mutated.
+  final Paint _paint = Paint();
+
   @override
   void paint(Canvas canvas, Size size) {
     for (final b in bursts) {
@@ -158,7 +175,8 @@ class _FireworksPainter extends CustomPainter {
         b.center.dx * size.width,
         b.center.dy * size.height,
       );
-      final paint = Paint()..color = b.color.withValues(alpha: 1 - t);
+      // Eased fade (quadratic) reads more natural than a linear ramp.
+      _paint.color = b.color.withValues(alpha: 1 - t * t);
       final spread = size.shortestSide;
       for (final s in b.particles) {
         final dist = s.speed * spread * t;
@@ -169,7 +187,7 @@ class _FireworksPainter extends CustomPainter {
               math.cos(s.angle) * dist,
               math.sin(s.angle) * dist + gravity,
             );
-        canvas.drawCircle(pos, 2.2 * (1 - t), paint);
+        canvas.drawCircle(pos, 2.2 * (1 - t), _paint);
       }
     }
   }

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// Falling, gently swaying particles over [child] — snow, rain, embers, or
 /// petals depending on the color.
 ///
@@ -16,6 +18,7 @@ class FxSnow extends StatefulWidget {
     this.color = const Color(0xCCFFFFFF),
     this.maxRadius = 3,
     this.speed = 0.08,
+    this.seed,
     this.child,
   });
 
@@ -25,14 +28,19 @@ class FxSnow extends StatefulWidget {
 
   /// Fall speed in fractions of the height per second.
   final double speed;
+
+  /// Optional seed for the random layout, so it's reproducible.
+  /// When null (the default) the layout is random each time.
+  final int? seed;
   final Widget? child;
 
   @override
   State<FxSnow> createState() => _FxSnowState();
 }
 
-class _FxSnowState extends State<FxSnow> with SingleTickerProviderStateMixin {
-  final math.Random _random = math.Random();
+class _FxSnowState extends State<FxSnow>
+    with SingleTickerProviderStateMixin, FxMotionAware {
+  late final math.Random _random = math.Random(widget.seed);
   late final Ticker _ticker;
   late List<_Flake> _flakes;
   Duration _last = Duration.zero;
@@ -54,12 +62,17 @@ class _FxSnowState extends State<FxSnow> with SingleTickerProviderStateMixin {
         radius: 1 + _random.nextDouble() * widget.maxRadius,
       );
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (!(MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
-        _ticker.start();
-      }
-    });
+    _ticker.start();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _ticker.stop();
+    } else if (!_ticker.isTicking) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
   }
 
   void _tick(Duration elapsed) {

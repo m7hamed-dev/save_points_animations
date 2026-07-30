@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A self-contained slider with an animated thumb that grows and casts a soft
@@ -19,6 +20,7 @@ class FxAnimatedSlider extends StatefulWidget {
     this.height = 44,
     this.trackHeight = 6,
     this.showBubble = true,
+    this.step,
   });
 
   final double value;
@@ -31,6 +33,10 @@ class FxAnimatedSlider extends StatefulWidget {
   final double height;
   final double trackHeight;
   final bool showBubble;
+
+  /// Amount to move the value by when a screen reader or keyboard requests an
+  /// increase/decrease. Defaults to 10% of the range.
+  final double? step;
 
   @override
   State<FxAnimatedSlider> createState() => _FxAnimatedSliderState();
@@ -45,9 +51,30 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
     return ((widget.value - widget.min) / span).clamp(0.0, 1.0);
   }
 
+  double get _step {
+    final span = widget.max - widget.min;
+    return widget.step ?? (span == 0 ? 0 : span / 10);
+  }
+
   void _updateFromDx(double dx, double width) {
     final fraction = (dx / width).clamp(0.0, 1.0);
-    widget.onChanged(widget.min + fraction * (widget.max - widget.min));
+    final next = widget.min + fraction * (widget.max - widget.min);
+    final step = _step;
+    // Tick when crossing a step boundary, so drags feel notched.
+    if (step > 0) {
+      final before = (widget.value - widget.min) ~/ step;
+      final after = (next - widget.min) ~/ step;
+      if (before != after) HapticFeedback.selectionClick();
+    }
+    widget.onChanged(next);
+  }
+
+  void _nudge(double delta) {
+    final next = (widget.value + delta).clamp(widget.min, widget.max);
+    if (next != widget.value) {
+      HapticFeedback.selectionClick();
+      widget.onChanged(next);
+    }
   }
 
   @override
@@ -58,83 +85,95 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
         final fraction = _fraction;
         const thumbBase = 18.0;
         final thumbSize = _dragging ? thumbBase + 8 : thumbBase;
+        // The thumb's logical center sits exactly on the track point; only the
+        // painted position is clamped so it never overflows the box edges.
         final thumbCenter = fraction * width;
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onHorizontalDragStart: (_) => setState(() => _dragging = true),
-          onHorizontalDragEnd: (_) => setState(() => _dragging = false),
-          onHorizontalDragUpdate: (d) =>
-              _updateFromDx(d.localPosition.dx, width),
-          onTapDown: (d) => _updateFromDx(d.localPosition.dx, width),
-          child: SizedBox(
-            height: widget.height,
-            child: Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                // Inactive track.
-                Align(
-                  child: Container(
-                    height: widget.trackHeight,
-                    decoration: BoxDecoration(
-                      color: widget.trackColor,
-                      borderRadius: .circular(widget.trackHeight),
-                    ),
-                  ),
-                ),
-                // Active track.
-                Align(
+        final paintCenter = thumbCenter.clamp(
+          thumbSize / 2,
+          width - thumbSize / 2,
+        );
+        final label = widget.value.toStringAsFixed(
+          widget.max - widget.min <= 1 ? 2 : 0,
+        );
+        return Semantics(
+          slider: true,
+          value: label,
+          onIncrease: () => _nudge(_step),
+          onDecrease: () => _nudge(-_step),
+          child: RepaintBoundary(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onHorizontalDragStart: (_) => setState(() => _dragging = true),
+              onHorizontalDragEnd: (_) => setState(() => _dragging = false),
+              onHorizontalDragUpdate: (d) =>
+                  _updateFromDx(d.localPosition.dx, width),
+              onTapDown: (d) => _updateFromDx(d.localPosition.dx, width),
+              child: SizedBox(
+                height: widget.height,
+                child: Stack(
                   alignment: Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: fraction,
-                    child: Container(
-                      height: widget.trackHeight,
-                      decoration: BoxDecoration(
-                        color: widget.activeColor,
-                        borderRadius: .circular(widget.trackHeight),
-                      ),
-                    ),
-                  ),
-                ),
-                // Value bubble.
-                if (widget.showBubble && _dragging)
-                  Positioned(
-                    left: (thumbCenter - 18).clamp(0.0, width - 36),
-                    top: 0,
-                    child: _Bubble(
-                      color: widget.activeColor,
-                      text: widget.value.toStringAsFixed(
-                        widget.max - widget.min <= 1 ? 2 : 0,
-                      ),
-                    ),
-                  ),
-                // Thumb.
-                Positioned(
-                  left: (thumbCenter - thumbSize / 2).clamp(
-                    0.0,
-                    width - thumbSize,
-                  ),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 160),
-                    curve: Curves.easeOut,
-                    width: thumbSize,
-                    height: thumbSize,
-                    decoration: BoxDecoration(
-                      color: widget.thumbColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: widget.activeColor, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: widget.activeColor.withValues(
-                            alpha: _dragging ? 0.4 : 0.2,
-                          ),
-                          blurRadius: _dragging ? 12 : 4,
-                          spreadRadius: _dragging ? 2 : 0,
+                  children: [
+                    // Inactive track.
+                    Align(
+                      child: Container(
+                        height: widget.trackHeight,
+                        decoration: BoxDecoration(
+                          color: widget.trackColor,
+                          borderRadius: .circular(widget.trackHeight),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    // Active track.
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: FractionallySizedBox(
+                        widthFactor: fraction,
+                        child: Container(
+                          height: widget.trackHeight,
+                          decoration: BoxDecoration(
+                            color: widget.activeColor,
+                            borderRadius: .circular(widget.trackHeight),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Value bubble.
+                    if (widget.showBubble && _dragging)
+                      Positioned(
+                        left: (paintCenter - 18).clamp(0.0, width - 36),
+                        top: 0,
+                        child: _Bubble(color: widget.activeColor, text: label),
+                      ),
+                    // Thumb.
+                    Positioned(
+                      left: paintCenter - thumbSize / 2,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 160),
+                        curve: Curves.easeOut,
+                        width: thumbSize,
+                        height: thumbSize,
+                        decoration: BoxDecoration(
+                          color: widget.thumbColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: widget.activeColor,
+                            width: 3,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.activeColor.withValues(
+                                alpha: _dragging ? 0.4 : 0.2,
+                              ),
+                              blurRadius: _dragging ? 12 : 4,
+                              spreadRadius: _dragging ? 2 : 0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );

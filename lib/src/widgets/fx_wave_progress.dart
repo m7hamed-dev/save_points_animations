@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A liquid "water fill" progress indicator — an animated wave rises to [value]
 /// inside a circle or rounded box.
@@ -40,14 +41,31 @@ class FxWaveProgress extends StatefulWidget {
 }
 
 class _FxWaveProgressState extends State<FxWaveProgress>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxWaveProgress oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -58,6 +76,8 @@ class _FxWaveProgressState extends State<FxWaveProgress>
 
   @override
   Widget build(BuildContext context) {
+    // Animate the fill level between old/new so a change in `value` glides
+    // instead of snapping.
     final box = SizedBox(
       width: widget.size,
       height: widget.size,
@@ -65,13 +85,18 @@ class _FxWaveProgressState extends State<FxWaveProgress>
         fit: StackFit.expand,
         children: [
           ColoredBox(color: widget.backgroundColor),
-          CustomPaint(
-            painter: _WavePainter(
-              repaint: _controller,
-              value: widget.value.clamp(0.0, 1.0),
-              controller: _controller,
-              color: widget.color,
-              waveHeight: widget.waveHeight,
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: widget.value.clamp(0.0, 1.0)),
+            duration: widget.duration,
+            curve: Curves.easeOutCubic,
+            builder: (context, level, _) => CustomPaint(
+              painter: _WavePainter(
+                repaint: _controller,
+                value: level,
+                controller: _controller,
+                color: widget.color,
+                waveHeight: widget.waveHeight,
+              ),
             ),
           ),
           if (widget.child != null) Center(child: widget.child),
@@ -79,10 +104,15 @@ class _FxWaveProgressState extends State<FxWaveProgress>
       ),
     );
 
+    final clipped = widget.shape == BoxShape.circle
+        ? ClipOval(child: box)
+        : ClipRRect(borderRadius: .circular(widget.borderRadius), child: box);
+
     return RepaintBoundary(
-      child: widget.shape == BoxShape.circle
-          ? ClipOval(child: box)
-          : ClipRRect(borderRadius: .circular(widget.borderRadius), child: box),
+      child: Semantics(
+        value: '${(widget.value.clamp(0.0, 1.0) * 100).round()}%',
+        child: clipped,
+      ),
     );
   }
 }
@@ -94,21 +124,29 @@ class _WavePainter extends CustomPainter {
     required this.controller,
     required this.color,
     required this.waveHeight,
-  }) : super(repaint: repaint);
+  }) : _fillPaint = Paint()..color = color,
+       super(repaint: repaint);
 
   final double value;
   final Animation<double> controller;
   final Color color;
   final double waveHeight;
 
+  final Paint _fillPaint;
+
   @override
   void paint(Canvas canvas, Size size) {
     final phase = controller.value * 2 * math.pi;
     final level = (1 - value) * size.height;
+    // Sample the wave in a fixed number of steps relative to width rather than
+    // a hardcoded 2px stride, so wide widgets don't over-tessellate.
+    const steps = 48;
+    final dx = size.width / steps;
     final path = Path()
       ..moveTo(0, size.height)
       ..lineTo(0, level);
-    for (var x = 0.0; x <= size.width; x += 2) {
+    for (var i = 0; i <= steps; i++) {
+      final x = i * dx;
       final y =
           level + math.sin(x / size.width * 2 * math.pi + phase) * waveHeight;
       path.lineTo(x, y);
@@ -116,7 +154,7 @@ class _WavePainter extends CustomPainter {
     path
       ..lineTo(size.width, size.height)
       ..close();
-    canvas.drawPath(path, Paint()..color = color);
+    canvas.drawPath(path, _fillPaint);
   }
 
   @override

@@ -108,7 +108,8 @@ class FxParallax extends StatefulWidget {
 
 class _FxParallaxState extends State<FxParallax> {
   ScrollPosition? _position;
-  double _normalized = 0; // -1 (top) .. 0 (center) .. 1 (bottom)
+  // -1 (top) .. 0 (center) .. 1 (bottom)
+  final ValueNotifier<double> _normalized = ValueNotifier<double>(0);
 
   @override
   void didChangeDependencies() {
@@ -139,22 +140,31 @@ class _FxParallaxState extends State<FxParallax> {
         : box.size.width;
     final itemCenter = itemPos + itemExtent / 2;
     final next = ((itemCenter / vpSize) * 2 - 1).clamp(-1.0, 1.0);
-    if (next != _normalized) setState(() => _normalized = next);
+    // Updating the notifier rebuilds only the Transform via
+    // ValueListenableBuilder, leaving the child subtree untouched per frame.
+    _normalized.value = next;
   }
 
   @override
   void dispose() {
     _position?.removeListener(_onScroll);
+    _normalized.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final shift = _normalized * widget.amount;
-    final offset = widget.axis == Axis.vertical
-        ? Offset(0, shift)
-        : Offset(shift, 0);
-    return Transform.translate(offset: offset, child: widget.child);
+    return ValueListenableBuilder<double>(
+      valueListenable: _normalized,
+      child: widget.child,
+      builder: (context, normalized, child) {
+        final shift = normalized * widget.amount;
+        final offset = widget.axis == Axis.vertical
+            ? Offset(0, shift)
+            : Offset(shift, 0);
+        return Transform.translate(offset: offset, child: child);
+      },
+    );
   }
 }
 

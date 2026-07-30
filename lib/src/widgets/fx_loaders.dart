@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Three (or more) dots that bounce in sequence.
 class FxDotsLoader extends StatefulWidget {
@@ -22,14 +23,31 @@ class FxDotsLoader extends StatefulWidget {
 }
 
 class _FxDotsLoaderState extends State<FxDotsLoader>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxDotsLoader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -97,14 +115,31 @@ class FxBarsLoader extends StatefulWidget {
 }
 
 class _FxBarsLoaderState extends State<FxBarsLoader>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxBarsLoader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -176,14 +211,31 @@ class FxProgressRing extends StatefulWidget {
 }
 
 class _FxProgressRingState extends State<FxProgressRing>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxProgressRing oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -219,28 +271,30 @@ class _RingPainter extends CustomPainter {
     required this.strokeWidth,
     required this.controller,
     required this.sweep,
-  }) : super(repaint: repaint);
+  }) : _paint = Paint()
+         ..color = color
+         ..style = PaintingStyle.stroke
+         ..strokeCap = StrokeCap.round
+         ..strokeWidth = strokeWidth,
+       super(repaint: repaint);
 
   final Color color;
   final double strokeWidth;
   final Animation<double> controller;
   final double sweep;
 
+  final Paint _paint;
+
   @override
   void paint(Canvas canvas, Size size) {
     final startAngle = controller.value * 2 * math.pi;
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = strokeWidth;
     final rect = Offset.zero & size;
     canvas.drawArc(
       rect.deflate(strokeWidth / 2),
       startAngle,
       sweep,
       false,
-      paint,
+      _paint,
     );
   }
 

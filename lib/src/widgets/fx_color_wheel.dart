@@ -82,27 +82,37 @@ class FxColorWheel extends StatelessWidget {
 }
 
 class _WheelPainter extends CustomPainter {
-  const _WheelPainter(this.value);
+  _WheelPainter(this.value);
 
   final double value;
+
+  static const int _steps = 360;
+
+  // The hue-arc colors depend only on the step count and [value] — not on the
+  // canvas size — so build the per-arc Paint objects once and reuse them across
+  // paints/resizes. Only the arc geometry is recomputed when the size changes.
+  late final List<Paint> _arcPaints = List<Paint>.generate(
+    _steps,
+    (i) => Paint()
+      ..style = PaintingStyle.fill
+      ..color = _Hsv(i.toDouble(), 1, value).toColor(),
+    growable: false,
+  );
 
   @override
   void paint(Canvas canvas, Size size) {
     final radius = size.width / 2;
     final center = Offset(radius, radius);
+    final arcRect = Rect.fromCircle(center: center, radius: radius);
     // Hue sweep.
-    const steps = 360;
-    for (var i = 0; i < steps; i++) {
+    for (var i = 0; i < _steps; i++) {
       final start = i * math.pi / 180;
-      final sweep = (2 * math.pi / steps) + 0.02;
-      final paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = _Hsv(i.toDouble(), 1, value).toColor();
+      final sweep = (2 * math.pi / _steps) + 0.02;
       final path = Path()
         ..moveTo(center.dx, center.dy)
-        ..arc(center, radius, start, sweep)
+        ..arcTo(arcRect, start, sweep, false)
         ..close();
-      canvas.drawPath(path, paint);
+      canvas.drawPath(path, _arcPaints[i]);
     }
     // Saturation fade toward white at the center.
     final radial = Paint()
@@ -111,23 +121,12 @@ class _WheelPainter extends CustomPainter {
           Color.fromARGB((255 * value).round(), 255, 255, 255),
           const Color(0x00FFFFFF),
         ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
+      ).createShader(arcRect);
     canvas.drawCircle(center, radius, radial);
   }
 
   @override
   bool shouldRepaint(_WheelPainter oldDelegate) => oldDelegate.value != value;
-}
-
-extension _ArcPath on Path {
-  void arc(Offset center, double radius, double startAngle, double sweep) {
-    arcTo(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweep,
-      false,
-    );
-  }
 }
 
 /// Minimal HSV helper so the widget stays Material-free.

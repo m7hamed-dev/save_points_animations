@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// The classic chat "typing…" indicator — three dots pulsing in sequence,
 /// optionally inside a chat bubble.
@@ -31,14 +32,23 @@ class FxTypingIndicator extends StatefulWidget {
 }
 
 class _FxTypingIndicatorState extends State<FxTypingIndicator>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      // Settle to a static frame.
+      _controller.value = 0;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -63,19 +73,27 @@ class _FxTypingIndicatorState extends State<FxTypingIndicator>
       ),
     );
 
-    if (!widget.showBubble) return RepaintBoundary(child: dots);
+    if (!widget.showBubble) {
+      return Semantics(
+        label: 'Typing…',
+        child: RepaintBoundary(child: dots),
+      );
+    }
 
-    return RepaintBoundary(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.dotSize * 1.4,
-          vertical: widget.dotSize,
+    return Semantics(
+      label: 'Typing…',
+      child: RepaintBoundary(
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: widget.dotSize * 1.4,
+            vertical: widget.dotSize,
+          ),
+          decoration: BoxDecoration(
+            color: widget.bubbleColor,
+            borderRadius: .circular(widget.dotSize * 2),
+          ),
+          child: dots,
         ),
-        decoration: BoxDecoration(
-          color: widget.bubbleColor,
-          borderRadius: .circular(widget.dotSize * 2),
-        ),
-        child: dots,
       ),
     );
   }

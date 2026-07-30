@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A frosted-glass card: it blurs whatever sits behind it, tints it lightly,
 /// and sweeps a soft diagonal sheen across the surface. Place it over content
@@ -36,8 +37,10 @@ class FxGlassCard extends StatefulWidget {
 }
 
 class _FxGlassCardState extends State<FxGlassCard>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+
+  bool get _sheenActive => widget.sheen && !reduceMotion;
 
   @override
   void initState() {
@@ -46,17 +49,31 @@ class _FxGlassCardState extends State<FxGlassCard>
       vsync: this,
       duration: widget.sheenDuration,
     );
-    if (widget.sheen) _controller.repeat();
+  }
+
+  void _syncSheen() {
+    if (_sheenActive && !_controller.isAnimating) {
+      _controller.repeat();
+    } else if (!_sheenActive && _controller.isAnimating) {
+      _controller
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) => _syncSheen();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncSheen();
   }
 
   @override
   void didUpdateWidget(covariant FxGlassCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.sheen && !_controller.isAnimating) {
-      _controller.repeat();
-    } else if (!widget.sheen && _controller.isAnimating) {
-      _controller.stop();
-    }
+    _syncSheen();
   }
 
   @override
@@ -81,33 +98,38 @@ class _FxGlassCardState extends State<FxGlassCard>
             ),
             child: Stack(
               children: [
-                if (widget.sheen)
+                if (_sheenActive)
                   Positioned.fill(
-                    child: IgnorePointer(
-                      child: AnimatedBuilder(
-                        animation: _controller,
-                        builder: (context, _) {
-                          // A soft band that travels corner to corner.
-                          final t = _controller.value * 2 - 0.5;
-                          return DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: const [
-                                  Color(0x00FFFFFF),
-                                  Color(0x33FFFFFF),
-                                  Color(0x00FFFFFF),
-                                ],
-                                stops: [
-                                  (t - 0.15).clamp(0.0, 1.0),
-                                  t.clamp(0.0, 1.0),
-                                  (t + 0.15).clamp(0.0, 1.0),
-                                ],
+                    // Isolated in its own layer so the animating sheen does not
+                    // force the expensive BackdropFilter blur to recomposite
+                    // every frame.
+                    child: RepaintBoundary(
+                      child: IgnorePointer(
+                        child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, _) {
+                            // A soft band that travels corner to corner.
+                            final t = _controller.value * 2 - 0.5;
+                            return DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: const [
+                                    Color(0x00FFFFFF),
+                                    Color(0x33FFFFFF),
+                                    Color(0x00FFFFFF),
+                                  ],
+                                  stops: [
+                                    (t - 0.15).clamp(0.0, 1.0),
+                                    t.clamp(0.0, 1.0),
+                                    (t + 0.15).clamp(0.0, 1.0),
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

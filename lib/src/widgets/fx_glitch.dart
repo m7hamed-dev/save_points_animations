@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 const List<double> _redMatrix = [
   1, 0, 0, 0, 0, //
   0, 0, 0, 0, 0, //
@@ -41,7 +43,7 @@ class FxGlitch extends StatefulWidget {
 }
 
 class _FxGlitchState extends State<FxGlitch>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -49,6 +51,19 @@ class _FxGlitchState extends State<FxGlitch>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      // Rapid RGB-split flashing is a photosensitivity hazard: fully stop and
+      // reset so no split frame lingers.
+      _controller
+        ..stop()
+        ..value = 0;
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -70,6 +85,8 @@ class _FxGlitchState extends State<FxGlitch>
         animation: _controller,
         child: widget.child,
         builder: (context, child) {
+          // Reduced motion: render the un-split, static frame only.
+          if (reduceMotion) return child!;
           final b = _burst(_controller.value);
           final dx = math.sin(_controller.value * 80) * widget.intensity * b;
           final dy = b * widget.intensity * 0.4;

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 
 /// A swipeable carousel where the centered page sits full-size and neighbours
@@ -33,23 +31,10 @@ class _FxCarouselState extends State<FxCarousel> {
   late final PageController _controller = PageController(
     viewportFraction: widget.viewportFraction,
   );
-  double _page = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(_onScroll);
-  }
-
-  void _onScroll() {
-    setState(() => _page = _controller.page ?? 0);
-  }
 
   @override
   void dispose() {
-    _controller
-      ..removeListener(_onScroll)
-      ..dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -62,20 +47,31 @@ class _FxCarouselState extends State<FxCarousel> {
         itemCount: widget.children.length,
         onPageChanged: widget.onPageChanged,
         itemBuilder: (context, i) {
-          final delta = (i - _page).abs().clamp(0.0, 1.0);
-          final scale = 1 - (1 - widget.minScale) * delta;
-          final opacity = 1 - 0.4 * delta;
-          return Center(
-            child: Opacity(
-              opacity: opacity,
-              child: Transform.scale(
-                scale: scale,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: widget.children[i],
+          // Rebuild only this page's transform as it scrolls, rather than
+          // setState-ing the whole carousel every scroll tick.
+          return AnimatedBuilder(
+            animation: _controller,
+            child: widget.children[i],
+            builder: (context, child) {
+              final page = _controller.hasClients
+                  ? (_controller.page ?? _controller.initialPage.toDouble())
+                  : _controller.initialPage.toDouble();
+              final delta = (i - page).abs().clamp(0.0, 1.0);
+              final scale = 1 - (1 - widget.minScale) * delta;
+              final opacity = 1 - 0.4 * delta;
+              return Center(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: child,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),
@@ -111,7 +107,7 @@ class FxCarouselDots extends StatelessWidget {
             duration: const Duration(milliseconds: 260),
             curve: Curves.easeOut,
             margin: const EdgeInsets.symmetric(horizontal: 3),
-            width: i == page ? size * math.max(2.4, 1) : size,
+            width: i == page ? size * 2.4 : size,
             height: size,
             decoration: BoxDecoration(
               color: i == page ? activeColor : color,

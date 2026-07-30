@@ -1,4 +1,6 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A gradient call-to-action button with a continuously sweeping sheen.
 ///
@@ -30,14 +32,24 @@ class FxShimmerButton extends StatefulWidget {
 }
 
 class _FxShimmerButtonState extends State<FxShimmerButton>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller
+        ..stop()
+        ..value = 0;
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -46,45 +58,54 @@ class _FxShimmerButtonState extends State<FxShimmerButton>
     super.dispose();
   }
 
+  void _handleTap() {
+    HapticFeedback.selectionClick();
+    widget.onPressed();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: GestureDetector(
-        onTap: widget.onPressed,
-        child: ClipRRect(
-          borderRadius: .circular(widget.borderRadius),
-          child: Stack(
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(gradient: widget.gradient),
-                child: Padding(
-                  padding: widget.padding,
-                  child: DefaultTextStyle.merge(
-                    style: const TextStyle(
-                      color: Color(0xFFFFFFFF),
-                      fontWeight: FontWeight.w600,
+    return Semantics(
+      button: true,
+      enabled: true,
+      child: RepaintBoundary(
+        child: GestureDetector(
+          onTap: _handleTap,
+          child: ClipRRect(
+            borderRadius: .circular(widget.borderRadius),
+            child: Stack(
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(gradient: widget.gradient),
+                  child: Padding(
+                    padding: widget.padding,
+                    child: DefaultTextStyle.merge(
+                      style: const TextStyle(
+                        color: Color(0xFFFFFFFF),
+                        fontWeight: FontWeight.w600,
+                      ),
+                      child: widget.child,
                     ),
-                    child: widget.child,
                   ),
                 ),
-              ),
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, _) => Align(
-                      alignment: Alignment(_controller.value * 3 - 1.5, 0),
-                      child: const FractionallySizedBox(
-                        widthFactor: 0.25,
-                        heightFactor: 1,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Color(0x00FFFFFF),
-                                Color(0x55FFFFFF),
-                                Color(0x00FFFFFF),
-                              ],
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, _) => Align(
+                        alignment: Alignment(_controller.value * 3 - 1.5, 0),
+                        child: const FractionallySizedBox(
+                          widthFactor: 0.25,
+                          heightFactor: 1,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0x00FFFFFF),
+                                  Color(0x55FFFFFF),
+                                  Color(0x00FFFFFF),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -92,8 +113,8 @@ class _FxShimmerButtonState extends State<FxShimmerButton>
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

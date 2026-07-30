@@ -38,21 +38,52 @@ class _FxWaveformState extends State<FxWaveform>
     with SingleTickerProviderStateMixin {
   late final Ticker _ticker;
   double _t = 0;
+  bool _reduceMotion = false;
 
   // A fixed phase + frequency per bar so the pattern looks organic, not synced.
-  late final List<double> _phase = List.generate(
-    widget.barCount,
-    (i) => i * 0.7,
-  );
-  late final List<double> _freq = List.generate(
-    widget.barCount,
-    (i) => 2.2 + (i % 3) * 0.9,
-  );
+  // Mutable so a changed [FxWaveform.barCount] can regrow them without crashing.
+  late List<double> _phase;
+  late List<double> _freq;
+
+  /// The bars only need a running ticker while they are actively bouncing.
+  bool get _shouldAnimate => widget.playing && !_reduceMotion;
 
   @override
   void initState() {
     super.initState();
-    _ticker = createTicker(_onTick)..start();
+    _rebuildBars();
+    _ticker = createTicker(_onTick);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    _syncTicker();
+  }
+
+  @override
+  void didUpdateWidget(covariant FxWaveform oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.barCount != oldWidget.barCount) _rebuildBars();
+    if (widget.playing != oldWidget.playing) _syncTicker();
+  }
+
+  void _rebuildBars() {
+    _phase = List.generate(widget.barCount, (i) => i * 0.7);
+    _freq = List.generate(widget.barCount, (i) => 2.2 + (i % 3) * 0.9);
+  }
+
+  /// Run the ticker only while the bars actually move; stop it (leaving them at
+  /// the idle line) when paused or under reduced motion, to avoid a wasted
+  /// per-frame rebuild of the whole row.
+  void _syncTicker() {
+    if (_shouldAnimate) {
+      if (!_ticker.isActive) _ticker.start();
+    } else if (_ticker.isActive) {
+      _ticker.stop();
+      setState(() {});
+    }
   }
 
   void _onTick(Duration elapsed) {
@@ -85,7 +116,7 @@ class _FxWaveformState extends State<FxWaveform>
 
   Widget _bar(int i) {
     final double level;
-    if (widget.playing) {
+    if (_shouldAnimate) {
       final wave = math.sin(_t * _freq[i] + _phase[i]);
       level = 0.2 + (wave * 0.5 + 0.5) * 0.8;
     } else {
@@ -96,7 +127,7 @@ class _FxWaveformState extends State<FxWaveform>
       widget.height,
     );
     return AnimatedContainer(
-      duration: widget.playing
+      duration: _shouldAnimate
           ? const Duration(milliseconds: 90)
           : const Duration(milliseconds: 300),
       curve: Curves.easeOut,

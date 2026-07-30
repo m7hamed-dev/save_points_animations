@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 import 'package:save_points_animations/src/widgets/fx_nav_item.dart';
 
 /// A bottom nav bar with a "gooey" blob highlight that stretches as it travels
@@ -38,7 +39,7 @@ class FxGooeyNavBar extends StatefulWidget {
 }
 
 class _FxGooeyNavBarState extends State<FxGooeyNavBar>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
   late int _previous = widget.currentIndex;
 
@@ -55,9 +56,23 @@ class _FxGooeyNavBarState extends State<FxGooeyNavBar>
   @override
   void didUpdateWidget(covariant FxGooeyNavBar oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
     if (oldWidget.currentIndex != widget.currentIndex) {
       _previous = oldWidget.currentIndex;
-      _controller.forward(from: 0);
+      if (reduceMotion) {
+        _controller.value = 1;
+      } else {
+        _controller.forward(from: 0);
+      }
+    }
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller.value = 1;
     }
   }
 
@@ -107,17 +122,22 @@ class _FxGooeyNavBarState extends State<FxGooeyNavBar>
                       children: [
                         for (var i = 0; i < n; i++)
                           Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () => widget.onTap(i),
-                              child: Center(
-                                child: IconTheme.merge(
-                                  data: IconThemeData(
-                                    color: i == widget.currentIndex
-                                        ? widget.selectedIconColor
-                                        : widget.iconColor,
+                            child: Semantics(
+                              button: true,
+                              selected: i == widget.currentIndex,
+                              label: widget.items[i].label,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () => widget.onTap(i),
+                                child: Center(
+                                  child: IconTheme.merge(
+                                    data: IconThemeData(
+                                      color: i == widget.currentIndex
+                                          ? widget.selectedIconColor
+                                          : widget.iconColor,
+                                    ),
+                                    child: widget.items[i].icon,
                                   ),
-                                  child: widget.items[i].icon,
                                 ),
                               ),
                             ),

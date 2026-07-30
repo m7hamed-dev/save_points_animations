@@ -32,6 +32,7 @@ class FxConfetti extends StatefulWidget {
     ],
     this.duration = const Duration(milliseconds: 1400),
     this.playOnStart = false,
+    this.seed,
   });
 
   final Widget child;
@@ -43,6 +44,10 @@ class FxConfetti extends StatefulWidget {
   final Duration duration;
   final bool playOnStart;
 
+  /// Optional seed for the random burst, so it's reproducible.
+  /// When null (the default) the burst is random each time.
+  final int? seed;
+
   @override
   State<FxConfetti> createState() => _FxConfettiState();
 }
@@ -50,7 +55,7 @@ class FxConfetti extends StatefulWidget {
 class _FxConfettiState extends State<FxConfetti>
     with SingleTickerProviderStateMixin {
   late final AnimationController _anim;
-  final math.Random _random = math.Random();
+  late final math.Random _random = math.Random(widget.seed);
   List<_Particle> _particles = const [];
 
   @override
@@ -140,18 +145,23 @@ class _ConfettiPainter extends CustomPainter {
   final List<_Particle> particles;
   final double t;
 
+  // One Paint reused for every particle every frame; only its color is mutated.
+  final Paint _paint = Paint();
+
   @override
   void paint(Canvas canvas, Size size) {
     if (t == 0 || particles.isEmpty) return;
     final origin = Offset(size.width / 2, size.height / 2);
     final gravity = size.height * 1.2;
+    // Eased fade (quadratic) reads more natural than a linear ramp.
+    final alpha = 1 - t * t;
 
     for (final p in particles) {
       final dx = math.cos(p.angle) * p.speed * size.width * t;
       final dy =
           math.sin(p.angle) * p.speed * size.height * t + 0.5 * gravity * t * t;
       final pos = origin + Offset(dx, dy);
-      final paint = Paint()..color = p.color.withValues(alpha: 1 - t);
+      _paint.color = p.color.withValues(alpha: alpha);
 
       canvas
         ..save()
@@ -163,7 +173,7 @@ class _ConfettiPainter extends CustomPainter {
             width: p.size,
             height: p.size * 0.5,
           ),
-          paint,
+          _paint,
         )
         ..restore();
     }

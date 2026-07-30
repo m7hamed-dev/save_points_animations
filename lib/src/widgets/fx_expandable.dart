@@ -39,6 +39,8 @@ class _FxExpandableState extends State<FxExpandable>
     curve: widget.curve,
   );
 
+  late bool _expanded = widget.initiallyExpanded;
+
   @override
   void initState() {
     super.initState();
@@ -50,10 +52,11 @@ class _FxExpandableState extends State<FxExpandable>
   }
 
   void _toggle() {
-    if (_controller.isCompleted || _controller.value > 0.5) {
-      _controller.reverse();
-    } else {
+    setState(() => _expanded = !_expanded);
+    if (_expanded) {
       _controller.forward();
+    } else {
+      _controller.reverse();
     }
   }
 
@@ -70,20 +73,24 @@ class _FxExpandableState extends State<FxExpandable>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _toggle,
-            child: Row(
-              children: [
-                Expanded(child: widget.header),
-                RotationTransition(
-                  turns: Tween<double>(begin: 0, end: 0.5).animate(_curved),
-                  child: CustomPaint(
-                    size: const Size(14, 14),
-                    painter: _ChevronPainter(widget.chevronColor),
+          Semantics(
+            button: true,
+            expanded: _expanded,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _toggle,
+              child: Row(
+                children: [
+                  Expanded(child: widget.header),
+                  RotationTransition(
+                    turns: Tween<double>(begin: 0, end: 0.5).animate(_curved),
+                    child: CustomPaint(
+                      size: const Size(14, 14),
+                      painter: _ChevronPainter(widget.chevronColor),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizeTransition(

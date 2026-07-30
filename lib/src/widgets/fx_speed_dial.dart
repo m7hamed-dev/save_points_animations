@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// An expanding action menu — tap the main button and the [children] fan out
 /// (staggered) above it while the main icon rotates.
@@ -34,8 +35,9 @@ class FxSpeedDial extends StatefulWidget {
 }
 
 class _FxSpeedDialState extends State<FxSpeedDial>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  bool _open = false;
 
   @override
   void initState() {
@@ -43,11 +45,20 @@ class _FxSpeedDialState extends State<FxSpeedDial>
     _controller = AnimationController(vsync: this, duration: widget.duration);
   }
 
+  @override
+  void didUpdateWidget(covariant FxSpeedDial oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+  }
+
   void _toggle() {
-    if (_controller.isCompleted || _controller.value > 0.5) {
-      _controller.reverse();
+    _open = !_open;
+    if (reduceMotion) {
+      _controller.value = _open ? 1 : 0;
     } else {
-      _controller.forward();
+      _open ? _controller.forward() : _controller.reverse();
     }
   }
 
@@ -93,29 +104,33 @@ class _FxSpeedDialState extends State<FxSpeedDial>
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           ...items,
-          GestureDetector(
-            onTap: _toggle,
-            child: Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                color: widget.backgroundColor,
-                shape: BoxShape.circle,
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 8,
-                    offset: Offset(0, 4),
+          Semantics(
+            button: true,
+            label: 'Menu',
+            child: GestureDetector(
+              onTap: _toggle,
+              child: Container(
+                width: widget.size,
+                height: widget.size,
+                decoration: BoxDecoration(
+                  color: widget.backgroundColor,
+                  shape: BoxShape.circle,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: RotationTransition(
+                    turns: Tween<double>(
+                      begin: 0,
+                      end: 0.125,
+                    ).animate(_controller),
+                    child: widget.icon,
                   ),
-                ],
-              ),
-              child: Center(
-                child: RotationTransition(
-                  turns: Tween<double>(
-                    begin: 0,
-                    end: 0.125,
-                  ).animate(_controller),
-                  child: widget.icon,
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// An animated donut chart whose segments sweep in on build (and re-sweep when
@@ -46,7 +47,9 @@ class _FxPieChartState extends State<FxPieChart>
   @override
   void didUpdateWidget(covariant FxPieChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.values != widget.values) _controller.forward(from: 0);
+    if (!listEquals(oldWidget.values, widget.values)) {
+      _controller.forward(from: 0);
+    }
   }
 
   @override
@@ -127,7 +130,7 @@ class _PiePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_PiePainter oldDelegate) =>
-      oldDelegate.values != values ||
-      oldDelegate.colors != colors ||
+      !listEquals(oldDelegate.values, values) ||
+      !listEquals(oldDelegate.colors, colors) ||
       oldDelegate.strokeWidth != strokeWidth;
 }

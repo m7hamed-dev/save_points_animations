@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A numeric keypad (dial-pad layout) where each key dips and ripples on tap.
@@ -33,6 +34,7 @@ class FxNumberPad extends StatelessWidget {
     Widget digit(int n) => _PadKey(
       color: color,
       keyColor: keyColor,
+      semanticLabel: '$n',
       onTap: () => onDigit(n),
       child: Text(
         '$n',
@@ -56,6 +58,7 @@ class FxNumberPad extends StatelessWidget {
           _PadKey(
             color: color,
             keyColor: const Color(0x00000000),
+            semanticLabel: 'Backspace',
             onTap: onBackspace ?? () {},
             child: Text('⌫', style: TextStyle(fontSize: 22, color: color)),
           ),
@@ -71,12 +74,14 @@ class _PadKey extends StatefulWidget {
     required this.onTap,
     required this.color,
     required this.keyColor,
+    required this.semanticLabel,
   });
 
   final Widget child;
   final VoidCallback onTap;
   final Color color;
   final Color keyColor;
+  final String semanticLabel;
 
   @override
   State<_PadKey> createState() => _PadKeyState();
@@ -87,28 +92,35 @@ class _PadKeyState extends State<_PadKey> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (_) => setState(() => _down = true),
-      onTapUp: (_) => setState(() => _down = false),
-      onTapCancel: () => setState(() => _down = false),
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: _down ? 0.88 : 1,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          width: 64,
-          height: 64,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: _down
-                ? widget.color.withValues(alpha: 0.12)
-                : widget.keyColor,
-            shape: BoxShape.circle,
+    return Semantics(
+      button: true,
+      label: widget.semanticLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (_) => setState(() => _down = true),
+        onTapUp: (_) => setState(() => _down = false),
+        onTapCancel: () => setState(() => _down = false),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          widget.onTap();
+        },
+        child: AnimatedScale(
+          scale: _down ? 0.88 : 1,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: 64,
+            height: 64,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _down
+                  ? widget.color.withValues(alpha: 0.12)
+                  : widget.keyColor,
+              shape: BoxShape.circle,
+            ),
+            child: widget.child,
           ),
-          child: widget.child,
         ),
       ),
     );

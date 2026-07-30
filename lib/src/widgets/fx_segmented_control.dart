@@ -70,19 +70,24 @@ class FxSegmentedControl extends StatelessWidget {
             children: [
               for (var i = 0; i < n; i++)
                 Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onChanged(i),
-                    child: Center(
-                      child: AnimatedDefaultTextStyle(
-                        duration: duration,
-                        style: TextStyle(
-                          color: i == selectedIndex
-                              ? selectedTextColor
-                              : textColor,
-                          fontWeight: FontWeight.w600,
+                  child: Semantics(
+                    button: true,
+                    selected: i == selectedIndex,
+                    label: segments[i],
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onChanged(i),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: duration,
+                          style: TextStyle(
+                            color: i == selectedIndex
+                                ? selectedTextColor
+                                : textColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          child: Text(segments[i]),
                         ),
-                        child: Text(segments[i]),
                       ),
                     ),
                   ),

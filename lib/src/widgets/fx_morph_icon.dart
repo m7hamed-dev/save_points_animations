@@ -88,6 +88,16 @@ class _MorphIconPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
 
+  // Hoisted out of paint() so they aren't reallocated every frame. The bar
+  // paint is fully static; only the middle bar's alpha is reassigned per frame.
+  late final Paint _barPaint = Paint()
+    ..color = color
+    ..strokeWidth = strokeWidth
+    ..strokeCap = StrokeCap.round;
+  late final Paint _middlePaint = Paint()
+    ..strokeWidth = strokeWidth
+    ..strokeCap = StrokeCap.round;
+
   @override
   void paint(Canvas canvas, Size size) {
     final t = Curves.easeInOut.transform(animation.value);
@@ -97,17 +107,13 @@ class _MorphIconPainter extends CustomPainter {
     final cx = w / 2;
     final cy = h / 2;
     final half = w * 0.35;
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
 
     // Top bar -> one diagonal of the X.
     canvas
       ..save()
       ..translate(cx, lerp(h * 0.28, cy))
       ..rotate(lerp(0, math.pi / 4))
-      ..drawLine(Offset(-half, 0), Offset(half, 0), paint)
+      ..drawLine(Offset(-half, 0), Offset(half, 0), _barPaint)
       ..restore();
 
     // Bottom bar -> other diagonal.
@@ -115,17 +121,14 @@ class _MorphIconPainter extends CustomPainter {
       ..save()
       ..translate(cx, lerp(h * 0.72, cy))
       ..rotate(lerp(0, -math.pi / 4))
-      ..drawLine(Offset(-half, 0), Offset(half, 0), paint)
+      ..drawLine(Offset(-half, 0), Offset(half, 0), _barPaint)
       ..restore();
 
     // Middle bar fades and shrinks away.
     canvas.drawLine(
       Offset(cx - half, cy),
       Offset(cx + half * (1 - t), cy),
-      Paint()
-        ..color = color.withValues(alpha: 1 - t)
-        ..strokeWidth = strokeWidth
-        ..strokeCap = StrokeCap.round,
+      _middlePaint..color = color.withValues(alpha: 1 - t),
     );
   }
 

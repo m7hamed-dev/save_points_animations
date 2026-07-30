@@ -31,7 +31,6 @@ class FxScrollProgress extends StatefulWidget {
 
 class _FxScrollProgressState extends State<FxScrollProgress> {
   ScrollPosition? _position;
-  double _fraction = 0;
 
   @override
   void didChangeDependencies() {
@@ -39,39 +38,37 @@ class _FxScrollProgressState extends State<FxScrollProgress> {
     _attach();
   }
 
+  @override
+  void didUpdateWidget(covariant FxScrollProgress oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _attach();
+    }
+  }
+
   void _attach() {
     final next = widget.controller?.hasClients ?? false
         ? widget.controller!.position
         : Scrollable.maybeOf(context)?.position;
     if (next != _position) {
-      _position?.removeListener(_update);
-      _position = next?..addListener(_update);
+      setState(() => _position = next);
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          if (_position == null) _attach();
-          _update();
-        }
+        if (mounted && _position == null) _attach();
       });
     }
   }
 
-  void _update() {
+  double get _fraction {
     final pos = _position;
-    if (pos == null || !pos.hasContentDimensions) return;
+    if (pos == null || !pos.hasContentDimensions) return 0;
     final max = pos.maxScrollExtent;
-    final next = max <= 0 ? 0.0 : (pos.pixels / max).clamp(0.0, 1.0);
-    if (next != _fraction) setState(() => _fraction = next);
-  }
-
-  @override
-  void dispose() {
-    _position?.removeListener(_update);
-    super.dispose();
+    return max <= 0 ? 0.0 : (pos.pixels / max).clamp(0.0, 1.0);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    final position = _position;
+    Widget buildBar() => ClipRRect(
       borderRadius: .circular(widget.borderRadius),
       child: SizedBox(
         height: widget.height,
@@ -89,6 +86,14 @@ class _FxScrollProgressState extends State<FxScrollProgress> {
           ],
         ),
       ),
+    );
+    return RepaintBoundary(
+      child: position == null
+          ? buildBar()
+          : AnimatedBuilder(
+              animation: position,
+              builder: (context, _) => buildBar(),
+            ),
     );
   }
 }

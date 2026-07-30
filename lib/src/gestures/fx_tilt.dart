@@ -29,12 +29,11 @@ class FxTilt extends StatefulWidget {
 
 class _FxTiltState extends State<FxTilt> {
   Offset _target = Offset.zero;
-  Size _size = Size.zero;
 
-  void _update(Offset local) {
-    if (_size.isEmpty) return;
-    final dx = (local.dx / _size.width - 0.5) * 2;
-    final dy = (local.dy / _size.height - 0.5) * 2;
+  void _update(Offset local, Size size) {
+    if (size.isEmpty) return;
+    final dx = (local.dx / size.width - 0.5) * 2;
+    final dy = (local.dy / size.height - 0.5) * 2;
     setState(() => _target = Offset(dx.clamp(-1, 1), dy.clamp(-1, 1)));
   }
 
@@ -42,9 +41,12 @@ class _FxTiltState extends State<FxTilt> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        _size = constraints.biggest;
+        // Read the size from the constraints local to this build pass and pass
+        // it into the hover handler, rather than stashing it in a field during
+        // build (which would be a build-phase side-effect).
+        final size = constraints.biggest;
         return MouseRegion(
-          onHover: (event) => _update(event.localPosition),
+          onHover: (event) => _update(event.localPosition, size),
           onExit: (_) => setState(() => _target = Offset.zero),
           child: TweenAnimationBuilder<Offset>(
             tween: Tween<Offset>(end: _target),

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// A tiny line chart that draws itself in, with an optional filled area — for
@@ -44,7 +45,9 @@ class _FxSparklineState extends State<FxSparkline>
   @override
   void didUpdateWidget(covariant FxSparkline oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.values != widget.values) _controller.forward(from: 0);
+    if (!listEquals(oldWidget.values, widget.values)) {
+      _controller.forward(from: 0);
+    }
   }
 
   @override
@@ -143,7 +146,7 @@ class _SparkPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SparkPainter oldDelegate) =>
-      oldDelegate.values != values ||
+      !listEquals(oldDelegate.values, values) ||
       oldDelegate.color != color ||
       oldDelegate.strokeWidth != strokeWidth ||
       oldDelegate.fill != fill;

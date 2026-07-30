@@ -1,4 +1,7 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// An animated day/night switch. The thumb slides between sun and moon while
 /// the track cross-fades from a bright sky to a starry night.
@@ -27,46 +30,67 @@ class FxThemeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final thumbSize = height - 8;
-    return GestureDetector(
-      onTap: () => onChanged(!isDark),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 360),
-        curve: Curves.easeInOut,
-        width: width,
-        height: height,
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: isDark ? nightColor : dayColor,
-          borderRadius: .circular(height),
-        ),
-        child: Stack(
-          children: [
-            // Stars fade in at night.
-            AnimatedOpacity(
-              opacity: isDark ? 1 : 0,
-              duration: const Duration(milliseconds: 360),
-              child: const _Stars(),
-            ),
-            AnimatedAlign(
-              alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
-              duration: const Duration(milliseconds: 360),
-              curve: Curves.easeInOutBack,
-              child: SizedBox(
-                width: thumbSize,
-                height: thumbSize,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) => RotationTransition(
-                    turns: Tween<double>(begin: 0.6, end: 1).animate(animation),
-                    child: FadeTransition(opacity: animation, child: child),
+    final reduceMotion = fxReduceMotion(context);
+    return Semantics(
+      button: true,
+      toggled: isDark,
+      label: 'Theme',
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onChanged(!isDark);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 360),
+          curve: Curves.easeInOut,
+          width: width,
+          height: height,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: isDark ? nightColor : dayColor,
+            borderRadius: .circular(height),
+          ),
+          child: Stack(
+            children: [
+              // Stars fade in at night.
+              AnimatedOpacity(
+                opacity: isDark ? 1 : 0,
+                duration: const Duration(milliseconds: 360),
+                child: const _Stars(),
+              ),
+              AnimatedAlign(
+                alignment: isDark
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                duration: const Duration(milliseconds: 360),
+                curve: Curves.easeInOutBack,
+                child: SizedBox(
+                  width: thumbSize,
+                  height: thumbSize,
+                  child: AnimatedSwitcher(
+                    duration: reduceMotion
+                        ? Duration.zero
+                        : const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) => reduceMotion
+                        ? FadeTransition(opacity: animation, child: child)
+                        : RotationTransition(
+                            turns: Tween<double>(
+                              begin: 0.6,
+                              end: 1,
+                            ).animate(animation),
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          ),
+                    child: isDark
+                        ? const _Moon(key: ValueKey('moon'))
+                        : const _Sun(key: ValueKey('sun')),
                   ),
-                  child: isDark
-                      ? const _Moon(key: ValueKey('moon'))
-                      : const _Sun(key: ValueKey('sun')),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

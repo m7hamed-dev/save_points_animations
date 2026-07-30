@@ -34,29 +34,32 @@ class FxGauge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: size,
-      child: TweenAnimationBuilder<double>(
-        tween: Tween<double>(end: value.clamp(0.0, 1.0)),
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        builder: (context, v, _) => Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned.fill(
-              child: CustomPaint(
-                painter: _GaugePainter(
-                  value: v,
-                  color: color,
-                  backgroundColor: backgroundColor,
-                  strokeWidth: strokeWidth,
-                  startAngle: startAngle,
-                  sweepAngle: sweepAngle,
+    return Semantics(
+      value: '${(value.clamp(0.0, 1.0) * 100).round()}%',
+      child: SizedBox.square(
+        dimension: size,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween<double>(end: value.clamp(0.0, 1.0)),
+          duration: duration,
+          curve: Curves.easeOutCubic,
+          builder: (context, v, _) => Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _GaugePainter(
+                    value: v,
+                    color: color,
+                    backgroundColor: backgroundColor,
+                    strokeWidth: strokeWidth,
+                    startAngle: startAngle,
+                    sweepAngle: sweepAngle,
+                  ),
                 ),
               ),
-            ),
-            ?child,
-          ],
+              ?child,
+            ],
+          ),
         ),
       ),
     );

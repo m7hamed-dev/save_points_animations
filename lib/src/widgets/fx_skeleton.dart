@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 import 'package:save_points_animations/src/extensions/fx_widget_extensions.dart';
 
 /// A shimmering skeleton placeholder for loading states.
@@ -44,13 +45,17 @@ class FxSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final block = Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
         color: baseColor,
         borderRadius: .circular(borderRadius),
       ),
-    ).animate().shimmer(color: highlightColor).looping();
+    );
+    // Honor "reduce motion": still show the placeholder block, just skip the
+    // looping shimmer sweep.
+    if (fxReduceMotion(context)) return block;
+    return block.animate().shimmer(color: highlightColor).looping();
   }
 }

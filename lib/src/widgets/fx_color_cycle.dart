@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// Continuously interpolates through a [colors] palette and hands the current
 /// color to [builder] — use it for cycling text, borders, glows, or fills.
 ///
@@ -26,14 +28,33 @@ class FxColorCycle extends StatefulWidget {
 }
 
 class _FxColorCycleState extends State<FxColorCycle>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+    _syncPlayback();
+  }
+
+  // Only cycle when there is more than one color and motion is allowed;
+  // otherwise the controller would loop uselessly.
+  void _syncPlayback() {
+    if (reduceMotion || widget.colors.length < 2) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) => _syncPlayback();
+
+  @override
+  void didUpdateWidget(covariant FxColorCycle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.colors.length != widget.colors.length) _syncPlayback();
   }
 
   @override

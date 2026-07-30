@@ -52,46 +52,51 @@ class FxPillNavBar extends StatelessWidget {
 
   Widget _item(int index) {
     final selected = index == currentIndex;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => onTap(index),
-      child: AnimatedContainer(
-        duration: duration,
-        curve: Curves.easeOut,
-        padding: EdgeInsets.symmetric(
-          horizontal: selected ? 16 : 12,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          color: selected
-              ? selectedColor.withValues(alpha: 0.15)
-              : const Color(0x00000000),
-          borderRadius: .circular(30),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconTheme.merge(
-              data: IconThemeData(color: selected ? selectedColor : color),
-              child: items[index].icon,
-            ),
-            AnimatedSize(
-              duration: duration,
-              curve: Curves.easeOut,
-              child: selected
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        items[index].label,
-                        style: TextStyle(
-                          color: selectedColor,
-                          fontWeight: FontWeight.w600,
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: items[index].label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: duration,
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: selected ? 16 : 12,
+            vertical: 10,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? selectedColor.withValues(alpha: 0.15)
+                : const Color(0x00000000),
+            borderRadius: .circular(30),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconTheme.merge(
+                data: IconThemeData(color: selected ? selectedColor : color),
+                child: items[index].icon,
+              ),
+              AnimatedSize(
+                duration: duration,
+                curve: Curves.easeOut,
+                child: selected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(
+                          items[index].label,
+                          style: TextStyle(
+                            color: selectedColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );

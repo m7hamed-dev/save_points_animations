@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A checkbox whose box fills and whose check draws itself in on toggle.
@@ -18,7 +19,10 @@ class FxAnimatedCheckbox extends StatefulWidget {
   });
 
   final bool value;
-  final ValueChanged<bool> onChanged;
+
+  /// Called when the box is tapped. Pass `null` to render a dimmed,
+  /// non-interactive checkbox.
+  final ValueChanged<bool>? onChanged;
   final double size;
   final Color activeColor;
   final Color borderColor;
@@ -46,6 +50,9 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
   @override
   void didUpdateWidget(covariant FxAnimatedCheckbox oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
     if (oldWidget.value != widget.value) {
       widget.value ? _controller.forward() : _controller.reverse();
     }
@@ -59,17 +66,30 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
 
   @override
   Widget build(BuildContext context) {
+    final enabled = widget.onChanged != null;
     return RepaintBoundary(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => widget.onChanged(!widget.value),
-        child: CustomPaint(
-          size: Size.square(widget.size),
-          painter: _CheckboxPainter(
-            animation: _controller,
-            activeColor: widget.activeColor,
-            borderColor: widget.borderColor,
-            checkColor: widget.checkColor,
+      child: Semantics(
+        checked: widget.value,
+        enabled: enabled,
+        child: Opacity(
+          opacity: enabled ? 1 : 0.4,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: enabled
+                ? () {
+                    HapticFeedback.lightImpact();
+                    widget.onChanged!(!widget.value);
+                  }
+                : null,
+            child: CustomPaint(
+              size: Size.square(widget.size),
+              painter: _CheckboxPainter(
+                animation: _controller,
+                activeColor: widget.activeColor,
+                borderColor: widget.borderColor,
+                checkColor: widget.checkColor,
+              ),
+            ),
           ),
         ),
       ),

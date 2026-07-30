@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A soft, drifting "aurora" of blurred colour blobs behind [child] — a modern,
 /// living gradient backdrop.
 ///
@@ -32,7 +34,7 @@ class FxAurora extends StatefulWidget {
 }
 
 class _FxAuroraState extends State<FxAurora>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -40,6 +42,15 @@ class _FxAuroraState extends State<FxAurora>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override

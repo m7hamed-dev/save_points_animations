@@ -1,4 +1,7 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A compact numeric stepper with `−` / `+` buttons that press in on tap and a
 /// value that rolls vertically (up or down) when it changes.
@@ -47,12 +50,16 @@ class _FxStepperState extends State<FxStepper> {
 
   void _bump(int delta) {
     final next = (widget.value + delta).clamp(widget.min, widget.max);
-    if (next != widget.value) widget.onChanged(next);
+    if (next != widget.value) {
+      HapticFeedback.selectionClick();
+      widget.onChanged(next);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final goingUp = widget.value >= _lastValue;
+    final reduceMotion = fxReduceMotion(context);
     return Container(
       decoration: BoxDecoration(
         color: widget.background,
@@ -64,6 +71,7 @@ class _FxStepperState extends State<FxStepper> {
         children: [
           _StepButton(
             icon: '−',
+            semanticLabel: 'Decrease',
             color: widget.color,
             enabled: widget.value > widget.min,
             onTap: () => _bump(-widget.step),
@@ -71,8 +79,13 @@ class _FxStepperState extends State<FxStepper> {
           SizedBox(
             width: 44,
             child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 240),
+              duration: reduceMotion
+                  ? Duration.zero
+                  : const Duration(milliseconds: 240),
               transitionBuilder: (child, animation) {
+                if (reduceMotion) {
+                  return FadeTransition(opacity: animation, child: child);
+                }
                 final offset = goingUp ? 1.0 : -1.0;
                 return ClipRect(
                   child: SlideTransition(
@@ -98,6 +111,7 @@ class _FxStepperState extends State<FxStepper> {
           ),
           _StepButton(
             icon: '+',
+            semanticLabel: 'Increase',
             color: widget.color,
             enabled: widget.value < widget.max,
             onTap: () => _bump(widget.step),
@@ -111,12 +125,14 @@ class _FxStepperState extends State<FxStepper> {
 class _StepButton extends StatefulWidget {
   const _StepButton({
     required this.icon,
+    required this.semanticLabel,
     required this.color,
     required this.enabled,
     required this.onTap,
   });
 
   final String icon;
+  final String semanticLabel;
   final Color color;
   final bool enabled;
   final VoidCallback onTap;
@@ -131,32 +147,37 @@ class _StepButtonState extends State<_StepButton> {
   @override
   Widget build(BuildContext context) {
     final active = widget.enabled;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: active ? (_) => setState(() => _down = true) : null,
-      onTapUp: active ? (_) => setState(() => _down = false) : null,
-      onTapCancel: active ? () => setState(() => _down = false) : null,
-      onTap: active ? widget.onTap : null,
-      child: AnimatedScale(
-        scale: _down ? 0.85 : 1,
-        duration: const Duration(milliseconds: 120),
-        child: Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active
-                ? widget.color.withValues(alpha: 0.12)
-                : const Color(0x11000000),
-            borderRadius: .circular(10),
-          ),
-          child: Text(
-            widget.icon,
-            style: TextStyle(
-              color: active ? widget.color : const Color(0xFFBDBDBD),
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              height: 1,
+    return Semantics(
+      button: true,
+      enabled: active,
+      label: widget.semanticLabel,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: active ? (_) => setState(() => _down = true) : null,
+        onTapUp: active ? (_) => setState(() => _down = false) : null,
+        onTapCancel: active ? () => setState(() => _down = false) : null,
+        onTap: active ? widget.onTap : null,
+        child: AnimatedScale(
+          scale: _down ? 0.85 : 1,
+          duration: const Duration(milliseconds: 120),
+          child: Container(
+            width: 34,
+            height: 34,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: active
+                  ? widget.color.withValues(alpha: 0.12)
+                  : const Color(0x11000000),
+              borderRadius: .circular(10),
+            ),
+            child: Text(
+              widget.icon,
+              style: TextStyle(
+                color: active ? widget.color : const Color(0xFFBDBDBD),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                height: 1,
+              ),
             ),
           ),
         ),

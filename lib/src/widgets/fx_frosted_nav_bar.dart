@@ -42,53 +42,60 @@ class FxFrostedNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final n = items.length;
     final alignX = n <= 1 ? 0.0 : -1 + 2 * currentIndex / (n - 1);
-    return ClipRRect(
-      borderRadius: .circular(borderRadius),
-      child: BackdropFilter(
-        filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-        child: Container(
-          height: height,
-          color: tint,
-          padding: const EdgeInsets.all(6),
-          child: Stack(
-            children: [
-              AnimatedAlign(
-                alignment: Alignment(alignX, 0),
-                duration: duration,
-                curve: Curves.easeOutCubic,
-                child: FractionallySizedBox(
-                  widthFactor: 1 / n,
-                  heightFactor: 1,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: highlightColor,
-                      borderRadius: .circular(borderRadius),
+    return RepaintBoundary(
+      child: ClipRRect(
+        borderRadius: .circular(borderRadius),
+        child: BackdropFilter(
+          filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: Container(
+            height: height,
+            color: tint,
+            padding: const EdgeInsets.all(6),
+            child: Stack(
+              children: [
+                AnimatedAlign(
+                  alignment: Alignment(alignX, 0),
+                  duration: duration,
+                  curve: Curves.easeOutCubic,
+                  child: FractionallySizedBox(
+                    widthFactor: 1 / n,
+                    heightFactor: 1,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: highlightColor,
+                        borderRadius: .circular(borderRadius),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Row(
-                children: [
-                  for (var i = 0; i < n; i++)
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => onTap(i),
-                        child: Center(
-                          child: IconTheme.merge(
-                            data: IconThemeData(
-                              color: i == currentIndex
-                                  ? selectedIconColor
-                                  : iconColor,
+                Row(
+                  children: [
+                    for (var i = 0; i < n; i++)
+                      Expanded(
+                        child: Semantics(
+                          button: true,
+                          selected: i == currentIndex,
+                          label: items[i].label,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => onTap(i),
+                            child: Center(
+                              child: IconTheme.merge(
+                                data: IconThemeData(
+                                  color: i == currentIndex
+                                      ? selectedIconColor
+                                      : iconColor,
+                                ),
+                                child: items[i].icon,
+                              ),
                             ),
-                            child: items[i].icon,
                           ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

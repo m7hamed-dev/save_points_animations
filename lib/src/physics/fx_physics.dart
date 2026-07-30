@@ -89,18 +89,30 @@ class _SimulationCurve extends Curve {
 /// widget.animate().moveY(200).curve(FxPhysics.gravity());
 /// ```
 abstract final class FxPhysics {
+  /// Cache of built spring curves. Constructing an [FxSpringCurve] steps a
+  /// simulation up to 2400 times to find its settle time; since `spring()` is
+  /// called from `build()` (potentially every frame on a rebuilding parent),
+  /// we memoize by parameters to keep that cost a one-time expense.
+  static final Map<int, FxSpringCurve> _springCache = <int, FxSpringCurve>{};
+
   /// A spring curve (see [FxSpringCurve]).
   static FxSpringCurve spring({
     double stiffness = 180,
     double damping = 12,
     double mass = 1,
     double velocity = 0,
-  }) => FxSpringCurve(
-    stiffness: stiffness,
-    damping: damping,
-    mass: mass,
-    velocity: velocity,
-  );
+  }) {
+    final key = Object.hash(stiffness, damping, mass, velocity);
+    return _springCache.putIfAbsent(
+      key,
+      () => FxSpringCurve(
+        stiffness: stiffness,
+        damping: damping,
+        mass: mass,
+        velocity: velocity,
+      ),
+    );
+  }
 
   /// A constant-acceleration (gravity) fall curve.
   static Curve gravity({double acceleration = 9.8, double velocity = 0}) =>

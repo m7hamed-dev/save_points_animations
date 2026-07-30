@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A glossy diagonal light band that sweeps across [child] — the "card shine"
 /// gloss for buttons, badges, and cards.
 ///
@@ -31,22 +33,46 @@ class FxShine extends StatefulWidget {
   State<FxShine> createState() => _FxShineState();
 }
 
-class _FxShineState extends State<FxShine> with SingleTickerProviderStateMixin {
+class _FxShineState extends State<FxShine>
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  bool _kicked = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) return;
-      if (widget.loop) {
-        _controller.repeat();
-      } else {
-        _controller.forward();
-      }
-    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The mixin only calls onReduceMotionChanged when the flag *flips*, so kick
+    // off the initial (non-reduced) run once the context is available.
+    if (!_kicked && !reduceMotion) {
+      _kicked = true;
+      _play();
+    }
+  }
+
+  void _play() {
+    if (widget.loop) {
+      _controller.repeat();
+    } else {
+      _controller.forward();
+    }
+  }
+
+  // Reacting to reduce-motion *changes* (not just once at mount) means toggling
+  // the OS setting at runtime starts/stops the gloss immediately.
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _kicked = true;
+      _play();
+    }
   }
 
   @override

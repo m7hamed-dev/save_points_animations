@@ -70,7 +70,7 @@ class _FxProgressBarState extends State<FxProgressBar>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
+    final bar = RepaintBoundary(
       child: ClipRRect(
         borderRadius: .circular(widget.radius),
         child: SizedBox(
@@ -103,6 +103,12 @@ class _FxProgressBarState extends State<FxProgressBar>
           ),
         ),
       ),
+    );
+    final value = widget.value;
+    if (value == null) return bar;
+    return Semantics(
+      value: '${(value.clamp(0.0, 1.0) * 100).round()}%',
+      child: bar,
     );
   }
 }

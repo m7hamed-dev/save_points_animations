@@ -42,23 +42,28 @@ class FxAnimatedTabBar extends StatelessWidget {
           children: [
             for (var i = 0; i < n; i++)
               Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onChanged(i),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Center(
-                      child: AnimatedDefaultTextStyle(
-                        duration: duration,
-                        style: TextStyle(
-                          color: i == selectedIndex
-                              ? selectedTextColor
-                              : textColor,
-                          fontWeight: i == selectedIndex
-                              ? FontWeight.w700
-                              : FontWeight.w500,
+                child: Semantics(
+                  button: true,
+                  selected: i == selectedIndex,
+                  label: tabs[i],
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => onChanged(i),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: duration,
+                          style: TextStyle(
+                            color: i == selectedIndex
+                                ? selectedTextColor
+                                : textColor,
+                            fontWeight: i == selectedIndex
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                          child: Text(tabs[i]),
                         ),
-                        child: Text(tabs[i]),
                       ),
                     ),
                   ),

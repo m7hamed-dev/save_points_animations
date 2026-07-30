@@ -126,8 +126,7 @@ class _RipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RipplePainter oldDelegate) =>
-      oldDelegate.color != color ||
-      oldDelegate.duration != duration ||
-      oldDelegate.elapsed != elapsed ||
-      oldDelegate.ripples != ripples;
+      // The `_frame` Listenable passed as `repaint:` already drives per-tick
+      // repaints; only config that changes the drawing needs checking here.
+      oldDelegate.color != color || oldDelegate.duration != duration;
 }

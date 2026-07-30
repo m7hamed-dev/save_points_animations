@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Types out each phrase in [phrases], pauses, deletes it, and moves to the
 /// next — the looping "typewriter" hero effect.
@@ -28,17 +29,35 @@ class FxTypeLoop extends StatefulWidget {
   State<FxTypeLoop> createState() => _FxTypeLoopState();
 }
 
-class _FxTypeLoopState extends State<FxTypeLoop> {
+class _FxTypeLoopState extends State<FxTypeLoop> with FxMotionAware {
   Timer? _timer;
   int _phrase = 0;
   int _count = 0;
   bool _deleting = false;
   int _pauseTicks = 0;
+  bool _started = false;
 
   @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(widget.typeSpeed, (_) => _tick());
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only fires onReduceMotionChanged when the flag flips, so
+    // start the loop on first mount when motion is allowed.
+    if (!_started) {
+      _started = true;
+      if (!reduceMotion) {
+        _timer = Timer.periodic(widget.typeSpeed, (_) => _tick());
+      }
+    }
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _timer?.cancel();
+      _timer = null;
+    } else {
+      _timer ??= Timer.periodic(widget.typeSpeed, (_) => _tick());
+    }
   }
 
   void _tick() {
@@ -76,9 +95,20 @@ class _FxTypeLoopState extends State<FxTypeLoop> {
 
   @override
   Widget build(BuildContext context) {
+    // When motion is reduced, show the first phrase in full (no cursor churn).
+    if (reduceMotion) {
+      final full = widget.phrases.isEmpty ? '' : widget.phrases.first;
+      return Semantics(
+        liveRegion: true,
+        child: Text(full, style: widget.style),
+      );
+    }
     final text = widget.phrases.isEmpty
         ? ''
         : widget.phrases[_phrase].substring(0, _count);
-    return Text('$text${widget.cursor}', style: widget.style);
+    return Semantics(
+      liveRegion: true,
+      child: Text('$text${widget.cursor}', style: widget.style),
+    );
   }
 }

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// Bubbles that rise and gently wobble over [child] — an airy, playful backdrop.
 ///
 /// ```dart
@@ -15,6 +17,7 @@ class FxBubbles extends StatefulWidget {
     this.color = const Color(0x33FFFFFF),
     this.maxRadius = 14,
     this.speed = 0.14,
+    this.seed,
     this.child,
   });
 
@@ -24,6 +27,10 @@ class FxBubbles extends StatefulWidget {
 
   /// Rise speed in fractions of the height per second.
   final double speed;
+
+  /// Optional seed for the random layout, so bursts are reproducible.
+  /// When null (the default) the layout is random each time.
+  final int? seed;
   final Widget? child;
 
   @override
@@ -31,8 +38,8 @@ class FxBubbles extends StatefulWidget {
 }
 
 class _FxBubblesState extends State<FxBubbles>
-    with SingleTickerProviderStateMixin {
-  final math.Random _random = math.Random();
+    with SingleTickerProviderStateMixin, FxMotionAware {
+  late final math.Random _random = math.Random(widget.seed);
   late final Ticker _ticker;
   late List<_Bubble> _bubbles;
   Duration _last = Duration.zero;
@@ -46,12 +53,17 @@ class _FxBubblesState extends State<FxBubbles>
     super.initState();
     _ticker = createTicker(_tick);
     _bubbles = List.generate(widget.count, (_) => _spawn(_random.nextDouble()));
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (!(MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
-        _ticker.start();
-      }
-    });
+    _ticker.start();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _ticker.stop();
+    } else if (!_ticker.isTicking) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
   }
 
   _Bubble _spawn(double y) => _Bubble(

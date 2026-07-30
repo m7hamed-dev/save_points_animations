@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A custom animated switch — the thumb slides and the track colour morphs.
@@ -30,32 +31,39 @@ class FxAnimatedToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inset = height * 0.12;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => onChanged(!value),
-      child: AnimatedContainer(
-        duration: duration,
-        curve: Curves.easeOut,
-        width: width,
-        height: height,
-        padding: EdgeInsets.all(inset),
-        decoration: BoxDecoration(
-          color: value ? activeColor : inactiveColor,
-          borderRadius: .circular(height / 2),
-        ),
-        child: AnimatedAlign(
+    return Semantics(
+      button: true,
+      toggled: value,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onChanged(!value);
+        },
+        child: AnimatedContainer(
           duration: duration,
           curve: Curves.easeOut,
-          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            width: height - inset * 2,
-            height: height - inset * 2,
-            decoration: BoxDecoration(
-              color: thumbColor,
-              shape: BoxShape.circle,
-              boxShadow: const [
-                BoxShadow(color: Color(0x33000000), blurRadius: 3),
-              ],
+          width: width,
+          height: height,
+          padding: EdgeInsets.all(inset),
+          decoration: BoxDecoration(
+            color: value ? activeColor : inactiveColor,
+            borderRadius: .circular(height / 2),
+          ),
+          child: AnimatedAlign(
+            duration: duration,
+            curve: Curves.easeOut,
+            alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              width: height - inset * 2,
+              height: height - inset * 2,
+              decoration: BoxDecoration(
+                color: thumbColor,
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(color: Color(0x33000000), blurRadius: 3),
+                ],
+              ),
             ),
           ),
         ),

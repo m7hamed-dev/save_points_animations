@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Lays [text] out around a circle and (optionally) spins it — a rotating seal,
 /// badge, or "•  NOW OPEN  •" ring.
@@ -29,8 +30,9 @@ class FxCircularText extends StatefulWidget {
 }
 
 class _FxCircularTextState extends State<FxCircularText>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  List<TextPainter> _painters = const [];
 
   @override
   void initState() {
@@ -39,11 +41,54 @@ class _FxCircularTextState extends State<FxCircularText>
       vsync: this,
       duration: widget.spinDuration,
     );
-    if (widget.spin) _controller.repeat();
+    _buildPainters();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion || !widget.spin) {
+      _controller.stop();
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxCircularText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.spinDuration != widget.spinDuration) {
+      _controller.duration = widget.spinDuration;
+    }
+    if (oldWidget.text != widget.text || oldWidget.style != widget.style) {
+      _buildPainters();
+    }
+    if (oldWidget.spin != widget.spin) {
+      if (widget.spin && !reduceMotion) {
+        _controller.repeat();
+      } else {
+        _controller.stop();
+      }
+    }
+  }
+
+  void _buildPainters() {
+    for (final p in _painters) {
+      p.dispose();
+    }
+    _painters = [
+      for (final glyph in widget.text.characters)
+        TextPainter(
+          text: TextSpan(text: glyph, style: widget.style),
+          textDirection: TextDirection.ltr,
+        )..layout(),
+    ];
   }
 
   @override
   void dispose() {
+    for (final p in _painters) {
+      p.dispose();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -57,7 +102,7 @@ class _FxCircularTextState extends State<FxCircularText>
         child: CustomPaint(
           painter: _CircularTextPainter(
             animation: _controller,
-            text: widget.text,
+            painters: _painters,
             radius: widget.radius,
             style: widget.style,
           ),
@@ -70,13 +115,13 @@ class _FxCircularTextState extends State<FxCircularText>
 class _CircularTextPainter extends CustomPainter {
   _CircularTextPainter({
     required this.animation,
-    required this.text,
+    required this.painters,
     required this.radius,
     required this.style,
   }) : super(repaint: animation);
 
   final Animation<double> animation;
-  final String text;
+  final List<TextPainter> painters;
   final double radius;
   final TextStyle style;
 
@@ -84,15 +129,12 @@ class _CircularTextPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rotation = animation.value * 2 * math.pi;
     final center = size.center(Offset.zero);
-    final n = text.length;
+    final n = painters.length;
     if (n == 0) return;
     final step = 2 * math.pi / n;
     for (var i = 0; i < n; i++) {
       final angle = -math.pi / 2 + i * step + rotation;
-      final painter = TextPainter(
-        text: TextSpan(text: text[i], style: style),
-        textDirection: TextDirection.ltr,
-      )..layout();
+      final painter = painters[i];
       final pos = center + Offset(math.cos(angle), math.sin(angle)) * radius;
       canvas
         ..save()
@@ -105,5 +147,7 @@ class _CircularTextPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CircularTextPainter oldDelegate) =>
-      oldDelegate.text != text || oldDelegate.radius != radius;
+      oldDelegate.painters != painters ||
+      oldDelegate.radius != radius ||
+      oldDelegate.style != style;
 }

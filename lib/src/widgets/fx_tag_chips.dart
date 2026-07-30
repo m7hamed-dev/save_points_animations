@@ -41,24 +41,32 @@ class FxTagChips extends StatelessWidget {
       runSpacing: spacing,
       children: [
         for (var i = 0; i < tags.length; i++)
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => onToggle(i),
-            child: AnimatedContainer(
-              duration: duration,
-              curve: Curves.easeOut,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: selected.contains(i) ? selectedColor : color,
-                borderRadius: .circular(20),
-              ),
-              child: AnimatedDefaultTextStyle(
+          Semantics(
+            button: true,
+            selected: selected.contains(i),
+            label: tags[i],
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onToggle(i),
+              child: AnimatedContainer(
                 duration: duration,
-                style: TextStyle(
-                  color: selected.contains(i) ? selectedTextColor : textColor,
-                  fontWeight: FontWeight.w600,
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
                 ),
-                child: Text(tags[i]),
+                decoration: BoxDecoration(
+                  color: selected.contains(i) ? selectedColor : color,
+                  borderRadius: .circular(20),
+                ),
+                child: AnimatedDefaultTextStyle(
+                  duration: duration,
+                  style: TextStyle(
+                    color: selected.contains(i) ? selectedTextColor : textColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  child: Text(tags[i]),
+                ),
               ),
             ),
           ),

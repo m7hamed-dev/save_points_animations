@@ -36,31 +36,6 @@ class FxPageIndicator extends StatefulWidget {
 }
 
 class _FxPageIndicatorState extends State<FxPageIndicator> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(_onScroll);
-  }
-
-  @override
-  void didUpdateWidget(covariant FxPageIndicator oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      oldWidget.controller.removeListener(_onScroll);
-      widget.controller.addListener(_onScroll);
-    }
-  }
-
-  void _onScroll() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(_onScroll);
-    super.dispose();
-  }
-
   double get _page {
     final controller = widget.controller;
     if (controller.hasClients && controller.position.haveDimensions) {
@@ -71,15 +46,22 @@ class _FxPageIndicatorState extends State<FxPageIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final page = _page;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < widget.count; i++) ...[
-          if (i > 0) SizedBox(width: widget.spacing),
-          _dot(i, page),
-        ],
-      ],
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: widget.controller,
+        builder: (context, _) {
+          final page = _page;
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < widget.count; i++) ...[
+                if (i > 0) SizedBox(width: widget.spacing),
+                _dot(i, page),
+              ],
+            ],
+          );
+        },
+      ),
     );
   }
 

@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// An organic, continuously morphing blob shape — a soft, living container for
 /// avatars, icons, or decorative accents.
 ///
@@ -32,7 +34,8 @@ class FxBlob extends StatefulWidget {
   State<FxBlob> createState() => _FxBlobState();
 }
 
-class _FxBlobState extends State<FxBlob> with SingleTickerProviderStateMixin {
+class _FxBlobState extends State<FxBlob>
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -40,6 +43,15 @@ class _FxBlobState extends State<FxBlob> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -81,28 +93,45 @@ class _BlobClipper extends CustomClipper<Path> {
   final double phase;
   final double amplitude;
 
+  double _radiusAt(double angle, double base) =>
+      base *
+      (1 +
+          amplitude * math.sin(3 * angle + phase) +
+          amplitude * 0.6 * math.sin(5 * angle - phase * 1.3));
+
   @override
   Path getClip(Size size) {
     final center = size.center(Offset.zero);
     final base = size.shortestSide / 2 * (1 - amplitude);
     final path = Path();
-    const steps = 120;
-    for (var i = 0; i <= steps; i++) {
-      final angle = i / steps * 2 * math.pi;
-      final r =
-          base *
-          (1 +
-              amplitude * math.sin(3 * angle + phase) +
-              amplitude * 0.6 * math.sin(5 * angle - phase * 1.3));
-      final point = Offset(
+    // Far fewer sample points than before; quadratic beziers through the
+    // midpoints keep the outline smooth. 44 samples is plenty here.
+    const steps = 44;
+    const twoPi = 2 * math.pi;
+
+    Offset pointAt(double angle) {
+      final r = _radiusAt(angle, base);
+      return Offset(
         center.dx + r * math.cos(angle),
         center.dy + r * math.sin(angle),
       );
-      if (i == 0) {
-        path.moveTo(point.dx, point.dy);
-      } else {
-        path.lineTo(point.dx, point.dy);
-      }
+    }
+
+    final first = pointAt(0);
+    // Start at the midpoint between the last and first sample so the closing
+    // curve joins seamlessly.
+    final prev = pointAt(-twoPi / steps);
+    final start = Offset((prev.dx + first.dx) / 2, (prev.dy + first.dy) / 2);
+    path.moveTo(start.dx, start.dy);
+    var current = first;
+    for (var i = 1; i <= steps; i++) {
+      final next = pointAt(i / steps * twoPi);
+      final mid = Offset(
+        (current.dx + next.dx) / 2,
+        (current.dy + next.dy) / 2,
+      );
+      path.quadraticBezierTo(current.dx, current.dy, mid.dx, mid.dy);
+      current = next;
     }
     return path..close();
   }

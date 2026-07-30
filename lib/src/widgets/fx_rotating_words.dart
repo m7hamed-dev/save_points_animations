@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Cycles through [words], animating each in with a fade + slide — a classic
 /// hero-headline word carousel (e.g. "Build.", "Ship.", "Scale.").
@@ -26,24 +27,41 @@ class FxRotatingWords extends StatefulWidget {
   State<FxRotatingWords> createState() => _FxRotatingWordsState();
 }
 
-class _FxRotatingWordsState extends State<FxRotatingWords> {
+class _FxRotatingWordsState extends State<FxRotatingWords> with FxMotionAware {
   int _index = 0;
   Timer? _timer;
+  bool _started = false;
 
   @override
-  void initState() {
-    super.initState();
-    _start();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only fires onReduceMotionChanged when the flag flips, so
+    // kick off the loop on first mount when motion is allowed.
+    if (!_started) {
+      _started = true;
+      _start();
+    }
   }
 
   void _start() {
     _timer?.cancel();
-    if (widget.words.length <= 1) return;
+    _timer = null;
+    if (reduceMotion || widget.words.length <= 1) return;
     _timer = Timer.periodic(widget.interval, (_) {
       if (mounted) {
         setState(() => _index = (_index + 1) % widget.words.length);
       }
     });
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _timer?.cancel();
+      _timer = null;
+    } else {
+      _start();
+    }
   }
 
   @override
@@ -64,22 +82,22 @@ class _FxRotatingWordsState extends State<FxRotatingWords> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedSwitcher(
-      duration: widget.transitionDuration,
-      transitionBuilder: (child, animation) => FadeTransition(
-        opacity: animation,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.4),
-            end: Offset.zero,
-          ).animate(animation),
-          child: child,
+    final word = widget.words.isEmpty ? '' : widget.words[_index];
+    return Semantics(
+      liveRegion: true,
+      child: AnimatedSwitcher(
+        duration: widget.transitionDuration,
+        transitionBuilder: (child, animation) => FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, 0.4),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         ),
-      ),
-      child: Text(
-        widget.words.isEmpty ? '' : widget.words[_index],
-        key: ValueKey(_index),
-        style: widget.style,
+        child: Text(word, key: ValueKey(_index), style: widget.style),
       ),
     );
   }

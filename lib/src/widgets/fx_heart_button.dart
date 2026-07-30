@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A "like" heart that pops and emits a small burst when toggled on.
@@ -42,6 +43,7 @@ class _FxHeartButtonState extends State<FxHeartButton>
 
   void _tap() {
     final next = !widget.isLiked;
+    HapticFeedback.lightImpact();
     widget.onChanged(next);
     if (next) _controller.forward(from: 0);
   }
@@ -54,34 +56,38 @@ class _FxHeartButtonState extends State<FxHeartButton>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _tap,
-        child: SizedBox.square(
-          dimension: widget.size * 1.8,
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              final v = _controller.value;
-              final scale = 1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
-              return CustomPaint(
-                painter: _BurstPainter(progress: v, color: widget.color),
-                child: Center(
-                  child: Transform.scale(
-                    scale: widget.isLiked ? scale : 1.0,
-                    child: CustomPaint(
-                      size: Size.square(widget.size),
-                      painter: _HeartPainter(
-                        color: widget.isLiked
-                            ? widget.color
-                            : widget.inactiveColor,
+    return Semantics(
+      button: true,
+      toggled: widget.isLiked,
+      child: RepaintBoundary(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _tap,
+          child: SizedBox.square(
+            dimension: widget.size * 1.8,
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                final v = _controller.value;
+                final scale = 1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
+                return CustomPaint(
+                  painter: _BurstPainter(progress: v, color: widget.color),
+                  child: Center(
+                    child: Transform.scale(
+                      scale: widget.isLiked ? scale : 1.0,
+                      child: CustomPaint(
+                        size: Size.square(widget.size),
+                        painter: _HeartPainter(
+                          color: widget.isLiked
+                              ? widget.color
+                              : widget.inactiveColor,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),

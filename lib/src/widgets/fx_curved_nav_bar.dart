@@ -60,8 +60,10 @@ class FxCurvedNavBar extends StatelessWidget {
                   tween: Tween<double>(end: targetX),
                   duration: duration,
                   curve: Curves.easeOut,
-                  builder: (context, x, _) => CustomPaint(
-                    painter: _CurvedBarPainter(color: color, notchX: x),
+                  builder: (context, x, _) => RepaintBoundary(
+                    child: CustomPaint(
+                      painter: _CurvedBarPainter(color: color, notchX: x),
+                    ),
                   ),
                 ),
               ),
@@ -98,14 +100,19 @@ class FxCurvedNavBar extends StatelessWidget {
                   children: [
                     for (var i = 0; i < items.length; i++)
                       Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => onTap(i),
-                          child: Opacity(
-                            opacity: i == currentIndex ? 0 : 1,
-                            child: IconTheme.merge(
-                              data: IconThemeData(color: iconColor),
-                              child: Center(child: items[i].icon),
+                        child: Semantics(
+                          button: true,
+                          selected: i == currentIndex,
+                          label: items[i].label,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => onTap(i),
+                            child: Opacity(
+                              opacity: i == currentIndex ? 0 : 1,
+                              child: IconTheme.merge(
+                                data: IconThemeData(color: iconColor),
+                                child: Center(child: items[i].icon),
+                              ),
                             ),
                           ),
                         ),

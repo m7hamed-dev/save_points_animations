@@ -71,8 +71,10 @@ class ScaleEffect extends FxEffect {
 
   @override
   void apply(FxAccumulator acc, double t) {
-    final sx = fxLerp(begin, end, t);
-    final sy = fxLerp(beginY ?? begin, endY ?? end, t);
+    // Springy/elastic curves can drive t below 0 (undershoot); flooring at 0
+    // avoids a negative scale flipping the child inside-out for one frame.
+    final sx = math.max(0.0, fxLerp(begin, end, t));
+    final sy = math.max(0.0, fxLerp(beginY ?? begin, endY ?? end, t));
     acc.transform.multiply(Matrix4.diagonal3Values(sx, sy, 1));
   }
 

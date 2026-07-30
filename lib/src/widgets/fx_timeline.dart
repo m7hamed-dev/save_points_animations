@@ -27,55 +27,57 @@ class FxTimeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var i = 0; i < items.length; i++)
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(
-                  width: dotSize,
-                  child: Column(
-                    children: [
-                      Container(
-                        width: dotSize,
-                        height: dotSize,
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
+    return RepaintBoundary(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < items.length; i++)
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(
+                    width: dotSize,
+                    child: Column(
+                      children: [
+                        Container(
+                          width: dotSize,
+                          height: dotSize,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                      ),
-                      if (i < items.length - 1)
-                        Expanded(
-                          child: Center(
-                            child: SizedBox(
-                              width: lineWidth,
-                              child: ColoredBox(
-                                color: color.withValues(alpha: 0.4),
+                        if (i < items.length - 1)
+                          Expanded(
+                            child: Center(
+                              child: SizedBox(
+                                width: lineWidth,
+                                child: ColoredBox(
+                                  color: color.withValues(alpha: 0.4),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: spacing),
-                    child: items[i]
-                        .animate()
-                        .fadeIn()
-                        .slideX(0.12)
-                        .delay(interval * i),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: spacing),
+                      child: items[i]
+                          .animate()
+                          .fadeIn()
+                          .slideX(0.12)
+                          .delay(interval * i),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

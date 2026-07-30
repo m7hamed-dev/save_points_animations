@@ -45,7 +45,7 @@ class FxLoadingOverlay extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _Spinner(color: spinnerColor),
+                  _Spinner(color: spinnerColor, active: visible),
                   if (message != null) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -68,9 +68,14 @@ class FxLoadingOverlay extends StatelessWidget {
 }
 
 class _Spinner extends StatefulWidget {
-  const _Spinner({required this.color});
+  const _Spinner({required this.color, required this.active});
 
   final Color color;
+
+  /// Whether the overlay is shown. When false the spinner stops rotating so it
+  /// doesn't burn a frame callback (and force the backdrop blur to recomposite)
+  /// while hidden behind a faded-out, ignored overlay.
+  final bool active;
 
   @override
   State<_Spinner> createState() => _SpinnerState();
@@ -79,6 +84,7 @@ class _Spinner extends StatefulWidget {
 class _SpinnerState extends State<_Spinner>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _reduceMotion = false;
 
   @override
   void initState() {
@@ -86,7 +92,28 @@ class _SpinnerState extends State<_Spinner>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1100),
-    )..repeat();
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+    _sync();
+  }
+
+  @override
+  void didUpdateWidget(covariant _Spinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.active != oldWidget.active) _sync();
+  }
+
+  void _sync() {
+    if (widget.active && !_reduceMotion) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      _controller.stop();
+    }
   }
 
   @override
@@ -97,13 +124,17 @@ class _SpinnerState extends State<_Spinner>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => Transform.rotate(
-        angle: _controller.value * 2 * math.pi,
-        child: CustomPaint(
-          size: const Size(42, 42),
-          painter: _ArcPainter(widget.color),
+    // Isolate the spinning arc so its per-frame repaint does not invalidate the
+    // expensive BackdropFilter blur sitting in the same layer.
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) => Transform.rotate(
+          angle: _controller.value * 2 * math.pi,
+          child: CustomPaint(
+            size: const Size(42, 42),
+            painter: _ArcPainter(widget.color),
+          ),
         ),
       ),
     );

@@ -45,11 +45,27 @@ class _FxMarqueeState extends State<FxMarquee>
     WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
   }
 
+  @override
+  void didUpdateWidget(covariant FxMarquee oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // A changed child/text can have a different width, which drives the wrap
+    // span; re-measure after the new child has laid out.
+    if (oldWidget.child != widget.child || oldWidget.gap != widget.gap) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+    }
+  }
+
   void _measure() {
     if (!mounted) return;
     _childWidth = _key.currentContext?.size?.width ?? 0;
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    if (!reduced && !_ticker.isActive && _childWidth > 0) _ticker.start();
+    if (reduced) {
+      if (_ticker.isActive) _ticker.stop();
+      _offset.value = 0;
+    } else if (!_ticker.isActive && _childWidth > 0) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
   }
 
   void _onTick(Duration elapsed) {

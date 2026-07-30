@@ -17,6 +17,7 @@ class FxSwipeCards extends StatefulWidget {
     required this.cards,
     this.onSwiped,
     this.threshold = 0.32,
+    this.flingVelocity = 700,
   });
 
   final List<Widget> cards;
@@ -27,6 +28,10 @@ class FxSwipeCards extends StatefulWidget {
   /// Fraction of width past which release dismisses the card.
   final double threshold;
 
+  /// Release speed, in logical pixels/second, above which the card is flung
+  /// regardless of how far it was dragged (default 700).
+  final double flingVelocity;
+
   @override
   State<FxSwipeCards> createState() => _FxSwipeCardsState();
 }
@@ -35,7 +40,8 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   int _top = 0;
-  Offset _drag = Offset.zero;
+  // Drives the moving card without rebuilding the card widgets each frame.
+  final ValueNotifier<Offset> _drag = ValueNotifier(Offset.zero);
   double _width = 1;
 
   @override
@@ -49,22 +55,23 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
 
   void _update(DragUpdateDetails d) {
     _controller.stop();
-    setState(() => _drag += d.delta);
+    _drag.value += d.delta;
   }
 
   void _end(DragEndDetails d) {
     final vx = d.velocity.pixelsPerSecond.dx;
-    final past = _drag.dx.abs() > _width * widget.threshold || vx.abs() > 700;
+    final fling = vx.abs() > widget.flingVelocity;
+    final past = _drag.value.dx.abs() > _width * widget.threshold || fling;
     if (past) {
-      final toRight = _drag.dx > 0 || vx > 0;
+      // Prefer the fling direction when a fling is present, otherwise fall
+      // back to the drag direction.
+      final toRight = fling ? vx > 0 : _drag.value.dx > 0;
       _animateTo(
-        Offset(toRight ? _width * 1.5 : -_width * 1.5, _drag.dy),
+        Offset(toRight ? _width * 1.5 : -_width * 1.5, _drag.value.dy),
         onDone: () {
           widget.onSwiped?.call(_top, toRight);
-          setState(() {
-            _top++;
-            _drag = Offset.zero;
-          });
+          _drag.value = Offset.zero;
+          setState(() => _top++);
         },
       );
     } else {
@@ -74,10 +81,10 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
 
   void _animateTo(Offset target, {VoidCallback? onDone}) {
     final anim = Tween<Offset>(
-      begin: _drag,
+      begin: _drag.value,
       end: target,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    void listener() => setState(() => _drag = anim.value);
+    void listener() => _drag.value = anim.value;
     anim.addListener(listener);
     unawaited(
       _controller.forward(from: 0).whenComplete(() {
@@ -89,6 +96,7 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
 
   @override
   void dispose() {
+    _drag.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -99,35 +107,45 @@ class _FxSwipeCardsState extends State<FxSwipeCards>
       child: LayoutBuilder(
         builder: (context, constraints) {
           _width = constraints.maxWidth.isFinite ? constraints.maxWidth : 300;
-          final children = <Widget>[];
 
-          if (_top + 1 < widget.cards.length) {
-            final t = (_drag.dx.abs() / _width).clamp(0.0, 1.0);
-            children.add(
-              Transform.scale(
-                scale: 0.92 + 0.08 * t,
-                child: widget.cards[_top + 1],
-              ),
-            );
-          }
+          final nextCard = _top + 1 < widget.cards.length
+              ? widget.cards[_top + 1]
+              : null;
+          final topCard = _top < widget.cards.length
+              ? widget.cards[_top]
+              : null;
 
-          if (_top < widget.cards.length) {
-            children.add(
-              Transform.translate(
-                offset: _drag,
-                child: Transform.rotate(
-                  angle: _drag.dx / _width * 0.3,
-                  child: GestureDetector(
-                    onPanUpdate: _update,
-                    onPanEnd: _end,
-                    child: widget.cards[_top],
+          return ValueListenableBuilder<Offset>(
+            valueListenable: _drag,
+            builder: (context, drag, _) {
+              final children = <Widget>[];
+
+              if (nextCard != null) {
+                final t = (drag.dx.abs() / _width).clamp(0.0, 1.0);
+                children.add(
+                  Transform.scale(scale: 0.92 + 0.08 * t, child: nextCard),
+                );
+              }
+
+              if (topCard != null) {
+                children.add(
+                  Transform.translate(
+                    offset: drag,
+                    child: Transform.rotate(
+                      angle: drag.dx / _width * 0.3,
+                      child: GestureDetector(
+                        onPanUpdate: _update,
+                        onPanEnd: _end,
+                        child: topCard,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          }
+                );
+              }
 
-          return Stack(alignment: Alignment.center, children: children);
+              return Stack(alignment: Alignment.center, children: children);
+            },
+          );
         },
       ),
     );

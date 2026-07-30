@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// An animated gradient background whose direction slowly rotates — a modern,
 /// living backdrop for hero sections, cards, or splash screens.
 ///
@@ -31,7 +33,7 @@ class FxAnimatedGradient extends StatefulWidget {
 }
 
 class _FxAnimatedGradientState extends State<FxAnimatedGradient>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -39,6 +41,15 @@ class _FxAnimatedGradientState extends State<FxAnimatedGradient>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override

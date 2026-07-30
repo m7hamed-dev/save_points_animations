@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A horizontal band with an animated sine-wave top edge — a flowing section
 /// divider or header base.
 ///
@@ -31,7 +33,7 @@ class FxWaveDivider extends StatefulWidget {
 }
 
 class _FxWaveDividerState extends State<FxWaveDivider>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -39,6 +41,15 @@ class _FxWaveDividerState extends State<FxWaveDivider>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -81,6 +92,9 @@ class _WaveDividerPainter extends CustomPainter {
   final double waveCount;
   final Animation<double> controller;
 
+  // Cached across frames; only the color is reassigned each paint().
+  final Paint _paint = Paint();
+
   @override
   void paint(Canvas canvas, Size size) {
     final phase = controller.value * 2 * math.pi;
@@ -96,7 +110,7 @@ class _WaveDividerPainter extends CustomPainter {
     path
       ..lineTo(size.width, size.height)
       ..close();
-    canvas.drawPath(path, Paint()..color = color);
+    canvas.drawPath(path, _paint..color = color);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A loader of dots that orbit a common center, each pulsing as it travels.
 ///
@@ -28,14 +29,31 @@ class FxOrbitLoader extends StatefulWidget {
 }
 
 class _FxOrbitLoaderState extends State<FxOrbitLoader>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: widget.duration)
-      ..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxOrbitLoader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override
@@ -70,12 +88,15 @@ class _OrbitPainter extends CustomPainter {
     required this.dotCount,
     required this.dotRadius,
     required this.color,
-  }) : super(repaint: repaint);
+  }) : _dotPaint = Paint()..color = color,
+       super(repaint: repaint);
 
   final Animation<double> controller;
   final int dotCount;
   final double dotRadius;
   final Color color;
+
+  final Paint _dotPaint;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -86,7 +107,7 @@ class _OrbitPainter extends CustomPainter {
       final angle = t * 2 * math.pi + i * 2 * math.pi / dotCount;
       final pos = center + Offset(math.cos(angle), math.sin(angle)) * orbit;
       final scale = 0.5 + 0.5 * ((math.sin(angle) + 1) / 2);
-      canvas.drawCircle(pos, dotRadius * scale, Paint()..color = color);
+      canvas.drawCircle(pos, dotRadius * scale, _dotPaint);
     }
   }
 

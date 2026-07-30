@@ -11,7 +11,9 @@ class ShakeEffect extends FxEffect {
     this.horizontal = true,
     super.delay,
     super.duration,
-    super.curve,
+    // The effect derives its own oscillation from t, so it must receive the
+    // raw (linear) timeline; a non-linear default curve would warp the decay.
+    super.curve = Curves.linear,
   });
 
   /// Peak displacement in logical pixels.
@@ -55,7 +57,7 @@ class BounceEffect extends FxEffect {
     this.count = 3,
     super.delay,
     super.duration,
-    super.curve,
+    super.curve = Curves.linear,
   });
 
   final double amplitude;
@@ -87,7 +89,7 @@ class PulseEffect extends FxEffect {
     this.amount = 0.1,
     super.delay,
     super.duration,
-    super.curve,
+    super.curve = Curves.linear,
   });
 
   /// Fractional peak growth (0.1 == +10%).

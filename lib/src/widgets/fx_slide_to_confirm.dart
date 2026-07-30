@@ -1,6 +1,20 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+
+/// Re-arm an [FxSlideToConfirm] after it has confirmed, via
+/// [FxSlideToConfirm.controller].
+class FxSlideToConfirmController {
+  VoidCallback? _reset;
+
+  void _attach(VoidCallback reset) => _reset = reset;
+
+  void _detach() => _reset = null;
+
+  /// Spring the thumb back to the start and re-enable dragging.
+  void reset() => _reset?.call();
+}
 
 /// A "slide to confirm / unlock" control — drag the thumb to the end to fire
 /// [onConfirmed]; release early and it springs back.
@@ -18,6 +32,8 @@ class FxSlideToConfirm extends StatefulWidget {
     this.thumbColor = const Color(0xFFFFFFFF),
     this.textColor = const Color(0xFFFFFFFF),
     this.borderRadius = 28,
+    this.enabled = true,
+    this.controller,
   });
 
   final Widget label;
@@ -27,6 +43,13 @@ class FxSlideToConfirm extends StatefulWidget {
   final Color thumbColor;
   final Color textColor;
   final double borderRadius;
+
+  /// When false, dragging is ignored (the thumb stays put).
+  final bool enabled;
+
+  /// Optional controller exposing [FxSlideToConfirmController.reset] so the
+  /// control can be re-armed after it confirms.
+  final FxSlideToConfirmController? controller;
 
   @override
   State<FxSlideToConfirm> createState() => _FxSlideToConfirmState();
@@ -46,21 +69,37 @@ class _FxSlideToConfirmState extends State<FxSlideToConfirm>
       vsync: this,
       duration: const Duration(milliseconds: 260),
     );
+    widget.controller?._attach(_reset);
+  }
+
+  @override
+  void didUpdateWidget(covariant FxSlideToConfirm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._detach();
+      widget.controller?._attach(_reset);
+    }
+  }
+
+  void _reset() {
+    _confirmed = false;
+    _animateTo(0);
   }
 
   void _update(DragUpdateDetails d) {
-    if (_confirmed) return;
+    if (_confirmed || !widget.enabled) return;
     _controller.stop();
     setState(() => _x = (_x + (d.primaryDelta ?? 0)).clamp(0.0, _max));
   }
 
   void _end(DragEndDetails d) {
-    if (_confirmed) return;
+    if (_confirmed || !widget.enabled) return;
     if (_x >= _max * 0.9) {
       _animateTo(
         _max,
         onDone: () {
           setState(() => _confirmed = true);
+          HapticFeedback.mediumImpact();
           widget.onConfirmed();
         },
       );
@@ -86,63 +125,69 @@ class _FxSlideToConfirmState extends State<FxSlideToConfirm>
 
   @override
   void dispose() {
+    widget.controller?._detach();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final thumb = widget.height - 8;
-          _max = constraints.maxWidth - thumb - 8;
-          final progress = _max <= 0 ? 0.0 : (_x / _max).clamp(0.0, 1.0);
-          return Container(
-            height: widget.height,
-            decoration: BoxDecoration(
-              color: widget.trackColor,
-              borderRadius: .circular(widget.borderRadius),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Opacity(
-                  opacity: 1 - progress,
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(
-                      color: widget.textColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    child: widget.label,
-                  ),
-                ),
-                Positioned(
-                  left: 4 + _x,
-                  top: 4,
-                  child: GestureDetector(
-                    onHorizontalDragUpdate: _update,
-                    onHorizontalDragEnd: _end,
-                    child: Container(
-                      width: thumb,
-                      height: thumb,
-                      decoration: BoxDecoration(
-                        color: widget.thumbColor,
-                        shape: BoxShape.circle,
+    return Semantics(
+      button: true,
+      enabled: widget.enabled && !_confirmed,
+      label: 'Slide to confirm',
+      child: RepaintBoundary(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final thumb = widget.height - 8;
+            _max = constraints.maxWidth - thumb - 8;
+            final progress = _max <= 0 ? 0.0 : (_x / _max).clamp(0.0, 1.0);
+            return Container(
+              height: widget.height,
+              decoration: BoxDecoration(
+                color: widget.trackColor,
+                borderRadius: .circular(widget.borderRadius),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Opacity(
+                    opacity: 1 - progress,
+                    child: DefaultTextStyle.merge(
+                      style: TextStyle(
+                        color: widget.textColor,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: CustomPaint(
-                        painter: _ThumbPainter(
-                          confirmed: _confirmed,
-                          color: widget.trackColor,
+                      child: widget.label,
+                    ),
+                  ),
+                  Positioned(
+                    left: 4 + _x,
+                    top: 4,
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: _update,
+                      onHorizontalDragEnd: _end,
+                      child: Container(
+                        width: thumb,
+                        height: thumb,
+                        decoration: BoxDecoration(
+                          color: widget.thumbColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: CustomPaint(
+                          painter: _ThumbPainter(
+                            confirmed: _confirmed,
+                            color: widget.trackColor,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

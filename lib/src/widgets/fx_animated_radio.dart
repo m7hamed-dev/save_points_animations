@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// A radio button whose inner dot scales in and ring tints when selected.
@@ -19,7 +20,10 @@ class FxAnimatedRadio<T> extends StatefulWidget {
 
   final T value;
   final T? groupValue;
-  final ValueChanged<T> onChanged;
+
+  /// Called when this option is tapped. Pass `null` to render a dimmed,
+  /// non-interactive radio button.
+  final ValueChanged<T>? onChanged;
   final double size;
   final Color color;
   final Color borderColor;
@@ -46,6 +50,9 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
   @override
   void didUpdateWidget(covariant FxAnimatedRadio<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
     final selected = widget.value == widget.groupValue;
     final wasSelected = oldWidget.value == oldWidget.groupValue;
     if (selected != wasSelected) {
@@ -61,16 +68,30 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
 
   @override
   Widget build(BuildContext context) {
+    final enabled = widget.onChanged != null;
     return RepaintBoundary(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => widget.onChanged(widget.value),
-        child: CustomPaint(
-          size: Size.square(widget.size),
-          painter: _RadioPainter(
-            animation: _controller,
-            color: widget.color,
-            borderColor: widget.borderColor,
+      child: Semantics(
+        inMutuallyExclusiveGroup: true,
+        checked: widget.value == widget.groupValue,
+        enabled: enabled,
+        child: Opacity(
+          opacity: enabled ? 1 : 0.4,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: enabled
+                ? () {
+                    HapticFeedback.lightImpact();
+                    widget.onChanged!(widget.value);
+                  }
+                : null,
+            child: CustomPaint(
+              size: Size.square(widget.size),
+              painter: _RadioPainter(
+                animation: _controller,
+                color: widget.color,
+                borderColor: widget.borderColor,
+              ),
+            ),
           ),
         ),
       ),

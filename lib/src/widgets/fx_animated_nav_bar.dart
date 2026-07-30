@@ -66,15 +66,19 @@ class FxAnimatedNavBar extends StatelessWidget {
             children: [
               for (var i = 0; i < n; i++)
                 Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onTap(i),
-                    child: Center(
-                      child: AnimatedSlide(
-                        offset: Offset(0, i == currentIndex ? -0.12 : 0),
-                        duration: duration,
-                        curve: Curves.easeOutCubic,
-                        child: items[i],
+                  child: Semantics(
+                    button: true,
+                    selected: i == currentIndex,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onTap(i),
+                      child: Center(
+                        child: AnimatedSlide(
+                          offset: Offset(0, i == currentIndex ? -0.12 : 0),
+                          duration: duration,
+                          curve: Curves.easeOutCubic,
+                          child: items[i],
+                        ),
                       ),
                     ),
                   ),

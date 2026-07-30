@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// An animated grid of dots with a wave rippling diagonally across it — a
 /// subtle, modern tech backdrop.
 ///
@@ -29,7 +31,7 @@ class FxDotGrid extends StatefulWidget {
 }
 
 class _FxDotGridState extends State<FxDotGrid>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -37,6 +39,15 @@ class _FxDotGridState extends State<FxDotGrid>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -82,20 +93,19 @@ class _DotGridPainter extends CustomPainter {
   final double dotRadius;
   final Color color;
 
+  // One Paint reused for every dot every frame; only its alpha is mutated.
+  final Paint _paint = Paint();
+
   @override
   void paint(Canvas canvas, Size size) {
     final phase = _animation.value * 2 * math.pi;
+    final invPeriod = 1 / (spacing * 3);
     for (var y = spacing / 2; y < size.height; y += spacing) {
       for (var x = spacing / 2; x < size.width; x += spacing) {
-        final wave =
-            (math.sin((x + y) / (spacing * 3) - phase) + 1) / 2; // 0..1
+        final wave = (math.sin((x + y) * invPeriod - phase) + 1) / 2; // 0..1
         final r = dotRadius * (0.4 + 0.8 * wave);
-        canvas.drawCircle(
-          Offset(x, y),
-          r,
-          Paint()
-            ..color = color.withValues(alpha: color.a * (0.4 + 0.6 * wave)),
-        );
+        _paint.color = color.withValues(alpha: color.a * (0.4 + 0.6 * wave));
+        canvas.drawCircle(Offset(x, y), r, _paint);
       }
     }
   }

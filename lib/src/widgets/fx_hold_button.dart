@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 /// Press and hold to confirm — a ring fills while held and fires [onConfirmed]
@@ -45,6 +46,7 @@ class _FxHoldButtonState extends State<FxHoldButton>
     );
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
+        HapticFeedback.mediumImpact();
         widget.onConfirmed();
         _controller.reset();
       }
@@ -65,22 +67,25 @@ class _FxHoldButtonState extends State<FxHoldButton>
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: GestureDetector(
-        onTapDown: (_) => _start(),
-        onTapUp: (_) => _cancel(),
-        onTapCancel: _cancel,
-        child: SizedBox.square(
-          dimension: widget.size,
-          child: CustomPaint(
-            painter: _HoldRingPainter(
-              repaint: _controller,
-              animation: _controller,
-              color: widget.color,
-              backgroundColor: widget.backgroundColor,
-              strokeWidth: widget.strokeWidth,
+    return Semantics(
+      button: true,
+      child: RepaintBoundary(
+        child: GestureDetector(
+          onTapDown: (_) => _start(),
+          onTapUp: (_) => _cancel(),
+          onTapCancel: _cancel,
+          child: SizedBox.square(
+            dimension: widget.size,
+            child: CustomPaint(
+              painter: _HoldRingPainter(
+                repaint: _controller,
+                animation: _controller,
+                color: widget.color,
+                backgroundColor: widget.backgroundColor,
+                strokeWidth: widget.strokeWidth,
+              ),
+              child: Center(child: widget.child),
             ),
-            child: Center(child: widget.child),
           ),
         ),
       ),

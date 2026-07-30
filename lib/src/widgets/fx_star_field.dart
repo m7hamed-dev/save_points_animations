@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A "warp speed" starfield — stars stream outward from the center toward the
 /// viewer, resetting to depth when they pass.
 ///
@@ -15,6 +17,7 @@ class FxStarField extends StatefulWidget {
     this.count = 140,
     this.color = const Color(0xFFFFFFFF),
     this.speed = 0.6,
+    this.seed,
     this.child,
   });
 
@@ -23,6 +26,10 @@ class FxStarField extends StatefulWidget {
 
   /// Approach speed (depth units per second).
   final double speed;
+
+  /// Optional seed for the random layout, so it's reproducible.
+  /// When null (the default) the layout is random each time.
+  final int? seed;
   final Widget? child;
 
   @override
@@ -30,8 +37,8 @@ class FxStarField extends StatefulWidget {
 }
 
 class _FxStarFieldState extends State<FxStarField>
-    with SingleTickerProviderStateMixin {
-  final math.Random _random = math.Random();
+    with SingleTickerProviderStateMixin, FxMotionAware {
+  late final math.Random _random = math.Random(widget.seed);
   late final Ticker _ticker;
   late List<_Star> _stars;
   Duration _last = Duration.zero;
@@ -45,12 +52,17 @@ class _FxStarFieldState extends State<FxStarField>
     super.initState();
     _ticker = createTicker(_tick);
     _stars = List.generate(widget.count, (_) => _spawn());
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (!(MediaQuery.maybeDisableAnimationsOf(context) ?? false)) {
-        _ticker.start();
-      }
-    });
+    _ticker.start();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _ticker.stop();
+    } else if (!_ticker.isTicking) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
   }
 
   _Star _spawn() => _Star(
@@ -115,6 +127,9 @@ class _StarPainter extends CustomPainter {
   final List<_Star> stars;
   final Color color;
 
+  // One Paint reused for every star every frame; only its alpha is mutated.
+  final Paint _paint = Paint();
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
@@ -123,11 +138,8 @@ class _StarPainter extends CustomPainter {
       final sy = center.dy + (s.y / s.z) * center.dy;
       if (sx < 0 || sx > size.width || sy < 0 || sy > size.height) continue;
       final radius = (1 - s.z) * 2.2;
-      canvas.drawCircle(
-        Offset(sx, sy),
-        radius,
-        Paint()..color = color.withValues(alpha: (1 - s.z).clamp(0.0, 1.0)),
-      );
+      _paint.color = color.withValues(alpha: (1 - s.z).clamp(0.0, 1.0));
+      canvas.drawCircle(Offset(sx, sy), radius, _paint);
     }
   }
 

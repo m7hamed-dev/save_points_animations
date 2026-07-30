@@ -47,7 +47,7 @@ class _FxDraggableSheetState extends State<FxDraggableSheet> {
     });
   }
 
-  void _settle() {
+  void _settle(double velocity) {
     var nearest = widget.snapSizes.first;
     var best = double.infinity;
     for (final s in widget.snapSizes) {
@@ -55,6 +55,19 @@ class _FxDraggableSheetState extends State<FxDraggableSheet> {
       if (d < best) {
         best = d;
         nearest = s;
+      }
+    }
+    // A fast flick should carry the sheet one snap further in its direction
+    // rather than settling on the geometrically nearest point. Upward drag is a
+    // negative dy velocity and should grow the sheet.
+    const flingThreshold = 600.0;
+    if (velocity.abs() > flingThreshold) {
+      final sorted = [...widget.snapSizes]..sort();
+      final idx = sorted.indexOf(nearest);
+      if (velocity < 0 && idx < sorted.length - 1) {
+        nearest = sorted[idx + 1];
+      } else if (velocity > 0 && idx > 0) {
+        nearest = sorted[idx - 1];
       }
     }
     setState(() {
@@ -95,7 +108,7 @@ class _FxDraggableSheetState extends State<FxDraggableSheet> {
                   behavior: HitTestBehavior.opaque,
                   onVerticalDragUpdate: (d) =>
                       _onDragUpdate(d.delta.dy, height),
-                  onVerticalDragEnd: (_) => _settle(),
+                  onVerticalDragEnd: (d) => _settle(d.primaryVelocity ?? 0),
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 12),

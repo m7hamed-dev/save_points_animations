@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// Wraps [child] in a continuously rotating gradient border — the trendy
 /// "glow outline" look for cards, avatars, or inputs.
 ///
@@ -36,7 +38,7 @@ class FxGradientBorder extends StatefulWidget {
 }
 
 class _FxGradientBorderState extends State<FxGradientBorder>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -44,6 +46,15 @@ class _FxGradientBorderState extends State<FxGradientBorder>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -84,23 +95,24 @@ class _GradientBorderPainter extends CustomPainter {
   final double borderWidth;
   final double borderRadius;
 
+  // Cached across frames; only the shader is reassigned each paint().
+  final Paint _paint = Paint()..style = PaintingStyle.stroke;
+
   @override
   void paint(Canvas canvas, Size size) {
     final t = animation.value;
     final rect = Offset.zero & size;
-    final shader = SweepGradient(
-      colors: [...colors, colors.first],
-      transform: GradientRotation(t * 2 * math.pi),
-    ).createShader(rect);
-    final paint = Paint()
-      ..shader = shader
-      ..style = PaintingStyle.stroke
+    _paint
+      ..shader = SweepGradient(
+        colors: [...colors, colors.first],
+        transform: GradientRotation(t * 2 * math.pi),
+      ).createShader(rect)
       ..strokeWidth = borderWidth;
     final rrect = RRect.fromRectAndRadius(
       rect.deflate(borderWidth / 2),
       Radius.circular(borderRadius),
     );
-    canvas.drawRRect(rrect, paint);
+    canvas.drawRRect(rrect, _paint);
   }
 
   @override

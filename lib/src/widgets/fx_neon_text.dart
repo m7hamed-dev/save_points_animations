@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Glowing neon-sign text with a subtle, irregular flicker.
 ///
@@ -28,14 +29,23 @@ class FxNeonText extends StatefulWidget {
 }
 
 class _FxNeonTextState extends State<FxNeonText>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    if (widget.flicker) _controller.repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion || !widget.flicker) {
+      // Settle to a static, fully-bright frame.
+      _controller.value = 0;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -57,7 +67,9 @@ class _FxNeonTextState extends State<FxNeonText>
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, _) {
-          final i = widget.flicker ? _intensity(_controller.value) : 1.0;
+          final i = (widget.flicker && !reduceMotion)
+              ? _intensity(_controller.value)
+              : 1.0;
           final base = (widget.style ?? const TextStyle(fontSize: 32)).copyWith(
             color: const Color(0xFFFFFFFF),
             fontWeight: FontWeight.bold,

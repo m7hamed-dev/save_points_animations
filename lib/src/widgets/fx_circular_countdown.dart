@@ -52,6 +52,15 @@ class _FxCircularCountdownState extends State<FxCircularCountdown>
   }
 
   @override
+  void didUpdateWidget(covariant FxCircularCountdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      _controller.forward(from: _controller.value);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -85,7 +94,14 @@ class _FxCircularCountdownState extends State<FxCircularCountdown>
                   ),
                 ),
                 widget.builder?.call(context, remaining) ??
-                    Text('${remaining.inSeconds}', style: widget.textStyle),
+                    Semantics(
+                      liveRegion: true,
+                      label: '${remaining.inSeconds} seconds remaining',
+                      child: Text(
+                        '${remaining.inSeconds}',
+                        style: widget.textStyle,
+                      ),
+                    ),
               ],
             );
           },

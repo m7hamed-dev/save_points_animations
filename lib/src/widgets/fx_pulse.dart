@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A looping "sonar" pulse of expanding, fading rings behind [child] — a
 /// live/attention indicator (call button, unread dot, recording light, …).
 ///
@@ -14,6 +16,8 @@ class FxPulse extends StatefulWidget {
     this.maxRadius = 18,
     this.rings = 2,
     this.duration = const Duration(milliseconds: 1600),
+    this.stroke = false,
+    this.strokeWidth = 2,
   });
 
   final Widget child;
@@ -24,11 +28,19 @@ class FxPulse extends StatefulWidget {
   final int rings;
   final Duration duration;
 
+  /// When true, the rings are drawn as outlined circles instead of filled
+  /// discs, for a lighter "sonar ring" look.
+  final bool stroke;
+
+  /// Outline width when [stroke] is true.
+  final double strokeWidth;
+
   @override
   State<FxPulse> createState() => _FxPulseState();
 }
 
-class _FxPulseState extends State<FxPulse> with SingleTickerProviderStateMixin {
+class _FxPulseState extends State<FxPulse>
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -36,6 +48,15 @@ class _FxPulseState extends State<FxPulse> with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -59,6 +80,8 @@ class _FxPulseState extends State<FxPulse> with SingleTickerProviderStateMixin {
                   color: widget.color,
                   maxRadius: widget.maxRadius,
                   rings: widget.rings,
+                  stroke: widget.stroke,
+                  strokeWidth: widget.strokeWidth,
                   controller: _controller,
                 ),
               ),
@@ -77,12 +100,16 @@ class _PulsePainter extends CustomPainter {
     required this.color,
     required this.maxRadius,
     required this.rings,
+    required this.stroke,
+    required this.strokeWidth,
     required this.controller,
   }) : super(repaint: repaint);
 
   final Color color;
   final double maxRadius;
   final int rings;
+  final bool stroke;
+  final double strokeWidth;
   final Animation<double> controller;
 
   @override
@@ -95,6 +122,11 @@ class _PulsePainter extends CustomPainter {
       final radius = base + phase * maxRadius;
       final paint = Paint()
         ..color = color.withValues(alpha: (1 - phase) * 0.35);
+      if (stroke) {
+        paint
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = strokeWidth;
+      }
       canvas.drawCircle(center, radius, paint);
     }
   }
@@ -103,5 +135,7 @@ class _PulsePainter extends CustomPainter {
   bool shouldRepaint(_PulsePainter oldDelegate) =>
       oldDelegate.color != color ||
       oldDelegate.maxRadius != maxRadius ||
-      oldDelegate.rings != rings;
+      oldDelegate.rings != rings ||
+      oldDelegate.stroke != stroke ||
+      oldDelegate.strokeWidth != strokeWidth;
 }

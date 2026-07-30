@@ -42,19 +42,24 @@ class FxDotNavBar extends StatelessWidget {
             children: [
               for (var i = 0; i < n; i++)
                 Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => onTap(i),
-                    child: Center(
-                      child: AnimatedScale(
-                        scale: i == currentIndex ? 1.18 : 1,
-                        duration: duration,
-                        curve: Curves.easeOut,
-                        child: IconTheme.merge(
-                          data: IconThemeData(
-                            color: i == currentIndex ? selectedColor : color,
+                  child: Semantics(
+                    button: true,
+                    selected: i == currentIndex,
+                    label: items[i].label,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onTap(i),
+                      child: Center(
+                        child: AnimatedScale(
+                          scale: i == currentIndex ? 1.18 : 1,
+                          duration: duration,
+                          curve: Curves.easeOut,
+                          child: IconTheme.merge(
+                            data: IconThemeData(
+                              color: i == currentIndex ? selectedColor : color,
+                            ),
+                            child: items[i].icon,
                           ),
-                          child: items[i].icon,
                         ),
                       ),
                     ),

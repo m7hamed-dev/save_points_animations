@@ -17,6 +17,7 @@ library;
 export 'src/builders/fx_builder.dart' show FxBuilder;
 export 'src/controllers/fx_controller.dart' show FxController;
 export 'src/core/fx_curves.dart';
+export 'src/core/fx_motion.dart' show FxMotionAware, fxReduceMotion;
 export 'src/debug/fx_debug.dart' show FxDebug, FxDebugRegistry;
 export 'src/effects/attention_effects.dart';
 export 'src/effects/color_effects.dart';

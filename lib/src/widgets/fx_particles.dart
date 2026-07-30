@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// An ambient field of slowly drifting particles — a subtle living backdrop
 /// for hero sections, splash screens, or empty states.
 ///
@@ -16,6 +18,7 @@ class FxParticles extends StatefulWidget {
     this.color = const Color(0x33FFFFFF),
     this.maxRadius = 3,
     this.speed = 0.03,
+    this.seed,
     this.child,
   });
 
@@ -25,6 +28,10 @@ class FxParticles extends StatefulWidget {
 
   /// Drift speed in fractions of the box per second.
   final double speed;
+
+  /// Optional seed for the random layout, so it's reproducible.
+  /// When null (the default) the layout is random each time.
+  final int? seed;
   final Widget? child;
 
   @override
@@ -32,8 +39,8 @@ class FxParticles extends StatefulWidget {
 }
 
 class _FxParticlesState extends State<FxParticles>
-    with SingleTickerProviderStateMixin {
-  final math.Random _random = math.Random();
+    with SingleTickerProviderStateMixin, FxMotionAware {
+  late final math.Random _random = math.Random(widget.seed);
   late final Ticker _ticker;
   late List<_Particle> _particles;
   Duration _last = Duration.zero;
@@ -55,11 +62,17 @@ class _FxParticlesState extends State<FxParticles>
         radius: 1 + _random.nextDouble() * widget.maxRadius,
       );
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-      if (!reduced) _ticker.start();
-    });
+    _ticker.start();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduce) {
+    if (reduce) {
+      _ticker.stop();
+    } else if (!_ticker.isTicking) {
+      _last = Duration.zero;
+      _ticker.start();
+    }
   }
 
   void _tick(Duration elapsed) {

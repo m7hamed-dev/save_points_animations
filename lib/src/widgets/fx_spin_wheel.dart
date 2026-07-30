@@ -56,21 +56,62 @@ class _FxSpinWheelState extends State<FxSpinWheel>
   double _to = 0;
   double _rotation = 0;
 
+  /// Segment labels laid out once (not per frame) — see [_buildLabels].
+  List<TextPainter> _labels = const <TextPainter>[];
+
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
     widget.controller?._attach(_spin);
+    _buildLabels();
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _rotation = _to;
-        widget.onResult?.call(_indexAtTop(_rotation));
+        final i = _indexAtTop(_rotation);
+        if (i >= 0) widget.onResult?.call(i);
       }
     });
   }
 
+  @override
+  void didUpdateWidget(covariant FxSpinWheel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.controller, oldWidget.controller)) {
+      widget.controller?._attach(_spin);
+    }
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (!_sameLabels(oldWidget)) _buildLabels();
+  }
+
+  bool _sameLabels(FxSpinWheel old) =>
+      widget.textStyle == old.textStyle &&
+      old.items.length == widget.items.length &&
+      List.generate(
+        widget.items.length,
+        (i) => widget.items[i] == old.items[i],
+      ).every((e) => e);
+
+  /// Lay out each segment label a single time. `TextPainter.layout()` is
+  /// expensive; doing it per glyph on every frame (as before) was the wheel's
+  /// dominant cost while spinning.
+  void _buildLabels() {
+    for (final p in _labels) {
+      p.dispose();
+    }
+    _labels = [
+      for (final item in widget.items)
+        TextPainter(
+          text: TextSpan(text: item, style: widget.textStyle),
+          textDirection: TextDirection.ltr,
+        )..layout(),
+    ];
+  }
+
   void _spin() {
-    if (_controller.isAnimating) return;
+    if (_controller.isAnimating || widget.items.isEmpty) return;
     final turns = 5 + _random.nextDouble() * 3;
     _from = _rotation;
     _to = _rotation + turns * 2 * math.pi;
@@ -79,6 +120,7 @@ class _FxSpinWheelState extends State<FxSpinWheel>
 
   int _indexAtTop(double rotation) {
     final n = widget.items.length;
+    if (n == 0) return -1;
     final seg = 2 * math.pi / n;
     var i = ((-rotation / seg) - 0.5).round() % n;
     if (i < 0) i += n;
@@ -87,6 +129,9 @@ class _FxSpinWheelState extends State<FxSpinWheel>
 
   @override
   void dispose() {
+    for (final p in _labels) {
+      p.dispose();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -107,7 +152,7 @@ class _FxSpinWheelState extends State<FxSpinWheel>
                 items: widget.items,
                 colors: widget.colors,
                 rotation: rotation,
-                textStyle: widget.textStyle,
+                labels: _labels,
               ),
             );
           },
@@ -122,13 +167,15 @@ class _WheelPainter extends CustomPainter {
     required this.items,
     required this.colors,
     required this.rotation,
-    required this.textStyle,
+    required this.labels,
   });
 
   final List<String> items;
   final List<Color> colors;
   final double rotation;
-  final TextStyle textStyle;
+
+  /// Pre-laid-out segment labels, one per item (see [_FxSpinWheelState]).
+  final List<TextPainter> labels;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -149,10 +196,7 @@ class _WheelPainter extends CustomPainter {
         Paint()..color = colors[i % colors.length],
       );
 
-      final painter = TextPainter(
-        text: TextSpan(text: items[i], style: textStyle),
-        textDirection: TextDirection.ltr,
-      )..layout();
+      final painter = labels[i];
       final mid = start + seg / 2;
       final pos =
           center + Offset(math.cos(mid), math.sin(mid)) * (radius * 0.62);
@@ -175,5 +219,6 @@ class _WheelPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_WheelPainter oldDelegate) =>
-      oldDelegate.rotation != rotation || oldDelegate.items != items;
+      oldDelegate.rotation != rotation ||
+      !identical(oldDelegate.labels, labels);
 }

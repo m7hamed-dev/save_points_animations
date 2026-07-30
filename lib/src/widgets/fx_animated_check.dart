@@ -14,6 +14,7 @@ class FxAnimatedCheck extends StatefulWidget {
     this.color = const Color(0xFF43A047),
     this.strokeWidth = 4,
     this.autoPlay = true,
+    this.play,
     this.duration = const Duration(milliseconds: 700),
   });
 
@@ -21,6 +22,11 @@ class FxAnimatedCheck extends StatefulWidget {
   final Color color;
   final double strokeWidth;
   final bool autoPlay;
+
+  /// Optional replay trigger. Each time this flips from `false` to `true` the
+  /// draw-in animation restarts from the beginning. Leave `null` to rely on
+  /// [autoPlay] alone.
+  final bool? play;
   final Duration duration;
 
   @override
@@ -44,6 +50,21 @@ class _FxAnimatedCheckState extends State<FxAnimatedCheck>
           _controller.forward();
         }
       });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxAnimatedCheck oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (widget.play == true && oldWidget.play != true) {
+      if (MediaQuery.maybeDisableAnimationsOf(context) ?? false) {
+        _controller.value = 1;
+      } else {
+        _controller.forward(from: 0);
+      }
     }
   }
 

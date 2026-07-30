@@ -25,7 +25,29 @@ class FxScratchCard extends StatefulWidget {
 class _FxScratchCardState extends State<FxScratchCard> {
   final List<Offset> _points = [];
 
-  void _add(Offset p) => setState(() => _points.add(p));
+  // Bumped whenever a point is added so the painter (via `repaint:`) redraws
+  // without rebuilding the whole Stack — which would rebuild widget.child too.
+  final ValueNotifier<int> _revision = ValueNotifier<int>(0);
+
+  // Minimum distance between consecutive stored points. Skipping closer moves
+  // caps the unbounded growth of _points (and the per-frame re-pathing cost)
+  // while staying dense enough for a smooth stroke at typical brush sizes.
+  static const double _minSpacing = 4;
+
+  void _add(Offset p) {
+    if (_points.isNotEmpty) {
+      final last = _points.last;
+      if ((p - last).distanceSquared < _minSpacing * _minSpacing) return;
+    }
+    _points.add(p);
+    _revision.value++;
+  }
+
+  @override
+  void dispose() {
+    _revision.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +64,7 @@ class _FxScratchCardState extends State<FxScratchCard> {
                 points: _points,
                 coverColor: widget.coverColor,
                 brushSize: widget.brushSize,
+                repaint: _revision,
               ),
             ),
           ),
@@ -56,7 +79,8 @@ class _ScratchPainter extends CustomPainter {
     required this.points,
     required this.coverColor,
     required this.brushSize,
-  });
+    required Listenable repaint,
+  }) : super(repaint: repaint);
 
   final List<Offset> points;
   final Color coverColor;

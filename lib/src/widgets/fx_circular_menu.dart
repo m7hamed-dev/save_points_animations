@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// A main button that fans its [children] out along an arc when tapped — a
 /// radial action menu.
@@ -39,7 +40,7 @@ class FxCircularMenu extends StatefulWidget {
 }
 
 class _FxCircularMenuState extends State<FxCircularMenu>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
   bool _open = false;
 
@@ -49,9 +50,21 @@ class _FxCircularMenuState extends State<FxCircularMenu>
     _controller = AnimationController(vsync: this, duration: widget.duration);
   }
 
+  @override
+  void didUpdateWidget(covariant FxCircularMenu oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+    }
+  }
+
   void _toggle() {
     setState(() => _open = !_open);
-    _open ? _controller.forward() : _controller.reverse();
+    if (reduceMotion) {
+      _controller.value = _open ? 1 : 0;
+    } else {
+      _open ? _controller.forward() : _controller.reverse();
+    }
   }
 
   @override
@@ -69,25 +82,29 @@ class _FxCircularMenuState extends State<FxCircularMenu>
         clipBehavior: Clip.none,
         children: [
           for (var i = 0; i < n; i++) _item(i, n),
-          GestureDetector(
-            onTap: _toggle,
-            child: Container(
-              width: widget.size,
-              height: widget.size,
-              decoration: BoxDecoration(
-                color: widget.backgroundColor,
-                shape: BoxShape.circle,
-                boxShadow: const [
-                  BoxShadow(color: Color(0x33000000), blurRadius: 8),
-                ],
-              ),
-              child: Center(
-                child: RotationTransition(
-                  turns: Tween<double>(
-                    begin: 0,
-                    end: 0.375,
-                  ).animate(_controller),
-                  child: widget.icon,
+          Semantics(
+            button: true,
+            label: 'Menu',
+            child: GestureDetector(
+              onTap: _toggle,
+              child: Container(
+                width: widget.size,
+                height: widget.size,
+                decoration: BoxDecoration(
+                  color: widget.backgroundColor,
+                  shape: BoxShape.circle,
+                  boxShadow: const [
+                    BoxShadow(color: Color(0x33000000), blurRadius: 8),
+                  ],
+                ),
+                child: Center(
+                  child: RotationTransition(
+                    turns: Tween<double>(
+                      begin: 0,
+                      end: 0.375,
+                    ).animate(_controller),
+                    child: widget.icon,
+                  ),
                 ),
               ),
             ),

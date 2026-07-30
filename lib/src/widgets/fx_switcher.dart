@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// How [FxSwitcher] animates between two children.
 enum FxSwitcherEffect {
   /// Cross-fade.
@@ -50,6 +52,10 @@ class FxSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Under reduce-motion, collapse the preset transforms to a plain cross-fade
+    // over a short duration so content still swaps without moving/scaling.
+    final reduce = fxReduceMotion(context);
+    final effectiveEffect = reduce ? FxSwitcherEffect.fade : effect;
     return AnimatedSwitcher(
       duration: duration,
       switchInCurve: curve,
@@ -59,7 +65,7 @@ class FxSwitcher extends StatelessWidget {
         children: [...previousChildren, ?currentChild],
       ),
       transitionBuilder: (child, animation) =>
-          _switcherTransition(effect, child, animation),
+          _switcherTransition(effectiveEffect, child, animation),
       child: child,
     );
   }

@@ -49,6 +49,15 @@ class _FxCountdownState extends State<FxCountdown>
   }
 
   @override
+  void didUpdateWidget(covariant FxCountdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.duration != widget.duration) {
+      _controller.duration = widget.duration;
+      _controller.forward(from: _controller.value);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -70,12 +79,16 @@ class _FxCountdownState extends State<FxCountdown>
             return widget.builder!(context, remaining);
           }
           final seconds = remaining.inSeconds;
-          return FxSwitcher(
-            effect: FxSwitcherEffect.slideUp,
-            child: Text(
-              '$seconds',
-              key: ValueKey<int>(seconds),
-              style: widget.style,
+          return Semantics(
+            liveRegion: true,
+            label: '$seconds seconds remaining',
+            child: FxSwitcher(
+              effect: FxSwitcherEffect.slideUp,
+              child: Text(
+                '$seconds',
+                key: ValueKey<int>(seconds),
+                style: widget.style,
+              ),
             ),
           );
         },

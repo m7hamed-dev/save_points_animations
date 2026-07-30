@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A glowing "comet" beam that travels around [child]'s rounded border — the
 /// trendy animated-outline accent for cards and inputs.
 ///
@@ -29,7 +31,7 @@ class FxBorderBeam extends StatefulWidget {
 }
 
 class _FxBorderBeamState extends State<FxBorderBeam>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -37,6 +39,15 @@ class _FxBorderBeamState extends State<FxBorderBeam>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration)
       ..repeat();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    if (reduceMotion) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -77,27 +88,29 @@ class _BeamPainter extends CustomPainter {
   final double borderWidth;
   final double borderRadius;
 
+  // Cached across frames; only the shader is reassigned each paint().
+  final Paint _paint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round;
+
   @override
   void paint(Canvas canvas, Size size) {
     final t = animation.value;
     final rect = Offset.zero & size;
     // A short bright band that clamps to transparent everywhere else, rotated
     // around the perimeter over time.
-    final shader = SweepGradient(
-      colors: [color.withValues(alpha: 0), color, color.withValues(alpha: 0)],
-      stops: const [0.0, 0.06, 0.12],
-      transform: GradientRotation(t * 2 * math.pi),
-    ).createShader(rect);
-    final paint = Paint()
-      ..shader = shader
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = borderWidth
-      ..strokeCap = StrokeCap.round;
+    _paint
+      ..shader = SweepGradient(
+        colors: [color.withValues(alpha: 0), color, color.withValues(alpha: 0)],
+        stops: const [0.0, 0.06, 0.12],
+        transform: GradientRotation(t * 2 * math.pi),
+      ).createShader(rect)
+      ..strokeWidth = borderWidth;
     final rrect = RRect.fromRectAndRadius(
       rect.deflate(borderWidth / 2),
       Radius.circular(borderRadius),
     );
-    canvas.drawRRect(rrect, paint);
+    canvas.drawRRect(rrect, _paint);
   }
 
   @override
