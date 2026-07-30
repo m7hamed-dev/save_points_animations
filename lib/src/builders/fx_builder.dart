@@ -268,6 +268,10 @@ class FxBuilder extends StatelessWidget {
   /// Zoom entrance: fade + scale up from [begin].
   FxBuilder zoom({double begin = 0.3}) => fade().scale(begin: begin);
 
+  /// Fade in with a scale that overshoots past 1 and settles — a subtle "pop".
+  FxBuilder pop({double overshoot = 1.1}) =>
+      addEffect(PopEffect(overshoot: overshoot));
+
   /// Opacity flash on/off.
   FxBuilder flash() => addEffect(const FlashEffect());
 

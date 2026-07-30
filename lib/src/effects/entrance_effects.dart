@@ -36,6 +36,49 @@ class RollInEffect extends FxEffect {
   );
 }
 
+/// A playful entrance: the child fades in while its scale overshoots past 1
+/// and settles back — a subtle "pop". Great for badges, chips, reactions, and
+/// anything that should feel like it snaps into place.
+class PopEffect extends FxEffect {
+  const PopEffect({
+    this.overshoot = 1.1,
+    super.delay,
+    super.duration,
+    super.curve = Curves.linear,
+  });
+
+  /// Peak scale reached before settling to 1 (1.1 == +10%).
+  final double overshoot;
+
+  @override
+  void apply(FxAccumulator acc, double t) {
+    acc.opacity *= fxKeyframe(t, const [
+      [0, 0],
+      [0.35, 1],
+      [1, 1],
+    ]).clamp(0.0, 1.0);
+    final s = fxKeyframe(t, [
+      [0, 0.3],
+      [0.6, overshoot],
+      [0.8, 0.98],
+      [1, 1],
+    ]);
+    acc.transform.multiply(Matrix4.diagonal3Values(s, s, 1));
+  }
+
+  @override
+  FxEffect copyWithTiming({
+    Duration? delay,
+    Duration? duration,
+    Curve? curve,
+  }) => PopEffect(
+    overshoot: overshoot,
+    delay: delay ?? this.delay,
+    duration: duration ?? this.duration,
+    curve: curve ?? this.curve,
+  );
+}
+
 /// Swing from a corner and drop away (Animate.css `hinge` — an exit).
 ///
 /// Note: Animate.css hinges from the top-left corner; this engine transforms
