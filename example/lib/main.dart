@@ -1967,6 +1967,63 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
 
+              const SizedBox(height: 32),
+              Text(
+                'New: Mesh · Glow · WaveDots · .pop()',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              // Animated mesh-gradient backdrop.
+              ClipRRect(
+                borderRadius: .circular(16),
+                child: const SizedBox(
+                  height: 120,
+                  width: double.infinity,
+                  child: FxMeshGradient(
+                    child: Center(
+                      child: Text(
+                        'Mesh gradient',
+                        style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Glowing button + traveling-wave dots loader.
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FxGlowButton(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Glow tapped'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    ),
+                    child: const Text('Get Pro'),
+                  ),
+                  const FxWaveDots(),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // `.pop()` entrance, staggered across a row of chips.
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var i = 0; i < 4; i++) ...[
+                    if (i > 0) const SizedBox(width: 12),
+                    const _Chip(
+                      color: Colors.deepPurple,
+                    ).animate().pop().delay((i * 140).ms),
+                  ],
+                ],
+              ),
+
               const SizedBox(height: 48),
             ],
           ),
