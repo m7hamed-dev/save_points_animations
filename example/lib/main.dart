@@ -2099,6 +2099,67 @@ class _HomeScreenState extends State<HomeScreen> {
                 textAlign: TextAlign.center,
               ),
 
+              const SizedBox(height: 32),
+              Text(
+                'New: Rain · Jelly · Heartbeat · DNA · .sheen()',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              // Rain over a dark scene, with a .sheen() streak on the card.
+              ClipRRect(
+                borderRadius: .circular(16),
+                child: const SizedBox(
+                  height: 120,
+                  width: double.infinity,
+                  child: FxRain(
+                    child: ColoredBox(
+                      color: Color(0xFF10131A),
+                      child: Center(
+                        child: Text(
+                          'Rainy night',
+                          style: TextStyle(
+                            color: Color(0xFFAECBFF),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FxJellyButton(
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Boing!'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    ),
+                    child: const Text('Squish me'),
+                  ),
+                  const FxDnaLoader(),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // ECG heartbeat line.
+              SizedBox(
+                height: 60,
+                child: FxHeartbeatLine(color: theme.colorScheme.error),
+              ),
+              const SizedBox(height: 16),
+              // One-shot specular sheen sweeping across a card (looped here).
+              const Card(
+                child: ListTile(
+                  leading: Icon(Icons.workspace_premium),
+                  title: Text('Sheen sweep'),
+                  subtitle: Text('.sheen() diagonal highlight'),
+                ),
+              ).animate().sheen(bandWidth: 0.15).duration(1600.ms).looping(),
+
               const SizedBox(height: 48),
             ],
           ),

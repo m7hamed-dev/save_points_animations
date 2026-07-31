@@ -332,6 +332,15 @@ class FxBuilder extends StatelessWidget {
         BreatheEffect(scaleAmount: scaleAmount, opacityDip: opacityDip),
       );
 
+  /// A sharp diagonal light streak sweeping across the child (a specular
+  /// "sheen"). One-shot by default; pair with [looping] to repeat.
+  FxBuilder sheen({
+    Color color = const Color(0xFFFFFFFF),
+    double bandWidth = 0.12,
+    double angle = 0.6,
+  }) =>
+      addEffect(SheenEffect(color: color, bandWidth: bandWidth, angle: angle));
+
   // --- Color & filter -----------------------------------------------------
 
   /// Animate saturation from [begin] (0 = grayscale) to [end] (1 = full).

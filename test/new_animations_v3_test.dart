@@ -143,6 +143,78 @@ void main() {
     });
   });
 
+  group('SheenEffect', () {
+    test('adds a ShaderMask wrap mid-sweep', () {
+      final acc = FxAccumulator();
+      const SheenEffect().apply(acc, 0.5);
+      expect(acc.wraps, hasLength(1));
+    });
+
+    testWidgets('.sheen() builds and renders', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const ColoredBox(
+            color: Color(0xFF448AFF),
+            child: SizedBox(width: 60, height: 40),
+          ).animate().sheen().looping(),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('batch 3 widgets render & dispose cleanly', () {
+    testWidgets('FxRain', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const SizedBox(
+            width: 160,
+            height: 160,
+            child: FxRain(seed: 7, child: ColoredBox(color: Color(0xFF10131A))),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxJellyButton wobbles on tap and disables', (tester) async {
+      var taps = 0;
+      await tester.pumpWidget(
+        _host(FxJellyButton(onPressed: () => taps++, child: const Text('J'))),
+      );
+      await tester.tap(find.text('J'));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(taps, 1);
+
+      await tester.pumpWidget(
+        _host(const FxJellyButton(child: Text('J'))),
+      );
+      await tester.tap(find.text('J'));
+      expect(taps, 1);
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxHeartbeatLine', (tester) async {
+      await tester.pumpWidget(
+        _host(const SizedBox(width: 200, height: 60, child: FxHeartbeatLine())),
+      );
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxDnaLoader', (tester) async {
+      await tester.pumpWidget(_host(const FxDnaLoader()));
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('reduced motion is honored', () {
     testWidgets('looping widgets settle without a running ticker', (
       tester,
@@ -156,10 +228,14 @@ void main() {
               children: [
                 SizedBox(width: 100, height: 100, child: FxMeshGradient()),
                 SizedBox(width: 100, height: 100, child: FxPlasma()),
+                SizedBox(width: 100, height: 100, child: FxRain(seed: 1)),
                 FxWaveDots(),
                 FxBouncingBall(),
                 FxShinyText('x'),
                 FxGlowButton(child: Text('x')),
+                FxJellyButton(child: Text('x')),
+                SizedBox(width: 120, height: 40, child: FxDnaLoader()),
+                SizedBox(width: 120, height: 60, child: FxHeartbeatLine()),
               ],
             ),
           ),

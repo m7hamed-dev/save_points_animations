@@ -78,6 +78,7 @@ export 'src/widgets/fx_confetti.dart' show FxConfetti, FxConfettiController;
 export 'src/widgets/fx_countdown.dart' show FxCountdown;
 export 'src/widgets/fx_curved_nav_bar.dart' show FxCurvedNavBar;
 export 'src/widgets/fx_date_strip.dart' show FxDateStrip;
+export 'src/widgets/fx_dna_loader.dart' show FxDnaLoader;
 export 'src/widgets/fx_dot_grid.dart' show FxDotGrid;
 export 'src/widgets/fx_dot_nav_bar.dart' show FxDotNavBar;
 export 'src/widgets/fx_draggable_sheet.dart' show FxDraggableSheet;
@@ -95,8 +96,10 @@ export 'src/widgets/fx_gooey_nav_bar.dart' show FxGooeyNavBar;
 export 'src/widgets/fx_gradient_border.dart' show FxGradientBorder;
 export 'src/widgets/fx_gradient_button.dart' show FxGradientButton;
 export 'src/widgets/fx_heart_button.dart' show FxHeartButton;
+export 'src/widgets/fx_heartbeat_line.dart' show FxHeartbeatLine;
 export 'src/widgets/fx_hold_button.dart' show FxHoldButton;
 export 'src/widgets/fx_image_compare.dart' show FxImageCompare;
+export 'src/widgets/fx_jelly_button.dart' show FxJellyButton;
 export 'src/widgets/fx_ken_burns.dart' show FxKenBurns;
 export 'src/widgets/fx_loaders.dart'
     show FxBarsLoader, FxDotsLoader, FxProgressRing;
@@ -123,6 +126,7 @@ export 'src/widgets/fx_progress_button.dart'
     show FxButtonState, FxProgressButton;
 export 'src/widgets/fx_pulse.dart' show FxPulse;
 export 'src/widgets/fx_radar.dart' show FxRadar;
+export 'src/widgets/fx_rain.dart' show FxRain;
 export 'src/widgets/fx_range_slider.dart' show FxRange, FxRangeSlider;
 export 'src/widgets/fx_rating.dart' show FxRating;
 export 'src/widgets/fx_reaction_bar.dart' show FxReactionBar;
