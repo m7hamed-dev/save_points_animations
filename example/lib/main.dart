@@ -2024,6 +2024,81 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
 
+              const SizedBox(height: 32),
+              Text(
+                'New: Plasma · ShinyText · Ball · RippleGrid · .blink()',
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              // Turbulent plasma field with shiny text laid over it.
+              ClipRRect(
+                borderRadius: .circular(16),
+                child: const SizedBox(
+                  height: 120,
+                  width: double.infinity,
+                  child: FxPlasma(
+                    child: Center(
+                      child: FxShinyText(
+                        'PREMIUM',
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 3,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Squash-and-stretch loader.
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FxBouncingBall(color: theme.colorScheme.primary),
+                      const SizedBox(height: 8),
+                      const Text('Loading'),
+                    ],
+                  ),
+                  // A blinking "LIVE" indicator via the .blink() effect.
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.fiber_manual_record,
+                        color: Colors.red,
+                        size: 14,
+                      ).animate().blink(count: 1).duration(1200.ms).looping(),
+                      const SizedBox(width: 6),
+                      const Text('LIVE'),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Tap anywhere on the grid to send a ripple.
+              ClipRRect(
+                borderRadius: .circular(16),
+                child: ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: SizedBox(
+                    height: 150,
+                    width: double.infinity,
+                    child: FxRippleGrid(color: theme.colorScheme.primary),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Tap the grid ↑',
+                style: theme.textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+
               const SizedBox(height: 48),
             ],
           ),

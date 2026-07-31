@@ -59,6 +59,44 @@ class FlashEffect extends _AttentionEffect {
   );
 }
 
+/// The child blinks on and off [count] times across the duration, holding each
+/// state (unlike [FlashEffect]'s quick four-beat). Pair with `.looping()` for a
+/// persistent blink — e.g. a "recording" or "live" indicator.
+class BlinkEffect extends _AttentionEffect {
+  const BlinkEffect({
+    this.count = 3,
+    this.minOpacity = 0.0,
+    super.delay,
+    super.duration,
+    super.curve = Curves.linear,
+  });
+
+  /// Number of on/off cycles across the duration.
+  final int count;
+
+  /// Opacity of the "off" state (0 = fully invisible).
+  final double minOpacity;
+
+  @override
+  void apply(FxAccumulator acc, double t) {
+    final phase = (t * count) % 1.0;
+    acc.opacity *= phase < 0.5 ? 1.0 : minOpacity.clamp(0.0, 1.0);
+  }
+
+  @override
+  FxEffect copyWithTiming({
+    Duration? delay,
+    Duration? duration,
+    Curve? curve,
+  }) => BlinkEffect(
+    count: count,
+    minOpacity: minOpacity,
+    delay: delay ?? this.delay,
+    duration: duration ?? this.duration,
+    curve: curve ?? this.curve,
+  );
+}
+
 /// Horizontal shift + rotation wobble (Animate.css `wobble`).
 class WobbleEffect extends _AttentionEffect {
   const WobbleEffect({

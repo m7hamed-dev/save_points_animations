@@ -275,6 +275,10 @@ class FxBuilder extends StatelessWidget {
   /// Opacity flash on/off.
   FxBuilder flash() => addEffect(const FlashEffect());
 
+  /// Blink on/off [count] times (pair with [looping] for a persistent blink).
+  FxBuilder blink({int count = 3, double minOpacity = 0.0}) =>
+      addEffect(BlinkEffect(count: count, minOpacity: minOpacity));
+
   /// Horizontal wobble with rotation.
   FxBuilder wobble({double amplitude = 1.0}) =>
       addEffect(WobbleEffect(amplitude: amplitude));

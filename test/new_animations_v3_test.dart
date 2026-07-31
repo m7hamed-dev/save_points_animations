@@ -80,6 +80,69 @@ void main() {
     });
   });
 
+  group('BlinkEffect', () {
+    test('off in the second half of a cycle, on at the ends', () {
+      const effect = BlinkEffect(count: 1);
+      final on = FxAccumulator();
+      effect.apply(on, 0.2);
+      expect(on.opacity, 1.0);
+
+      final off = FxAccumulator();
+      effect.apply(off, 0.7);
+      expect(off.opacity, 0.0);
+
+      final end = FxAccumulator();
+      effect.apply(end, 1.0);
+      expect(end.opacity, 1.0);
+    });
+
+    testWidgets('.blink() builds and renders', (tester) async {
+      await tester.pumpWidget(
+        _host(const Text('blink').animate().blink().looping()),
+      );
+      expect(find.text('blink'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('batch 2 widgets render & dispose cleanly', () {
+    testWidgets('FxPlasma', (tester) async {
+      await tester.pumpWidget(
+        _host(const SizedBox(width: 160, height: 160, child: FxPlasma())),
+      );
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxShinyText', (tester) async {
+      await tester.pumpWidget(_host(const FxShinyText('SHINY')));
+      expect(find.text('SHINY'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxBouncingBall', (tester) async {
+      await tester.pumpWidget(_host(const FxBouncingBall()));
+      await tester.pump(const Duration(milliseconds: 200));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('FxRippleGrid reacts to a tap', (tester) async {
+      await tester.pumpWidget(
+        _host(const SizedBox(width: 200, height: 200, child: FxRippleGrid())),
+      );
+      await tester.tapAt(const Offset(400, 300));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpWidget(const SizedBox());
+      expect(tester.takeException(), isNull);
+    });
+  });
+
   group('reduced motion is honored', () {
     testWidgets('looping widgets settle without a running ticker', (
       tester,
@@ -92,7 +155,10 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(width: 100, height: 100, child: FxMeshGradient()),
+                SizedBox(width: 100, height: 100, child: FxPlasma()),
                 FxWaveDots(),
+                FxBouncingBall(),
+                FxShinyText('x'),
                 FxGlowButton(child: Text('x')),
               ],
             ),
