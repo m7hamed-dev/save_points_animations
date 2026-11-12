@@ -75,6 +75,14 @@
   transform and opacity at paint time inside its own repaint boundary. Hit
   testing follows the painted position, including outside the child's layout
   bounds.
+- Those chains don't repaint their child either: each frame only updates an
+  opacity layer and a transform layer, the way `FadeTransition` does. On 100
+  looping `.fade().scale()` tiles this takes the per-frame paint work from
+  about 1,300 render-object paints to none. A fully transparent frame paints
+  nothing and holds no layer. With `animate(addRepaintBoundary: false)` the
+  child is repainted with its nearest boundary, as before.
+- `FxCountdown` rebuilds its digits when the shown second changes instead of
+  on every frame. A custom `builder` still runs every frame.
 
 ### Changed
 - Tests and the example app import `package:material_ui/material_ui.dart`
@@ -85,6 +93,9 @@
   `material_ui` is a dev dependency only.
 
 ### Fixed
+- `FxConfetti` ignored reduced motion. Bursts are now skipped while the
+  platform asks for reduced motion, and one in flight is cleared when the
+  setting turns on; the child is shown as usual.
 - About 19 continuously-animating widgets never started moving unless reduced
   motion had been toggled: they started their loop only from
   `FxMotionAware.onReduceMotionChanged`, which fires on changes, not at mount.

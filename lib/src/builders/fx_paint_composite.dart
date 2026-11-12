@@ -3,12 +3,14 @@ import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/effects/fx_effect.dart';
 
 /// Applies a paint-only frame (an [FxAccumulator]'s transform, fractional
-/// translation and opacity) at paint time.
+/// translation and opacity) without rebuilding widgets.
 ///
 /// The engine uses this when every effect in a chain is
-/// [FxEffect.paintOnly]: each animation tick then only repaints (and updates
-/// two layers) instead of rebuilding widgets. [compose] is called lazily, at
-/// most once per tick, to build the frame for the animation's current value.
+/// [FxEffect.paintOnly]. With [repaintBoundary] (the default), each animation
+/// tick only updates two compositing layers, an opacity and a transform: the
+/// child is not rebuilt, laid out or repainted, the way [FadeTransition]
+/// updates its opacity. [compose] is called once per tick to build the frame
+/// for the animation's current value.
 class FxPaintComposite extends SingleChildRenderObjectWidget {
   /// Repaint [child] with the frame [compose] returns whenever [animation]
   /// notifies.
@@ -27,9 +29,11 @@ class FxPaintComposite extends SingleChildRenderObjectWidget {
   /// paint-only parts of the accumulator.
   final FxAccumulator Function() compose;
 
-  /// Whether to isolate each tick's repaint to this subtree. Unlike wrapping
-  /// it in a [RepaintBoundary] widget, this keeps hit testing working where
-  /// the child is drawn, even outside its layout bounds.
+  /// Whether this subtree gets its own layers, so a tick updates them instead
+  /// of repainting anything. Unlike wrapping it in a [RepaintBoundary]
+  /// widget, this keeps hit testing working where the child is drawn, even
+  /// outside its layout bounds. When false, each tick repaints the child
+  /// along with its nearest repaint boundary.
   final bool repaintBoundary;
 
   @override
@@ -58,6 +62,12 @@ class FxPaintComposite extends SingleChildRenderObjectWidget {
 /// from the current frame instead of widget properties, so they change without
 /// a rebuild. Hit testing and [applyPaintTransform] follow the transform, the
 /// same way [Transform] does.
+///
+/// As a repaint boundary its own layer is an [OpacityLayer], and it paints
+/// the child into a [TransformLayer] it keeps. A new frame then only sets
+/// those two layers' alpha and matrix ([updateCompositedLayer]), like
+/// [RenderAnimatedOpacity]. A fully transparent frame paints nothing and is
+/// not a boundary, so an invisible child costs no layer.
 class RenderFxPaintComposite extends RenderProxyBox {
   /// Create the render object.
   RenderFxPaintComposite({
@@ -65,11 +75,13 @@ class RenderFxPaintComposite extends RenderProxyBox {
     required this._compose,
     this._repaintBoundary = true,
     RenderBox? child,
-  }) : super(child);
+  }) : super(child) {
+    _alpha = _alphaOf(frame);
+  }
 
   bool _repaintBoundary;
 
-  /// Whether this object is a repaint boundary (see
+  /// Whether this object may be a repaint boundary (see
   /// [FxPaintComposite.repaintBoundary]).
   bool get repaintBoundary => _repaintBoundary;
   set repaintBoundary(bool value) {
@@ -80,7 +92,14 @@ class RenderFxPaintComposite extends RenderProxyBox {
   }
 
   @override
-  bool get isRepaintBoundary => _repaintBoundary;
+  bool get isRepaintBoundary => _repaintBoundary && child != null && _alpha > 0;
+
+  /// The current frame's opacity as an 8-bit alpha. Kept up to date on every
+  /// invalidation, because it decides whether this is a repaint boundary.
+  int _alpha = 255;
+
+  static int _alphaOf(FxAccumulator frame) =>
+      Color.getAlphaFromOpacity(frame.opacity.clamp(0.0, 1.0));
 
   Listenable _animation;
 
@@ -119,7 +138,14 @@ class RenderFxPaintComposite extends RenderProxyBox {
 
   void _invalidate() {
     _frame = null;
-    markNeedsPaint();
+    final oldAlpha = _alpha;
+    _alpha = _alphaOf(frame);
+    if (child != null && (oldAlpha == 0) != (_alpha == 0)) {
+      // Becoming (in)visible toggles isRepaintBoundary.
+      markNeedsCompositingBitsUpdate();
+    }
+    // Falls back to markNeedsPaint when this isn't (or wasn't yet) a boundary.
+    markNeedsCompositedLayerUpdate();
     markNeedsSemanticsUpdate();
   }
 
@@ -163,33 +189,69 @@ class RenderFxPaintComposite extends RenderProxyBox {
       ..multiply(Matrix4.translationValues(fx - w / 2, fy - h / 2, 0));
   }
 
+  /// The offset [paint] last pushed the kept transform layer at (zero in
+  /// practice: the framework paints a repaint boundary at its own origin).
+  Offset _layerOffset = Offset.zero;
+
+  /// [effectiveTransform] about [offset], as [PaintingContext.pushTransform]
+  /// would set it on its layer.
+  Matrix4 _layerTransform(Offset offset) =>
+      Matrix4.translationValues(offset.dx, offset.dy, 0)
+        ..multiply(effectiveTransform)
+        ..multiply(Matrix4.translationValues(-offset.dx, -offset.dy, 0));
+
+  @override
+  OffsetLayer updateCompositedLayer({
+    required covariant OpacityLayer? oldLayer,
+  }) {
+    final layer = oldLayer ?? OpacityLayer();
+    layer.alpha = _alpha;
+    // On a layer-only update this is where the matrix changes; when the frame
+    // also repaints, paint() sets it again on the same layer.
+    _transformLayer.layer?.transform = _layerTransform(_layerOffset);
+    return layer;
+  }
+
+  void _paintChild(PaintingContext context, Offset offset) =>
+      context.paintChild(child!, offset);
+
   @override
   void paint(PaintingContext context, Offset offset) {
     final child = this.child;
     if (child == null) return;
-    final alpha = Color.getAlphaFromOpacity(opacity);
+    final alpha = _alpha;
     if (alpha == 0) {
       // Matches Opacity(opacity: 0): nothing is painted.
       _opacityLayer.layer = null;
       _transformLayer.layer = null;
       return;
     }
-    final transform = effectiveTransform;
 
-    void paintChild(PaintingContext context, Offset offset) =>
-        context.paintChild(child, offset);
+    if (isRepaintBoundary) {
+      // This object's own layer carries the opacity (updateCompositedLayer).
+      // Always push the transform layer, even for an identity matrix, so the
+      // next frames can update it in place instead of repainting.
+      _opacityLayer.layer = null;
+      _layerOffset = offset;
+      final layer = _transformLayer.layer ??= TransformLayer();
+      layer.transform = _layerTransform(offset);
+      context.pushLayer(layer, _paintChild, offset);
+      return;
+    }
+
+    final transform = effectiveTransform;
 
     void paintTransformed(PaintingContext context, Offset offset) {
       if (transform.isIdentity()) {
         _transformLayer.layer = null;
-        paintChild(context, offset);
+        _paintChild(context, offset);
         return;
       }
       _transformLayer.layer = context.pushTransform(
         needsCompositing,
         offset,
         transform,
-        paintChild,
+        _paintChild,
         oldLayer: _transformLayer.layer,
       );
     }

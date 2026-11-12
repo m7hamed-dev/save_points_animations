@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_points_animations/save_points_animations.dart';
@@ -317,6 +318,87 @@ void main() {
       await tester.tapAt(const Offset(400, 300)); // the layout position
       expect(taps, 1);
     });
+
+    testWidgets('ticks update the layers without repainting the child', (
+      tester,
+    ) async {
+      var paints = 0;
+      await _playTo(
+        tester,
+        _PaintCounter(onPaint: () => paints++)
+            .animate(duration: const Duration(seconds: 1), curve: Curves.linear)
+            .fade()
+            .scale(begin: 0.5)
+            .rotate(30),
+        const Duration(milliseconds: 100),
+      );
+      final composite = tester.renderObject<RenderFxPaintComposite>(
+        find.byType(FxPaintComposite),
+      );
+      expect(composite.isRepaintBoundary, isTrue);
+      final opacityLayer = composite.debugLayer! as OpacityLayer;
+      final transformLayer = opacityLayer.firstChild! as TransformLayer;
+      final painted = paints;
+      expect(painted, greaterThan(0));
+      final alphaBefore = opacityLayer.alpha!;
+      final matrixBefore = transformLayer.transform!.clone();
+
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(paints, painted, reason: 'the child is not repainted');
+      expect(composite.debugLayer, same(opacityLayer));
+      expect(opacityLayer.firstChild, same(transformLayer));
+      expect(opacityLayer.alpha, greaterThan(alphaBefore));
+      expect(transformLayer.transform, isNot(matrixBefore));
+    });
+
+    testWidgets('a fully transparent frame paints nothing and has no layer', (
+      tester,
+    ) async {
+      var paints = 0;
+      await _playTo(
+        tester,
+        _PaintCounter(
+          onPaint: () => paints++,
+        ).animate(duration: const Duration(milliseconds: 100)).fadeOut(),
+        const Duration(milliseconds: 200),
+      );
+      final composite = tester.renderObject<RenderFxPaintComposite>(
+        find.byType(FxPaintComposite),
+      );
+      expect(composite.opacity, 0.0);
+      expect(composite.isRepaintBoundary, isFalse);
+      expect(composite.debugLayer, isNull);
+      final painted = paints;
+      await tester.pump(const Duration(milliseconds: 16));
+      expect(paints, painted);
+    });
+
+    testWidgets('without a repaint boundary, ticks repaint the child', (
+      tester,
+    ) async {
+      var paints = 0;
+      await _playTo(
+        tester,
+        _PaintCounter(onPaint: () => paints++)
+            .animate(
+              duration: const Duration(seconds: 1),
+              addRepaintBoundary: false,
+            )
+            .fade()
+            .moveX(100),
+        const Duration(milliseconds: 100),
+      );
+      final composite = tester.renderObject<RenderFxPaintComposite>(
+        find.byType(FxPaintComposite),
+      );
+      expect(composite.isRepaintBoundary, isFalse);
+      final painted = paints;
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(paints, greaterThan(painted));
+      expect(composite.opacity, greaterThan(0.0));
+      expect(composite.opacity, lessThan(1.0));
+    });
   });
 
   group('onVisible', () {
@@ -457,4 +539,37 @@ class _Probe extends StatefulWidget {
 class _ProbeState extends State<_Probe> {
   @override
   Widget build(BuildContext context) => Text(widget.label);
+}
+
+/// A 40x40 box that reports every time it is painted.
+class _PaintCounter extends LeafRenderObjectWidget {
+  const _PaintCounter({required this.onPaint});
+  final VoidCallback onPaint;
+
+  @override
+  _RenderPaintCounter createRenderObject(BuildContext context) =>
+      _RenderPaintCounter(onPaint);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenderPaintCounter renderObject,
+  ) => renderObject.onPaint = onPaint;
+}
+
+class _RenderPaintCounter extends RenderBox {
+  _RenderPaintCounter(this.onPaint);
+  VoidCallback onPaint;
+
+  @override
+  void performLayout() => size = constraints.constrain(const Size(40, 40));
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    onPaint();
+    context.canvas.drawRect(
+      offset & size,
+      Paint()..color = const Color(0xFF000000),
+    );
+  }
 }

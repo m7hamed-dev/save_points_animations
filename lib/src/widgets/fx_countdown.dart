@@ -42,10 +42,23 @@ class _FxCountdownState extends State<FxCountdown>
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
     _controller
+      ..addListener(_tick)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) widget.onComplete?.call();
       })
       ..forward();
+  }
+
+  /// The whole seconds the default display last built.
+  int? _shownSeconds;
+
+  /// The default display only changes once a second, so it rebuilds then and
+  /// not on every frame. A custom [FxCountdown.builder] gets every frame
+  /// through its own [AnimatedBuilder].
+  void _tick() {
+    if (widget.builder == null && _remaining.inSeconds != _shownSeconds) {
+      setState(() {});
+    }
   }
 
   @override
@@ -70,28 +83,28 @@ class _FxCountdownState extends State<FxCountdown>
 
   @override
   Widget build(BuildContext context) {
+    final builder = widget.builder;
+    if (builder != null) {
+      return RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) => builder(context, _remaining),
+        ),
+      );
+    }
+    final seconds = _shownSeconds = _remaining.inSeconds;
     return RepaintBoundary(
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final remaining = _remaining;
-          if (widget.builder != null) {
-            return widget.builder!(context, remaining);
-          }
-          final seconds = remaining.inSeconds;
-          return Semantics(
-            liveRegion: true,
-            label: '$seconds seconds remaining',
-            child: FxSwitcher(
-              effect: FxSwitcherEffect.slideUp,
-              child: Text(
-                '$seconds',
-                key: ValueKey<int>(seconds),
-                style: widget.style,
-              ),
-            ),
-          );
-        },
+      child: Semantics(
+        liveRegion: true,
+        label: '$seconds seconds remaining',
+        child: FxSwitcher(
+          effect: FxSwitcherEffect.slideUp,
+          child: Text(
+            '$seconds',
+            key: ValueKey<int>(seconds),
+            style: widget.style,
+          ),
+        ),
       ),
     );
   }

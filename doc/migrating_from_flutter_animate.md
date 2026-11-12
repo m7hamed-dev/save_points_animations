@@ -133,8 +133,9 @@ is gone.
 
 ## What you gain
 
-- **Paint-time rendering.** Chains that only move, scale, rotate, skew, flip,
-  slide or fade rebuild nothing per frame.
+- **Layer-only frames.** Chains that only move, scale, rotate, skew, flip,
+  slide or fade rebuild and repaint nothing per frame; they only update an
+  opacity and a transform layer.
 - **RTL-aware entrances.** `slideFromStart()` / `slideFromEnd()` mirror in
   right-to-left locales; `moveX` / `slideX` take `directional: true`.
 - **Reduced motion by default.** Chains jump to their end frame (or are skipped

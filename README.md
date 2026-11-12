@@ -26,7 +26,7 @@ Text('Hello')
     .rotate(15);
 ```
 
-One controller per chain. Moves, scales and fades are applied at paint time — no widget rebuilds per frame, no stack of nested animated widgets.
+One controller per chain. Moves, scales and fades are applied as compositing layers — no widget rebuilds or repaints per frame, no stack of nested animated widgets.
 
 ## Table of Contents
 
@@ -59,7 +59,7 @@ One controller per chain. Moves, scales and fades are applied at paint time — 
 
 ## 💡 Why
 
-- **One controller, no per-frame rebuilds.** Every transform effect (move / scale / rotate / skew / flip / slide) folds into a single `Matrix4` and every fade into a single opacity multiplier. When a chain only moves and fades, they are applied straight at paint time inside its own repaint boundary — each frame repaints, nothing rebuilds. No per-effect widget nesting.
+- **One controller, no per-frame rebuilds.** Every transform effect (move / scale / rotate / skew / flip / slide) folds into a single `Matrix4` and every fade into a single opacity multiplier. When a chain only moves and fades, they are applied as an opacity layer and a transform layer inside its own repaint boundary — each frame only updates those two layers, the way `FadeTransition` does: nothing rebuilds or repaints. No per-effect widget nesting.
 - **Immutable & chainable.** The chain builds a value; nothing animates until the widget builds.
 - **Accessible by default.** Honors `MediaQuery.disableAnimations` and settles to a static frame under reduced motion — across the fluent engine *and* every looping widget.
 - **RTL-aware.** `slideFromStart()` / `slideFromEnd()` and `directional:` moves mirror automatically in Arabic, Hebrew and other right-to-left locales.

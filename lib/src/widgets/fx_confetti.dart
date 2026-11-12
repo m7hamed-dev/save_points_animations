@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
+import 'package:save_points_animations/src/core/fx_motion.dart';
 
 /// Triggers confetti bursts on an [FxConfetti].
 class FxConfettiController extends ChangeNotifier {
@@ -17,6 +18,10 @@ class FxConfettiController extends ChangeNotifier {
 }
 
 /// Overlays a confetti particle burst above [child].
+///
+/// The burst is pure decoration, so when the platform asks for reduced motion
+/// ([fxReduceMotion]) bursts are skipped and one already in flight is cleared;
+/// [child] is shown as usual.
 class FxConfetti extends StatefulWidget {
   const FxConfetti({
     super.key,
@@ -53,7 +58,7 @@ class FxConfetti extends StatefulWidget {
 }
 
 class _FxConfettiState extends State<FxConfetti>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _anim;
   late final math.Random _random = math.Random(widget.seed);
   List<_Particle> _particles = const [];
@@ -79,7 +84,14 @@ class _FxConfettiState extends State<FxConfetti>
     }
   }
 
+  @override
+  void onReduceMotionChanged(bool reduceMotion) {
+    // Clears a burst in flight: the painter draws nothing at t == 0.
+    if (reduceMotion) _anim.value = 0;
+  }
+
   void _burst() {
+    if (reduceMotion) return;
     _particles = List.generate(widget.particleCount, (_) {
       final angle = -math.pi / 2 + (_random.nextDouble() - 0.5) * math.pi;
       return _Particle(

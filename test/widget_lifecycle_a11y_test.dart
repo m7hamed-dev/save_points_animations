@@ -156,6 +156,103 @@ void main() {
     testWidgets('FxLoadingOverlay: reacts to a runtime toggle', (tester) async {
       await _expectReactsToRuntimeToggle(tester, overlay);
     });
+
+    testWidgets('FxConfetti: bursts are skipped', (tester) async {
+      final controller = FxConfettiController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        _host(
+          FxConfetti(
+            controller: controller,
+            playOnStart: true,
+            child: const SizedBox(width: 100, height: 100),
+          ),
+          reduceMotion: true,
+        ),
+      );
+      await tester.pump(); // playOnStart's post-frame burst
+      expect(tester.hasRunningAnimations, isFalse);
+      controller.play();
+      await tester.pump();
+      expect(tester.hasRunningAnimations, isFalse);
+      expect(find.byType(SizedBox), findsWidgets, reason: 'child still shown');
+    });
+
+    testWidgets('FxConfetti: a burst in flight stops when reduce motion turns '
+        'on', (tester) async {
+      const confetti = FxConfetti(
+        playOnStart: true,
+        child: SizedBox(width: 100, height: 100),
+      );
+      await tester.pumpWidget(_host(confetti));
+      await tester.pump(); // playOnStart's post-frame burst
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.hasRunningAnimations, isTrue);
+
+      await tester.pumpWidget(_host(confetti, reduceMotion: true));
+      await tester.pump();
+      expect(tester.hasRunningAnimations, isFalse);
+    });
+  });
+
+  group('rebuild cost', () {
+    testWidgets('FxCountdown rebuilds its digits once a second, not every '
+        'frame', (tester) async {
+      var completed = 0;
+      var digitBuilds = 0;
+      debugOnRebuildDirtyWidget = (element, _) {
+        if (element.widget is FxSwitcher) digitBuilds++;
+      };
+      await tester.pumpWidget(
+        _host(
+          FxCountdown(
+            duration: const Duration(seconds: 3),
+            onComplete: () => completed++,
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100)); // 2.9s left
+      expect(find.text('2'), findsOneWidget);
+
+      digitBuilds = 0;
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 16)); // still 2.x
+      }
+      expect(digitBuilds, 0);
+
+      await tester.pump(const Duration(milliseconds: 500)); // 1.9s left
+      expect(digitBuilds, 1);
+      expect(find.text('1'), findsOneWidget);
+      debugOnRebuildDirtyWidget = null;
+
+      await tester.pump(const Duration(seconds: 2));
+      expect(completed, 1);
+      expect(find.text('0'), findsOneWidget);
+    });
+
+    testWidgets('FxCountdown: a custom builder still gets every frame', (
+      tester,
+    ) async {
+      final seen = <Duration>[];
+      await tester.pumpWidget(
+        _host(
+          FxCountdown(
+            duration: const Duration(seconds: 3),
+            builder: (context, remaining) {
+              seen.add(remaining);
+              return Text('${remaining.inMilliseconds}');
+            },
+          ),
+        ),
+      );
+      seen.clear();
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      expect(seen, hasLength(5));
+      expect(seen.toSet(), hasLength(5));
+      await tester.pumpWidget(const SizedBox());
+    });
   });
 
   // These loops used to start only from onReduceMotionChanged, which fires
