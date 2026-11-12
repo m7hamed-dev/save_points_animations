@@ -76,6 +76,14 @@
   testing follows the painted position, including outside the child's layout
   bounds.
 
+### Changed
+- Tests and the example app import `package:material_ui/material_ui.dart`
+  instead of `package:flutter/material.dart`, which is deprecated since
+  Flutter 3.47. The package itself never depended on Material or Cupertino —
+  only on Flutter's widgets layer and below — so apps can pair it with
+  `material_ui`, `cupertino_ui` or their own design system.
+  `material_ui` is a dev dependency only.
+
 ### Fixed
 - About 19 continuously-animating widgets never started moving unless reduced
   motion had been toggled: they started their loop only from

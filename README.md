@@ -66,6 +66,7 @@ One controller per chain. Moves, scales and fades are applied at paint time — 
 - **Modern motion by default.** Effects and transitions ease with Material 3 **emphasized** curves out of the box (`FxCurves.emphasized` / `emphasizedDecelerate` / `emphasizedAccelerate`) — override any time.
 - **Batteries included.** 110+ ready-made animated widgets — nav bars, buttons, charts, loaders, decorative backdrops — on top of the engine.
 - **Extensible.** Create your own effect by extending `FxEffect` — no fork needed.
+- **Design-system agnostic.** The package builds only on Flutter's widgets layer (`package:flutter/widgets.dart` and the libraries below it) — nothing from Material or Cupertino — so it works the same alongside `package:material_ui`, `package:cupertino_ui` or your own components.
 
 ## ✨ Features
 

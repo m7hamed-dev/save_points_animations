@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
 import 'package:save_points_animations_example/detail_screen.dart';

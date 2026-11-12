@@ -8,9 +8,9 @@
 //
 // The captured timeline is written to `build/` and can be summarized with the
 // `flutter_driver` `summarizeTimeline` helpers if you add a driver target.
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:save_points_animations_example/main.dart' as app;
 
 void main() {

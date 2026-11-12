@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A simple colored square used throughout the gallery to show off effects.
 class DemoChip extends StatelessWidget {
