@@ -137,6 +137,15 @@
   `decreasedValue` — the value an increase/decrease would produce, clamped to
   the track and, on the range slider, to the other thumb.
 
+### Documentation
+- `example/README.md`, which pub.dev shows on the Example tab, is now a
+  complete runnable app instead of the `flutter create` placeholder.
+- README: the troubleshooting entry about animations replaying on rebuild
+  now gives the real cause (the widget being created anew, e.g. by a changing
+  key); a rebuild alone keeps the animation's state. The Accessibility section
+  covers keyboard support, the roadmap marks it shipped, and a note says the
+  snippets use Material names from `package:material_ui`.
+
 ## 0.44.0
 
 Widgets as extensions, more page transitions & lifecycle fixes.

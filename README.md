@@ -125,6 +125,9 @@ Text('Sale').fxShine();
 FxRating(value: stars, onChanged: (v) => setState(() => stars = v));
 ```
 
+> [!NOTE]
+> The snippets here use `Colors`, `Icons`, `MaterialApp` and other Material names from `package:material_ui`, as most apps do. The package itself needs only `package:flutter/widgets.dart`, so any design system works. [`example/README.md`](example/README.md) has a complete, runnable app.
+
 ## 📖 Usage
 
 ### The fluent engine
@@ -654,6 +657,7 @@ liveDot.animate().blink().looping();// on/off blink (e.g. a LIVE indicator)
 Motion is opt-out-able and controls are operable without a pointer.
 
 - **Reduced motion.** The engine and *every* looping widget check `MediaQuery.disableAnimations`. Under the OS "reduce motion" setting, one-shot effects jump to their end frame and continuous animations settle to a static frame — reacting to runtime toggles, not just at mount. Set `FxTheme(respectReducedMotion: true)` (the default) to opt in globally, or `FxReducedMotionBehavior` to choose *jump-to-end* vs *disable*.
+- **Keyboard.** `FxAnimatedSlider` and `FxRangeSlider` step with the arrow keys (each range thumb is its own focus stop). Enter / Space activate the toggles, checkboxes, radios, animated buttons (hold the key on `FxHoldButton`), `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring appears only under keyboard focus, and disabled controls are skipped.
 - **Semantics.** Interactive widgets expose the right roles and state — buttons, `selected` tabs/nav items, `checked` checkboxes/radios, `slider` values with increase/decrease actions, and live-region announcements for countdowns and progress.
 - **Haptics.** Toggles, sliders, ratings, steppers and confirm actions fire `HapticFeedback` on interaction.
 
@@ -675,7 +679,7 @@ Motion is opt-out-able and controls are operable without a pointer.
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | `.duration()` seems to affect the wrong effect | Timing binds to the effect(s) **just added**, and later effects inherit it | Call `.duration()` right after the intended effect, or set chain-wide timing with `.animate(duration:)` |
-| A widget animates on every rebuild | `.animate()` rebuilds a fresh chain each build | Drive it with an `FxController` + `autoPlay: false`, or gate with a trigger like `.onVisible()` |
+| An entrance replays when the screen rebuilds | A rebuild keeps the animation's state, so it replays only when Flutter creates the widget anew: a key that changes every build (`UniqueKey()`, `ValueKey(DateTime.now())`), or a different widget type wrapping it in that spot (two `if` branches that nest it differently) | Keep keys stable, and give list items a `ValueKey(id)`. To animate on a state change use `.animate(target: …)`; to replay on demand, hold an `FxController` |
 | Nothing animates | OS "reduce motion" is on | Expected — effects jump to end. Override via `FxTheme(respectReducedMotion: false)` if truly needed |
 | Blur/glass looks heavy while scrolling | `BackdropFilter` re-rasterizes | It's isolated in a `RepaintBoundary`; keep the blurred region small |
 | Backdrop widget shows nothing | It fills its parent's box | Give it a bounded parent (`SizedBox`/`ClipRRect` with a height) |
@@ -703,7 +707,7 @@ Triggers, gesture animations, presets, physics/springs, page transitions, Hero, 
 - [x] Reduced-motion & semantics across the library
 - [x] RTL-aware directional effects
 - [x] State-driven (`target`) animation and paint-time rendering
-- [ ] Web keyboard shortcuts for interactive widgets
+- [x] Keyboard support for interactive widgets
 - [ ] More shader-based effects
 
 See [`ROADMAP.md`](ROADMAP.md) for detail.
