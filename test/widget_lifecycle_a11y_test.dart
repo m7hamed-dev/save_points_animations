@@ -379,39 +379,44 @@ void main() {
   });
 
   group('keyboard', () {
-    testWidgets('FxAnimatedSlider: arrow keys step the focused slider', (
-      tester,
-    ) async {
-      var value = 0.5;
-      await tester.pumpWidget(
-        _app(
-          StatefulBuilder(
-            builder: (context, setState) => SizedBox(
-              width: 200,
-              child: FxAnimatedSlider(
-                value: value,
-                onChanged: (v) => setState(() => value = v),
+    // `variant:` comes before the callback: with it after, formatters before
+    // and after dart_style 3.1.10 (Dart 3.12 vs 3.14) wrap this call
+    // differently, and CI checks formatting on the minimum SDK.
+    testWidgets(
+      'FxAnimatedSlider: arrow keys step the focused slider',
+      variant: TargetPlatformVariant.desktop(),
+      (tester) async {
+        var value = 0.5;
+        await tester.pumpWidget(
+          _app(
+            StatefulBuilder(
+              builder: (context, setState) => SizedBox(
+                width: 200,
+                child: FxAnimatedSlider(
+                  value: value,
+                  onChanged: (v) => setState(() => value = v),
+                ),
               ),
             ),
           ),
-        ),
-      );
-      // Arrows do nothing until the slider has focus.
-      await _press(tester, LogicalKeyboardKey.arrowRight);
-      expect(value, 0.5);
+        );
+        // Arrows do nothing until the slider has focus.
+        await _press(tester, LogicalKeyboardKey.arrowRight);
+        expect(value, 0.5);
 
-      await _tab(tester);
-      expect(_focusIsInside(find.byType(FxAnimatedSlider)), isTrue);
-      await _press(tester, LogicalKeyboardKey.arrowRight);
-      expect(value, closeTo(0.6, 1e-9));
-      await _press(tester, LogicalKeyboardKey.arrowLeft);
-      await _press(tester, LogicalKeyboardKey.arrowLeft);
-      expect(value, closeTo(0.4, 1e-9));
-      await _press(tester, LogicalKeyboardKey.arrowUp);
-      expect(value, closeTo(0.5, 1e-9));
-      await _press(tester, LogicalKeyboardKey.arrowDown);
-      expect(value, closeTo(0.4, 1e-9));
-    }, variant: TargetPlatformVariant.desktop());
+        await _tab(tester);
+        expect(_focusIsInside(find.byType(FxAnimatedSlider)), isTrue);
+        await _press(tester, LogicalKeyboardKey.arrowRight);
+        expect(value, closeTo(0.6, 1e-9));
+        await _press(tester, LogicalKeyboardKey.arrowLeft);
+        await _press(tester, LogicalKeyboardKey.arrowLeft);
+        expect(value, closeTo(0.4, 1e-9));
+        await _press(tester, LogicalKeyboardKey.arrowUp);
+        expect(value, closeTo(0.5, 1e-9));
+        await _press(tester, LogicalKeyboardKey.arrowDown);
+        expect(value, closeTo(0.4, 1e-9));
+      },
+    );
 
     testWidgets(
       'FxRangeSlider: Tab moves start → end thumb; arrows nudge the focused one',

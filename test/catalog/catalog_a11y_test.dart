@@ -290,10 +290,13 @@ final List<_Case> _cases = [
     () => const FxGlowButton(onPressed: _noop, child: Text('Glow')),
     checks: _tapAndText,
   ),
+  // Contrast is checked per gradient color in main(): textContrastGuideline
+  // compares the most frequent light and dark pixels, and on a rotating sweep
+  // gradient almost every pixel is unique, so the "dark" pick depends on the
+  // rasterizer (it fell on an anti-aliased glyph edge on Linux CI).
   _Case(
     'FxGradientButton',
     () => const FxGradientButton(onPressed: _noop, child: Text('Gradient')),
-    checks: _tapAndText,
   ),
   _Case(
     'FxJellyButton',
@@ -860,6 +863,31 @@ void main() {
       }
     });
   }
+
+  // The label sits on a sweep of these colors, so check it against each one
+  // as a solid fill. The sRGB blends between the default colors are darker
+  // than the lightest of them, so the colors themselves bound the contrast.
+  group('FxGradientButton contrast per default color', () {
+    final colors = const FxGradientButton(child: SizedBox()).colors;
+    for (final color in colors) {
+      final hex = color.toARGB32().toRadixString(16).toUpperCase();
+      catalogTestWidgets('textContrastGuideline on #$hex', (tester) async {
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          catalogHost(
+            FxGradientButton(
+              onPressed: _noop,
+              colors: [color, color],
+              child: const Text('Gradient'),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 600));
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+        handle.dispose();
+      });
+    }
+  });
 
   group('semantics behavior', _semanticsBehavior);
 
