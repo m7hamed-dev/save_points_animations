@@ -3,8 +3,13 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// Press and hold to confirm — a ring fills while held and fires [onConfirmed]
 /// when complete; releasing early rewinds it. Good for destructive actions.
+///
+/// From the keyboard, focus it and hold Enter / Space. A screen reader's
+/// activate action confirms directly (it cannot express a hold).
 ///
 /// ```dart
 /// FxHoldButton(onConfirmed: delete, child: const Icon(Icons.delete));
@@ -53,10 +58,51 @@ class _FxHoldButtonState extends State<FxHoldButton>
     });
   }
 
+  @override
+  void didUpdateWidget(covariant FxHoldButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.holdDuration != oldWidget.holdDuration) {
+      _controller.duration = widget.holdDuration;
+      // Re-issue an in-flight fill/rewind so it continues at the new speed.
+      if (_controller.status == AnimationStatus.forward) {
+        _controller.forward();
+      } else if (_controller.status == AnimationStatus.reverse) {
+        _controller.reverse();
+      }
+    }
+  }
+
   void _start() => _controller.forward();
 
   void _cancel() {
     if (!_controller.isCompleted) _controller.reverse();
+  }
+
+  // Assistive technologies can't express "press and hold", and activating a
+  // focused element with one is already a deliberate action, so the semantic
+  // tap confirms directly.
+  void _confirmNow() {
+    _controller.stop();
+    HapticFeedback.mediumImpact();
+    widget.onConfirmed();
+    _controller.value = 0;
+  }
+
+  // Keyboard mirrors the pointer: holding Enter / Space fills the ring and
+  // releasing early rewinds it.
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    final key = event.logicalKey;
+    if (key != LogicalKeyboardKey.enter &&
+        key != LogicalKeyboardKey.numpadEnter &&
+        key != LogicalKeyboardKey.space) {
+      return KeyEventResult.ignored;
+    }
+    if (event is KeyDownEvent) {
+      _start();
+    } else if (event is KeyUpEvent) {
+      _cancel();
+    }
+    return KeyEventResult.handled;
   }
 
   @override
@@ -69,22 +115,40 @@ class _FxHoldButtonState extends State<FxHoldButton>
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      child: RepaintBoundary(
-        child: GestureDetector(
-          onTapDown: (_) => _start(),
-          onTapUp: (_) => _cancel(),
-          onTapCancel: _cancel,
-          child: SizedBox.square(
-            dimension: widget.size,
-            child: CustomPaint(
-              painter: _HoldRingPainter(
-                repaint: _controller,
-                animation: _controller,
-                color: widget.color,
-                backgroundColor: widget.backgroundColor,
-                strokeWidth: widget.strokeWidth,
+      enabled: true,
+      onTap: _confirmNow,
+      child: FxFocusableControl(
+        enabled: true,
+        onKeyEvent: _onKey,
+        // Losing focus mid-hold never delivers the key-up: rewind instead.
+        onFocusChange: (focused) {
+          if (!focused) _cancel();
+        },
+        builder: (context, showFocus) => RepaintBoundary(
+          child: GestureDetector(
+            // Semantics come from the explicit onTap above; the raw
+            // down/up handlers would just start and immediately rewind.
+            excludeFromSemantics: true,
+            onTapDown: (_) => _start(),
+            onTapUp: (_) => _cancel(),
+            onTapCancel: _cancel,
+            child: FxFocusRing(
+              visible: showFocus,
+              color: widget.color,
+              circle: true,
+              child: SizedBox.square(
+                dimension: widget.size,
+                child: CustomPaint(
+                  painter: _HoldRingPainter(
+                    repaint: _controller,
+                    animation: _controller,
+                    color: widget.color,
+                    backgroundColor: widget.backgroundColor,
+                    strokeWidth: widget.strokeWidth,
+                  ),
+                  child: Center(child: widget.child),
+                ),
               ),
-              child: Center(child: widget.child),
             ),
           ),
         ),

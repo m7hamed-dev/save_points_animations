@@ -1,7 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A custom animated switch — the thumb slides and the track colour morphs.
+/// It is keyboard-focusable; Enter / Space flip it.
 ///
 /// ```dart
 /// FxAnimatedToggle(value: on, onChanged: (v) => setState(() => on = v));
@@ -28,41 +31,54 @@ class FxAnimatedToggle extends StatelessWidget {
   final Color thumbColor;
   final Duration duration;
 
+  void _toggle() {
+    HapticFeedback.lightImpact();
+    onChanged(!value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final inset = height * 0.12;
     return Semantics(
       button: true,
+      enabled: true,
       toggled: value,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onChanged(!value);
-        },
-        child: AnimatedContainer(
-          duration: duration,
-          curve: Curves.easeOut,
-          width: width,
-          height: height,
-          padding: EdgeInsets.all(inset),
-          decoration: BoxDecoration(
-            color: value ? activeColor : inactiveColor,
+      // Enter / Space flip the switch when it has keyboard focus.
+      child: FxFocusableControl(
+        enabled: true,
+        onActivate: _toggle,
+        builder: (context, showFocus) => GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: _toggle,
+          child: FxFocusRing(
+            visible: showFocus,
+            color: activeColor,
             borderRadius: .circular(height / 2),
-          ),
-          child: AnimatedAlign(
-            duration: duration,
-            curve: Curves.easeOut,
-            alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              width: height - inset * 2,
-              height: height - inset * 2,
+            child: AnimatedContainer(
+              duration: duration,
+              curve: Curves.easeOut,
+              width: width,
+              height: height,
+              padding: EdgeInsets.all(inset),
               decoration: BoxDecoration(
-                color: thumbColor,
-                shape: BoxShape.circle,
-                boxShadow: const [
-                  BoxShadow(color: Color(0x33000000), blurRadius: 3),
-                ],
+                color: value ? activeColor : inactiveColor,
+                borderRadius: .circular(height / 2),
+              ),
+              child: AnimatedAlign(
+                duration: duration,
+                curve: Curves.easeOut,
+                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  width: height - inset * 2,
+                  height: height - inset * 2,
+                  decoration: BoxDecoration(
+                    color: thumbColor,
+                    shape: BoxShape.circle,
+                    boxShadow: const [
+                      BoxShadow(color: Color(0x33000000), blurRadius: 3),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

@@ -2,9 +2,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:save_points_animations/src/core/fx_motion.dart';
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
 
 /// An animated day/night switch. The thumb slides between sun and moon while
-/// the track cross-fades from a bright sky to a starry night.
+/// the track cross-fades from a bright sky to a starry night. It is
+/// keyboard-focusable; Enter / Space flip it.
 ///
 /// ```dart
 /// FxThemeToggle(isDark: dark, onChanged: (v) => setState(() => dark = v));
@@ -27,71 +29,83 @@ class FxThemeToggle extends StatelessWidget {
   final Color dayColor;
   final Color nightColor;
 
+  void _toggle() {
+    HapticFeedback.lightImpact();
+    onChanged(!isDark);
+  }
+
   @override
   Widget build(BuildContext context) {
     final thumbSize = height - 8;
     final reduceMotion = fxReduceMotion(context);
     return Semantics(
       button: true,
+      enabled: true,
       toggled: isDark,
       label: 'Theme',
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onChanged(!isDark);
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 360),
-          curve: Curves.easeInOut,
-          width: width,
-          height: height,
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
+      // Enter / Space flip it when it has keyboard focus.
+      child: FxFocusableControl(
+        enabled: true,
+        onActivate: _toggle,
+        builder: (context, showFocus) => GestureDetector(
+          onTap: _toggle,
+          child: FxFocusRing(
+            visible: showFocus,
             color: isDark ? nightColor : dayColor,
-            borderRadius: .circular(height),
-          ),
-          child: Stack(
-            children: [
-              // Stars fade in at night.
-              AnimatedOpacity(
-                opacity: isDark ? 1 : 0,
-                duration: const Duration(milliseconds: 360),
-                child: const _Stars(),
-              ),
-              AnimatedAlign(
-                alignment: isDark
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                duration: const Duration(milliseconds: 360),
-                curve: Curves.easeInOutBack,
-                child: SizedBox(
-                  width: thumbSize,
-                  height: thumbSize,
-                  child: AnimatedSwitcher(
-                    duration: reduceMotion
-                        ? Duration.zero
-                        : const Duration(milliseconds: 300),
-                    transitionBuilder: (child, animation) => reduceMotion
-                        ? FadeTransition(opacity: animation, child: child)
-                        : RotationTransition(
-                            turns: Tween<double>(
-                              begin: 0.6,
-                              end: 1,
-                            ).animate(animation),
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          ),
-                    child: isDark
-                        ? const _Moon(key: ValueKey('moon'))
-                        : const _Sun(key: ValueKey('sun')),
-                  ),
-                ),
-              ),
-            ],
+            borderRadius: .circular(height / 2),
+            child: _track(thumbSize, reduceMotion),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _track(double thumbSize, bool reduceMotion) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 360),
+      curve: Curves.easeInOut,
+      width: width,
+      height: height,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark ? nightColor : dayColor,
+        borderRadius: .circular(height),
+      ),
+      child: Stack(
+        children: [
+          // Stars fade in at night.
+          AnimatedOpacity(
+            opacity: isDark ? 1 : 0,
+            duration: const Duration(milliseconds: 360),
+            child: const _Stars(),
+          ),
+          AnimatedAlign(
+            alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
+            duration: const Duration(milliseconds: 360),
+            curve: Curves.easeInOutBack,
+            child: SizedBox(
+              width: thumbSize,
+              height: thumbSize,
+              child: AnimatedSwitcher(
+                duration: reduceMotion
+                    ? Duration.zero
+                    : const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) => reduceMotion
+                    ? FadeTransition(opacity: animation, child: child)
+                    : RotationTransition(
+                        turns: Tween<double>(
+                          begin: 0.6,
+                          end: 1,
+                        ).animate(animation),
+                        child: FadeTransition(opacity: animation, child: child),
+                      ),
+                child: isDark
+                    ? const _Moon(key: ValueKey('moon'))
+                    : const _Sun(key: ValueKey('sun')),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

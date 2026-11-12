@@ -13,6 +13,7 @@ class MoveEffect extends FxEffect {
     this.beginY = 0,
     this.endX = 0,
     this.endY = 0,
+    this.directional = false,
     super.delay,
     super.duration,
     super.curve,
@@ -23,11 +24,19 @@ class MoveEffect extends FxEffect {
   final double endX;
   final double endY;
 
+  /// When true, X values are measured toward the trailing edge, so the motion
+  /// mirrors in right-to-left text (positive X moves left under RTL).
+  final bool directional;
+
+  @override
+  bool get paintOnly => true;
+
   @override
   void apply(FxAccumulator acc, double t) {
+    final dx = fxLerp(beginX, endX, t);
     acc.transform.multiply(
       Matrix4.translationValues(
-        fxLerp(beginX, endX, t),
+        directional && acc.isRtl ? -dx : dx,
         fxLerp(beginY, endY, t),
         0,
       ),
@@ -44,6 +53,7 @@ class MoveEffect extends FxEffect {
     beginY: beginY,
     endX: endX,
     endY: endY,
+    directional: directional,
     delay: delay ?? this.delay,
     duration: duration ?? this.duration,
     curve: curve ?? this.curve,
@@ -68,6 +78,9 @@ class ScaleEffect extends FxEffect {
   /// Optional independent Y begin/end. When null, uses [begin]/[end].
   final double? beginY;
   final double? endY;
+
+  @override
+  bool get paintOnly => true;
 
   @override
   void apply(FxAccumulator acc, double t) {
@@ -110,6 +123,9 @@ class RotateEffect extends FxEffect {
   final double endDegrees;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     acc.transform.multiply(
       Matrix4.rotationZ(_deg2rad(fxLerp(beginDegrees, endDegrees, t))),
@@ -146,6 +162,9 @@ class SkewEffect extends FxEffect {
   final double beginY;
   final double endX;
   final double endY;
+
+  @override
+  bool get paintOnly => true;
 
   @override
   void apply(FxAccumulator acc, double t) {
@@ -190,6 +209,9 @@ class FlipEffect extends FxEffect {
   final double endDegrees;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     final angle = _deg2rad(fxLerp(beginDegrees, endDegrees, t));
     final m = Matrix4.identity()..setEntry(3, 2, 0.001);
@@ -224,6 +246,7 @@ class SlideEffect extends FxEffect {
     this.beginY = 0,
     this.endX = 0,
     this.endY = 0,
+    this.directional = false,
     super.delay,
     super.duration,
     super.curve,
@@ -234,14 +257,21 @@ class SlideEffect extends FxEffect {
   final double endX;
   final double endY;
 
+  /// When true, X fractions are measured toward the trailing edge, so the
+  /// slide mirrors in right-to-left text (e.g. `slideFromStart`).
+  final bool directional;
+
+  @override
+  bool get paintOnly => true;
+
   @override
   void apply(FxAccumulator acc, double t) {
     final dx = fxLerp(beginX, endX, t);
     final dy = fxLerp(beginY, endY, t);
     if (dx == 0 && dy == 0) return;
-    acc.addWrap(
-      (child) =>
-          FractionalTranslation(translation: Offset(dx, dy), child: child),
+    acc.fractionalTranslation += Offset(
+      directional && acc.isRtl ? -dx : dx,
+      dy,
     );
   }
 
@@ -255,6 +285,7 @@ class SlideEffect extends FxEffect {
     beginY: beginY,
     endX: endX,
     endY: endY,
+    directional: directional,
     delay: delay ?? this.delay,
     duration: duration ?? this.duration,
     curve: curve ?? this.curve,

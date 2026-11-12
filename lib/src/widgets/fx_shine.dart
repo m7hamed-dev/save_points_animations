@@ -55,6 +55,18 @@ class _FxShineState extends State<FxShine>
     }
   }
 
+  @override
+  void didUpdateWidget(covariant FxShine oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final durationChanged = widget.duration != oldWidget.duration;
+    final loopChanged = widget.loop != oldWidget.loop;
+    if (durationChanged) _controller.duration = widget.duration;
+    if (!(durationChanged || loopChanged) || reduceMotion) return;
+    // Re-issue a running sweep so the new period / loop mode takes effect, and
+    // resume looping if a finished one-shot is switched to loop.
+    if (_controller.isAnimating || (loopChanged && widget.loop)) _play();
+  }
+
   void _play() {
     if (widget.loop) {
       _controller.repeat();

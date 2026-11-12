@@ -1,7 +1,12 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/core/fx_motion.dart';
+
 /// A rounded progress bar that animates smoothly toward [value], or sweeps
 /// continuously when [value] is null (indeterminate).
+///
+/// Honors the platform "reduce motion" setting: the indeterminate sweep holds
+/// still as a centered segment and value changes jump instead of easing.
 ///
 /// ```dart
 /// FxProgressBar(value: 0.6);          // animates when value changes
@@ -35,7 +40,7 @@ class FxProgressBar extends StatefulWidget {
 }
 
 class _FxProgressBarState extends State<FxProgressBar>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
 
   @override
@@ -45,16 +50,34 @@ class _FxProgressBarState extends State<FxProgressBar>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
-    if (widget.value == null) _controller.repeat();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*; sync once the flag is
+    // known so the first indeterminate sweep starts (or settles) here.
+    _sync();
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) => _sync();
 
   @override
   void didUpdateWidget(covariant FxProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.value == null && !_controller.isAnimating) {
-      _controller.repeat();
-    } else if (widget.value != null && _controller.isAnimating) {
+    if ((widget.value == null) != (oldWidget.value == null)) _sync();
+  }
+
+  // The indeterminate sweep runs only while there is no value and motion is
+  // allowed. Under reduced motion it settles to a static, centered segment.
+  void _sync() {
+    if (widget.value != null) {
       _controller.stop();
+    } else if (reduceMotion) {
+      _controller.value = 0.5;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
     }
   }
 
@@ -82,7 +105,8 @@ class _FxProgressBarState extends State<FxProgressBar>
               if (widget.value != null)
                 TweenAnimationBuilder<double>(
                   tween: Tween<double>(end: widget.value!.clamp(0.0, 1.0)),
-                  duration: widget.duration,
+                  // Reduced motion: jump straight to the new value.
+                  duration: reduceMotion ? Duration.zero : widget.duration,
                   curve: Curves.easeOutCubic,
                   builder: (context, v, child) => Align(
                     alignment: Alignment.centerLeft,

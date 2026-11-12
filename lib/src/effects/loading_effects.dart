@@ -151,6 +151,9 @@ class BreatheEffect extends FxEffect {
   final double opacityDip;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     final v = (1 - math.cos(t * 2 * math.pi)) / 2; // 0 → 1 → 0
     final scale = 1 + scaleAmount * v;

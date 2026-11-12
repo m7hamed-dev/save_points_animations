@@ -1,11 +1,3 @@
-<!--
-  MAINTAINER TODO before publishing:
-  - Replace `your-org` in every URL with the real GitHub org/user (pulled from pubspec `repository`).
-  - Add a real LICENSE (the LICENSE file currently says "TODO: Add your license here.")
-    and update the License section + badge below.
-  - If the package is not yet on pub.dev, the Pub Version badge will 404 until first publish.
--->
-
 <div align="center">
 
 # Save Points Animations
@@ -13,11 +5,13 @@
 ### A fluent, extensible animation framework for Flutter — animate **any** widget with chainable extension methods, backed by a single-controller engine.
 
 [![Pub Version](https://img.shields.io/pub/v/save_points_animations?style=flat-square&logo=dart&color=0175C2)](https://pub.dev/packages/save_points_animations)
-[![Flutter](https://img.shields.io/badge/Flutter-3.12+-02569B?style=flat-square&logo=flutter)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.44+-02569B?style=flat-square&logo=flutter)](https://flutter.dev)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/m7hamed-dev/save_points_animations/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/m7hamed-dev/save_points_animations/actions/workflows/ci.yml)
 [![Reduced motion](https://img.shields.io/badge/a11y-reduced--motion-brightgreen?style=flat-square)](#-accessibility)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/your-org/save_points_animations/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/m7hamed-dev/save_points_animations/pulls)
 
-[**📚 Documentation**](https://github.com/your-org/save_points_animations#readme) · [**🚀 Run the demo**](example/lib/main.dart) · [**🐛 Report Bug**](https://github.com/your-org/save_points_animations/issues) · [**✨ Request Feature**](https://github.com/your-org/save_points_animations/issues)
+[**📚 Documentation**](https://github.com/m7hamed-dev/save_points_animations#readme) · [**🚀 Run the demo**](example/lib/main.dart) · [**🐛 Report Bug**](https://github.com/m7hamed-dev/save_points_animations/issues) · [**✨ Request Feature**](https://github.com/m7hamed-dev/save_points_animations/issues)
 
 </div>
 
@@ -25,17 +19,14 @@
 
 ```dart
 Text('Hello')
-    .animate()
+    .animate(duration: 600.ms, delay: 200.ms, curve: FxCurves.snappy)
     .fade()
     .moveY(50)
     .scale(begin: 0.8)
-    .rotate(15)
-    .duration(600.ms)
-    .delay(200.ms)
-    .curve(FxCurves.snappy);
+    .rotate(15);
 ```
 
-One controller. One `Transform`. One `Opacity`. No stack of nested animated widgets.
+One controller per chain. Moves, scales and fades are applied at paint time — no widget rebuilds per frame, no stack of nested animated widgets.
 
 ## Table of Contents
 
@@ -45,11 +36,16 @@ One controller. One `Transform`. One `Opacity`. No stack of nested animated widg
 - [Quick Start](#-quick-start)
 - [Usage](#-usage)
   - [The fluent engine](#the-fluent-engine)
+  - [Timing](#timing)
+  - [State-driven animation](#state-driven-animation)
+  - [Right-to-left layouts](#right-to-left-layouts)
   - [Timelines, triggers & scroll](#timelines-triggers--scroll)
   - [Physics, page transitions & Hero](#physics-page-transitions--hero)
   - [Text animations](#text-animations)
   - [Global theme](#global-theme)
   - [Custom effects](#custom-effects)
+  - [Choosing an import](#choosing-an-import)
+  - [Coming from flutter_animate](#coming-from-flutter_animate)
 - [Widget Catalog](#-widget-catalog)
 - [Built-in Effects](#-built-in-effects)
 - [Accessibility](#-accessibility)
@@ -63,9 +59,10 @@ One controller. One `Transform`. One `Opacity`. No stack of nested animated widg
 
 ## 💡 Why
 
-- **One controller, one `Transform`, one `Opacity`.** Every transform effect (move / scale / rotate / skew / flip) folds into a single `Matrix4`, and every fade into a single opacity multiplier — then wrapped in a `RepaintBoundary`. No per-effect widget nesting.
+- **One controller, no per-frame rebuilds.** Every transform effect (move / scale / rotate / skew / flip / slide) folds into a single `Matrix4` and every fade into a single opacity multiplier. When a chain only moves and fades, they are applied straight at paint time inside its own repaint boundary — each frame repaints, nothing rebuilds. No per-effect widget nesting.
 - **Immutable & chainable.** The chain builds a value; nothing animates until the widget builds.
 - **Accessible by default.** Honors `MediaQuery.disableAnimations` and settles to a static frame under reduced motion — across the fluent engine *and* every looping widget.
+- **RTL-aware.** `slideFromStart()` / `slideFromEnd()` and `directional:` moves mirror automatically in Arabic, Hebrew and other right-to-left locales.
 - **Modern motion by default.** Effects and transitions ease with Material 3 **emphasized** curves out of the box (`FxCurves.emphasized` / `emphasizedDecelerate` / `emphasizedAccelerate`) — override any time.
 - **Batteries included.** 110+ ready-made animated widgets — nav bars, buttons, charts, loaders, decorative backdrops — on top of the engine.
 - **Extensible.** Create your own effect by extending `FxEffect` — no fork needed.
@@ -77,7 +74,10 @@ One controller. One `Transform`. One `Opacity`. No stack of nested animated widg
 | 🔗 **Fluent effects** | `widget.animate().fade().moveY(50).scale()` — parallel by default, sequence with `.then()` |
 | 🧩 **Widgets as extensions** | Every wrapping widget is also a `.fx…()` method: `card.fxShine()`, `content.fxAurora()` |
 | ⏱️ **Timelines & staggers** | `.then()` barriers and `.animateList().interval(80.ms)` for lists |
-| 👆 **Triggers & gestures** | `.onTap()` · `.onVisible()` · `.pressScale()` · `.hoverScale()` |
+| 🕰️ **Chain-wide timing** | `.animate(duration: 600.ms, delay: 200.ms, curve: …)`, inherited `.duration()`, Material 3 `FxDurations` tokens |
+| 🎯 **State-driven** | `.animate(target: selected ? 1 : 0)` animates whenever your state changes |
+| 🌍 **RTL-aware** | `slideFromStart()` / `slideFromEnd()` mirror in right-to-left locales |
+| 👆 **Triggers & gestures** | `.onTap()` · `.onVisible(once: false)` · `.pressScale()` · `.hoverScale()` |
 | 🌀 **Real physics** | `.spring()` / `.gravity()` / `.friction()` backed by `SpringSimulation` |
 | 🚪 **Page transitions & Hero** | 20+ `FxPageTransition` styles + `context.fxPush(...)` + arc Hero flights |
 | 🔤 **Text animations** | `'Typing…'.typewriter()`, `(1240).countUp()`, `'wavy ~'.wavyText()` |
@@ -139,13 +139,11 @@ Container().fadeIn().slideFromBottom().scaleIn();
 
 ```dart
 Image.asset('logo.png')
-    .animate()
+    .animate(duration: 800.ms, curve: FxCurves.elastic)
     .fade()
     .moveX(-100)
     .rotate(15)
-    .scale(begin: 0.5)
-    .duration(800.ms)
-    .curve(FxCurves.elastic);
+    .scale(begin: 0.5);
 ```
 
 **Widgets as extensions.** Every child-wrapping widget is also a `.fx…()` method on `Widget`, so you can decorate inline instead of nesting constructors:
@@ -181,6 +179,63 @@ fx.repeat(reverse: true);
 > [!NOTE]
 > The underlying `AnimationController` is owned and disposed by the widget — calling `fx.dispose()` is a safe no-op, so you can never leak or double-dispose it.
 
+**Callbacks and finite loops:**
+
+```dart
+badge.animate(onComplete: () => setState(() => celebrated = true)).tada();
+
+dot.animate(onPlay: () => debugPrint('again!')).pulse().looping(count: 3);
+```
+
+`onPlay` fires whenever playback starts forward, `onComplete` whenever it finishes — including after the last of `looping(count: n)`'s cycles (an endless `looping()` never completes).
+
+### Timing
+
+Every effect's duration and curve resolve in this order:
+
+1. timing set on the effect itself — `.duration()` / `.curve()` right after it, or its constructor;
+2. otherwise the timing last set with `.duration()` / `.curve()` earlier in the chain;
+3. otherwise the chain defaults from `.animate(duration:, curve:)`;
+4. otherwise the nearest `FxTheme`, then the package defaults.
+
+```dart
+// Both effects run for 600ms: scale inherits fade's duration.
+logo.animate().fade().duration(600.ms).scale();
+
+// One call that adds several effects is one group: fadeIn() is a fade and a
+// slide, and .duration() right after it times both.
+card.animate().fadeIn().duration(400.ms).then().shake();
+
+// Chain-wide defaults, plus a wait before the first play.
+title.animate(duration: FxDurations.medium4, delay: 200.ms).fade().moveY(30);
+```
+
+Delays are not inherited: `animate(delay:)` waits before the chain first plays, and `.delay()` offsets only the effect(s) it follows. `FxDurations` holds the Material 3 duration tokens (`short1` … `extraLong4`), to pair with the `FxCurves.emphasized*` easing tokens.
+
+### State-driven animation
+
+Pass `target` (`0..1`) instead of playing once on mount. The chain renders at that point of its timeline and animates whenever you rebuild it with a new value — no controller, no `StatefulWidget` boilerplate:
+
+```dart
+card
+    .animate(target: isSelected ? 1 : 0, duration: 200.ms)
+    .scale(begin: 1, end: 1.05)
+    .tint(Colors.indigo, begin: 0, end: 0.15);
+```
+
+### Right-to-left layouts
+
+`slideFromStart()` / `slideFromEnd()` slide in from the leading / trailing edge — from the left in English, from the right in Arabic or Hebrew. For your own effects, `moveX(…, directional: true)` and `slideX(…, directional: true)` measure X toward the trailing edge, so they mirror the same way:
+
+```dart
+Directionality(
+  textDirection: TextDirection.rtl,
+  child: tile.animate().slideFromStart(),   // enters from the right
+);
+```
+
+`slideFromLeft()` / `slideFromRight()` keep their physical direction in every locale.
+
 ### Timelines, triggers & scroll
 
 **Timelines — sequence with `.then()`:**
@@ -195,7 +250,7 @@ chip.animate()
 ```
 
 > [!IMPORTANT]
-> `.duration()`, `.delay()`, and `.curve()` apply to the **most recently added effect** (the widely-used `flutter_animate` convention). Set them per effect, or use an `FxTheme` for global defaults.
+> `.duration()`, `.delay()`, and `.curve()` apply to the **most recently added effect** — or to every effect the last call added (`fadeIn()` is a fade *and* a slide). Later effects inherit `.duration()` / `.curve()`; see [Timing](#timing).
 
 **Staggered lists:**
 
@@ -205,10 +260,13 @@ Column(
       .animateList()
       .fade()
       .slideY(0.2)
-      .interval(80.ms)
+      .duration(400.ms)   // every item's effects
+      .interval(80.ms)    // item i starts 80ms × i after the first
       .build(),
 );
 ```
+
+Keyed children keep their animation (and state) when the list is reordered.
 
 **Triggers — play on an event:**
 
@@ -216,9 +274,12 @@ Column(
 badge.animate().tada().onTap();                   // replay on tap
 menu.animate().fadeIn().onHover();                // replay on hover
 card.animate().fadeIn().slideX(0.1).onVisible();  // play when scrolled into view
+
+// Replay every time it scrolls back in, and know when it leaves:
+tile.animate().fadeIn().onVisible(once: false, onHidden: pauseVideo);
 ```
 
-Available: `onTap` · `onDoubleTap` · `onLongPress` · `onHover` · `onAppear` · `onVisible` / `animateOnVisible`.
+Available: `onTap` · `onDoubleTap` · `onLongPress` · `onHover` · `onAppear` · `onVisible` / `animateOnVisible` (with `visibleFraction`, `once`, `onShown`, `onHidden`).
 
 **Scroll-driven animations & gestures:**
 
@@ -327,6 +388,22 @@ class SwingEffect extends FxEffect {
 
 widget.animate().addEffect(const SwingEffect());
 ```
+
+If your effect only ever writes `acc.transform`, `acc.fractionalTranslation` and `acc.opacity` (never `acc.addWrap`), also override `bool get paintOnly => true;` — chains made only of such effects animate at paint time without rebuilding. Use `acc.isRtl` to mirror horizontal motion in right-to-left layouts.
+
+### Choosing an import
+
+| Import | What you get |
+|--------|--------------|
+| `package:save_points_animations/save_points_animations.dart` | Everything below, plus one-call shortcuts on every `Widget` (`Text('Hi').fadeIn()`, `.shake()`, …) |
+| `package:save_points_animations/core.dart` | The engine only: `.animate()` chains, effects, triggers, scroll, physics, transitions, theme — `Widget` gains just `animate()` |
+| `package:save_points_animations/widgets.dart` | The ready-made widget catalog and text animations only |
+
+Prefer `core.dart` in large apps, or alongside another animation package, to keep autocomplete on `Widget` focused.
+
+### Coming from flutter_animate
+
+The chain reads almost the same — `.animate().fade().scale()`, `.then()`, `.animate(target:)`, `onPlay` / `onComplete` and inherited timing all behave the way you know them. See the [migration guide](doc/migrating_from_flutter_animate.md) for the differences and a method-by-method table.
 
 ## 🧩 Widget Catalog
 
@@ -558,7 +635,7 @@ FxSwitcher(
 
 **Color & filter:** `saturate` / `grayscale` · `brightness` · `hueShift`
 
-**Entrances (one-shots):** `fadeIn` · `scaleIn/Out` · `zoom` · `pop` (overshoot) · `elastic` · `rollIn` · `hinge` · `jackInTheBox` · `lightSpeedIn/Out` · `rotateIn` · `slideFrom{Top,Bottom,Left,Right}`
+**Entrances (one-shots):** `fadeIn` · `scaleIn/Out` · `zoom` · `pop` (overshoot) · `elastic` · `rollIn` · `hinge` · `jackInTheBox` · `lightSpeedIn/Out` · `rotateIn` · `slideFrom{Top,Bottom,Left,Right}` · `slideFrom{Start,End}` (RTL-aware)
 
 **Presets:** `success` · `error` · `warning` · `loading` · `attention` · `heroEntry/Exit` · `dialog` · `tooltip` · `toast` · `snackbar` · `cardEntry` · `listItem` · `pageTransition` · `modal` · `popup` · `emptyState` · `onboarding` · `fab` · `notification`
 
@@ -586,17 +663,17 @@ Motion is opt-out-able and controls are operable without a pointer.
 
 1. **Chain, don't nest.** Prefer `widget.animate().fade().scale()` over stacking `FadeTransition`/`ScaleTransition` — one controller, one repaint boundary.
 2. **`.then()` sequences; bare effects run in parallel.** Reach for `.then(delay)` only when you actually need a barrier.
-3. **Per-effect timing is last-effect.** `.duration()` / `.delay()` / `.curve()` bind to the most recently added effect — call them right after the effect you mean.
-4. **Set global defaults with `FxTheme`** rather than repeating `.duration()` / `.curve()` everywhere.
+3. **Set timing once.** Put chain-wide timing in `.animate(duration:, curve:)`; `.duration()` / `.curve()` bind to the effect(s) just added and carry forward to later ones.
+4. **Set app-wide defaults with `FxTheme`**, and name durations with `FxDurations` tokens instead of magic numbers.
 5. **Loop with `.looping()`** for ambient motion (`glow`, `float`, `shimmer`, `sheen`) — and trust reduced-motion to pause it.
 6. **Pass a `seed`** to particle backdrops (`FxRain`, `FxSnow`, `FxParticles`, …) for reproducible layouts in golden tests.
-7. **Hold an `FxController`** for imperative replay; disposing it is a safe no-op.
+7. **Hold an `FxController`** for imperative replay; disposing it is a safe no-op. For state (selected, expanded, hovered), prefer `.animate(target: …)`.
 
 ## 🩹 Troubleshooting
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `.duration()` seems to affect the wrong effect | Timing binds to the **last** added effect | Call `.duration()` immediately after the intended effect, or set it on the `FxEffect` |
+| `.duration()` seems to affect the wrong effect | Timing binds to the effect(s) **just added**, and later effects inherit it | Call `.duration()` right after the intended effect, or set chain-wide timing with `.animate(duration:)` |
 | A widget animates on every rebuild | `.animate()` rebuilds a fresh chain each build | Drive it with an `FxController` + `autoPlay: false`, or gate with a trigger like `.onVisible()` |
 | Nothing animates | OS "reduce motion" is on | Expected — effects jump to end. Override via `FxTheme(respectReducedMotion: false)` if truly needed |
 | Blur/glass looks heavy while scrolling | `BackdropFilter` re-rasterizes | It's isolated in a `RepaintBoundary`; keep the blurred region small |
@@ -623,7 +700,8 @@ Triggers, gesture animations, presets, physics/springs, page transitions, Hero, 
 - [x] Physics/springs, page transitions & Hero
 - [x] 110+ ready-made widgets
 - [x] Reduced-motion & semantics across the library
-- [ ] RTL-aware directional effects
+- [x] RTL-aware directional effects
+- [x] State-driven (`target`) animation and paint-time rendering
 - [ ] Web keyboard shortcuts for interactive widgets
 - [ ] More shader-based effects
 
@@ -638,7 +716,7 @@ flutter test --update-goldens --tags golden  # regenerate goldens
 dart format . && flutter analyze
 ```
 
-Golden tests pump the controller to **deterministic `t` values** (never a live mid-flight frame) and are tagged `golden`. Because golden rendering varies by platform, CI runs the portable suite and goldens are verified locally. CI (analyze + format + test on every push/PR) is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+Golden tests pump the controller to **deterministic `t` values** (never a live mid-flight frame) and are tagged `golden`. Because golden rendering varies by platform, CI runs the portable suite and goldens are verified locally. CI (format, analyze and test on the minimum supported Flutter and the latest stable, plus `pub publish --dry-run`, pana and an example web build) is defined in [`.github/workflows/ci.yml`](.github/workflows/ci.yml). Deploying the web demo is a separate, manually-run workflow.
 
 A full demo lives in [`example/`](example/lib/main.dart):
 
@@ -648,13 +726,11 @@ cd example && flutter run
 
 ## 🤝 Contributing
 
-Contributions are welcome! Open an [issue](https://github.com/your-org/save_points_animations/issues) to discuss a change, or send a [pull request](https://github.com/your-org/save_points_animations/pulls). Run `dart format . && flutter analyze && flutter test --exclude-tags golden` before submitting.
+Contributions are welcome! Open an [issue](https://github.com/m7hamed-dev/save_points_animations/issues) to discuss a change, or send a [pull request](https://github.com/m7hamed-dev/save_points_animations/pulls). Run `dart format . && flutter analyze && flutter test --exclude-tags golden` before submitting.
 
 ## 📄 License
 
-<!-- TODO: The LICENSE file currently contains a placeholder. Add a real license and name it here (e.g. "MIT"). -->
-
-See [LICENSE](LICENSE).
+Released under the [MIT License](LICENSE).
 
 <div align="center">
 
@@ -663,4 +739,3 @@ Made with ❤️ for the Flutter community.
 **⭐ Star this repo if it helped you.**
 
 </div>
-# save_points_animations

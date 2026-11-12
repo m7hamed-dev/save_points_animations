@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
+import 'support/fx_probe.dart';
+
 Widget _host(Widget child, {bool disableAnimations = false}) {
   return MediaQuery(
     data: MediaQueryData(disableAnimations: disableAnimations),
@@ -30,11 +32,12 @@ void main() {
     );
     await tester.pump(); // run post-frame forward()
     await tester.pump(const Duration(milliseconds: 150));
-    final mid = tester.widget<Opacity>(find.byType(Opacity).first).opacity;
+    final mid = fxPaintedOpacity(tester, find.text('Hi'));
     expect(mid, greaterThan(0.0));
     expect(mid, lessThan(1.0));
-    // At rest the engine drops the Opacity wrapper (fully opaque = no-op).
     await tester.pump(const Duration(milliseconds: 200));
+    expect(fxPaintedOpacity(tester, find.text('Hi')), 1.0);
+    // Fade only changes paint: no Opacity widget is ever built for it.
     expect(find.byType(Opacity), findsNothing);
   });
 
@@ -44,9 +47,9 @@ void main() {
     );
     await tester.pump(); // run the post-frame callback
     await tester.pump();
-    // Jumped straight to the end frame: fully visible, no Opacity wrapper.
+    // Jumped straight to the end frame: fully visible.
     expect(find.text('Hi'), findsOneWidget);
-    expect(find.byType(Opacity), findsNothing);
+    expect(fxPaintedOpacity(tester, find.text('Hi')), 1.0);
   });
 
   testWidgets('reduced motion "disable" shows the child untouched', (
@@ -66,7 +69,8 @@ void main() {
     // No effect applied at all — in particular the entrance fade must not
     // leave the child stuck at opacity 0.
     expect(find.text('Hi'), findsOneWidget);
-    expect(find.byType(Opacity), findsNothing);
+    expect(fxPaintedOpacity(tester, find.text('Hi')), 1.0);
+    expect(fxCompositeOf(tester, find.text('Hi')), isNull);
     expect(
       find.ancestor(of: find.text('Hi'), matching: find.byType(Transform)),
       findsNothing,

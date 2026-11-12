@@ -1,13 +1,15 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/widgets/fx_animated_check.dart';
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
 import 'package:save_points_animations/src/widgets/fx_loaders.dart';
 
 /// The visual state of an [FxProgressButton].
 enum FxButtonState { idle, loading, success, error }
 
 /// A button that morphs into a loading spinner, then a success check (or error
-/// cross), driven by [state]. Great for form submits.
+/// cross), driven by [state]. Great for form submits. It is keyboard-focusable;
+/// Enter / Space press it while [state] is idle.
 ///
 /// ```dart
 /// FxProgressButton(
@@ -88,35 +90,51 @@ class FxProgressButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final circle = state != FxButtonState.idle;
+    final idle = state == FxButtonState.idle;
+    final VoidCallback? press = idle
+        ? () {
+            HapticFeedback.selectionClick();
+            onPressed();
+          }
+        : null;
     return LayoutBuilder(
       builder: (context, constraints) {
         final fullWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : 220.0;
+        final radius = BorderRadius.circular(
+          circle ? height / 2 : borderRadius,
+        );
         return Semantics(
           button: true,
-          enabled: state == FxButtonState.idle,
+          enabled: idle,
           liveRegion: true,
           label: _semanticLabel.isEmpty ? null : _semanticLabel,
           child: Align(
-            child: GestureDetector(
-              onTap: state == FxButtonState.idle
-                  ? () {
-                      HapticFeedback.selectionClick();
-                      onPressed();
-                    }
-                  : null,
-              child: AnimatedContainer(
-                duration: duration,
-                curve: Curves.easeInOut,
-                width: circle ? height : fullWidth,
-                height: height,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
+            // Stays focusable through loading/success/error so a keyboard
+            // user keeps their place; Enter / Space only press it when idle.
+            child: FxFocusableControl(
+              enabled: true,
+              onActivate: () => press?.call(),
+              builder: (context, showFocus) => GestureDetector(
+                onTap: press,
+                child: FxFocusRing(
+                  visible: showFocus,
                   color: _bg,
-                  borderRadius: .circular(circle ? height / 2 : borderRadius),
+                  borderRadius: radius,
+                  child: AnimatedContainer(
+                    duration: duration,
+                    curve: Curves.easeInOut,
+                    width: circle ? height : fullWidth,
+                    height: height,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: _bg, borderRadius: radius),
+                    child: AnimatedSwitcher(
+                      duration: duration,
+                      child: _content(),
+                    ),
+                  ),
                 ),
-                child: AnimatedSwitcher(duration: duration, child: _content()),
               ),
             ),
           ),

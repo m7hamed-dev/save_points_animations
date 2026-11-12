@@ -1,6 +1,98 @@
 ## Unreleased
 
+### Breaking
+- **`.duration()` and `.curve()` now carry forward.** An effect without its own
+  duration or curve inherits the last one set with `.duration()` / `.curve()`
+  earlier in the chain (then `animate(duration:, curve:)`, then `FxTheme`), so
+  `.fade().duration(600.ms).scale()` runs both for 600ms. Timing passed to an
+  effect's constructor (e.g. `elastic()`'s curve) stays local, and delays are
+  never inherited. Chains that relied on later effects falling back to the
+  theme need their own `.duration()` / `.curve()`.
+- **A call that adds several effects is one group.** `.duration()`,
+  `.delay()` and `.curve()` right after `fadeIn()`, `scaleIn()`,
+  `slideFrom…()`, `zoom()`, `lightSpeedIn/Out()`, `rotateIn()` or
+  `parallel([...])` now apply to every effect it added, not only the last one
+  (previously `fadeIn().duration(1.seconds)` slowed the slide but not the
+  fade).
+- **Paint-only chains build no `Opacity` / `Transform` widgets.** Chains whose
+  effects only move, scale, rotate, skew, flip, slide or fade are applied at
+  paint time (see *Performance*). Tests that looked for those widgets should
+  check the painted result instead (e.g. golden tests).
+- The one-call shortcuts on `Widget` (`fadeIn()`, `shake()`, `float()`, …)
+  moved from the `FxAnimate` extension to a new `FxAnimateShortcuts`
+  extension. Only code that named the extension explicitly is affected.
+- `animateList()` staggers items by delaying each item's start instead of
+  adding the offset to every effect's own delay, so an `FxTheme` delay is no
+  longer overridden.
+
+### Added
+- Chain-wide timing: `.animate(duration:, delay:, curve:)`. `delay` waits once
+  before the first automatic play and is not repeated by loops.
+- State-driven animation: `.animate(target: …)` renders the chain at a point
+  of its timeline (`0..1`) and animates to every new value it is rebuilt with.
+- `onPlay` / `onComplete` callbacks on `.animate()`, and `looping(count:)` to
+  stop after a number of cycles (then `onComplete` fires).
+- Right-to-left support: `slideFromStart()` / `slideFromEnd()` (also as
+  one-call shortcuts) and `directional:` on `moveX`, `slideX`, `MoveEffect` and
+  `SlideEffect` mirror horizontal motion under `TextDirection.rtl`.
+  `FxAccumulator.textDirection` / `isRtl` let custom effects do the same.
+- `onVisible()` / `animateOnVisible()` take `once` (set `false` to rewind when
+  the widget leaves the viewport and replay when it returns), `onShown` and
+  `onHidden`.
+- `FxDurations`: the Material 3 duration tokens (`short1` … `extraLong4`).
+- `animateList()` gains `.duration()`, `.curve()`, `.delay()`, `.moveY()` and
+  `slideX(directional:)`; keyed children keep their animation when reordered.
+- Opt-in entrypoints: `package:save_points_animations/core.dart` (the engine,
+  with only `animate()` added to `Widget`) and
+  `package:save_points_animations/widgets.dart` (the widget catalog). The main
+  library still exports everything.
+- `FxEffect.paintOnly` and `FxAccumulator.fractionalTranslation` for custom
+  effects that should take the paint-time path.
+- Keyboard support for interactive widgets: `FxAnimatedSlider` /
+  `FxRangeSlider` step with the arrow keys (each range thumb is its own focus
+  stop), and Enter / Space activate `FxAnimatedToggle`, `FxAnimatedCheckbox`,
+  `FxAnimatedRadio`, the animated buttons (`FxGlowButton`, `FxGradientButton`,
+  `FxJellyButton`, `FxShimmerButton`, `FxMagneticButton`, `FxHeartButton`,
+  `FxProgressButton`, `FxHoldButton` — hold the key to fill),
+  `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring
+  appears only under keyboard focus; disabled controls are skipped.
+- `FxSlideToConfirmController` is now exported. It is the type of
+  `FxSlideToConfirm.controller`, but apps could only reach it through
+  `package:save_points_animations/src/…`.
+- A widget test catalog (`test/catalog/`): a golden image for every exported
+  widget (plus a check that none is missing), tap-target / label / contrast
+  guideline checks for 41 interactive widgets, and 77 behavior tests. Known
+  widget bugs found by it are kept as skipped tests with the reason, and run
+  with `--dart-define=CATALOG_RUN_SKIPPED=true`.
+- A migration guide from `flutter_animate`
+  ([doc/migrating_from_flutter_animate.md](doc/migrating_from_flutter_animate.md))
+  and an interactive playground in the example app.
+
+### Performance
+- Chains made only of paint-only effects (fade, move, slide, scale, rotate,
+  skew, flip and the motion/attention/entrance effects built on them) no longer
+  rebuild any widget per frame: a single render object applies the composed
+  transform and opacity at paint time inside its own repaint boundary. Hit
+  testing follows the painted position, including outside the child's layout
+  bounds.
+
 ### Fixed
+- About 19 continuously-animating widgets never started moving unless reduced
+  motion had been toggled: they started their loop only from
+  `FxMotionAware.onReduceMotionChanged`, which fires on changes, not at mount.
+  Affected: `FxGlowButton`, `FxGradientButton`, `FxShimmerButton`,
+  `FxNeonText`, `FxTypingIndicator`, `FxPlasma`, `FxBouncingBall`,
+  `FxWaveDots`, `FxShinyText`, `FxDnaLoader`, `FxHeartbeatLine`,
+  `FxMeshGradient`, `FxCircularText`, `FxWaveProgress`, `FxRadar`,
+  `FxOrbitLoader`, `FxDotsLoader`, `FxBarsLoader` and `FxProgressRing` (and
+  so `FxProgressButton`'s spinner). The `FxMotionAware` docs now say when the
+  callback fires.
+- `FxProgressBar` (indeterminate sweep), `FxKenBurns` and `FxLoadingOverlay`
+  now honor reduced motion, at mount and when the setting changes at runtime.
+- 18 looping widgets (e.g. `FxAnimatedGradient`, `FxAurora`, `FxBlob`,
+  `FxBorderBeam`, `FxShine`, `FxSpotlight`, `FxExpandable`, `FxHoldButton`)
+  now apply a new `duration`, `curve` or mode passed on rebuild instead of
+  keeping the values they were created with.
 - `.animate()` and `animateOnScroll` no longer reset the animated child's
   `State`. The engine drops no-op `Opacity` / `Transform` / wrapper widgets at
   rest, which changed the widget type above the child and made Flutter

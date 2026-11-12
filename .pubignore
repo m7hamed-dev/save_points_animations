@@ -1,0 +1,39 @@
+# A .pubignore replaces .gitignore for `dart pub publish`, so everything that
+# .gitignore excludes is repeated here, followed by files that belong in the
+# repository but not in the published package.
+
+# --- Mirrored from .gitignore ---
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+*.iml
+*.ipr
+*.iws
+.idea/
+/pubspec.lock
+**/doc/api/
+.dart_tool/
+.flutter-plugins-dependencies
+/build/
+/coverage/
+
+# --- Repository-only files ---
+# Internal design briefs used while building the package.
+/prompt.md
+/prompt.enhanced.md
+# CI configuration and local tooling.
+/.github/
+/.claude/
+/benchmark/
+# Golden reference images are platform-specific and large.
+/test/golden/goldens/
+/test/goldens/
+/test/catalog/goldens/
+/test/catalog/failures/

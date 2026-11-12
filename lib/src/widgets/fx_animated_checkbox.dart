@@ -1,7 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A checkbox whose box fills and whose check draws itself in on toggle.
+/// While enabled it is keyboard-focusable; Enter / Space toggle it.
 ///
 /// ```dart
 /// FxAnimatedCheckbox(value: on, onChanged: (v) => setState(() => on = v));
@@ -64,6 +67,13 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
     super.dispose();
   }
 
+  void _toggle() {
+    final onChanged = widget.onChanged;
+    if (onChanged == null) return;
+    HapticFeedback.lightImpact();
+    onChanged(!widget.value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onChanged != null;
@@ -71,23 +81,28 @@ class _FxAnimatedCheckboxState extends State<FxAnimatedCheckbox>
       child: Semantics(
         checked: widget.value,
         enabled: enabled,
-        child: Opacity(
-          opacity: enabled ? 1 : 0.4,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: enabled
-                ? () {
-                    HapticFeedback.lightImpact();
-                    widget.onChanged!(!widget.value);
-                  }
-                : null,
-            child: CustomPaint(
-              size: Size.square(widget.size),
-              painter: _CheckboxPainter(
-                animation: _controller,
-                activeColor: widget.activeColor,
-                borderColor: widget.borderColor,
-                checkColor: widget.checkColor,
+        // Focusable (and Enter / Space toggle it) only while enabled.
+        child: FxFocusableControl(
+          enabled: enabled,
+          onActivate: _toggle,
+          builder: (context, showFocus) => Opacity(
+            opacity: enabled ? 1 : 0.4,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: enabled ? _toggle : null,
+              child: FxFocusRing(
+                visible: showFocus,
+                color: widget.activeColor,
+                borderRadius: .circular(widget.size * 0.25),
+                child: CustomPaint(
+                  size: Size.square(widget.size),
+                  painter: _CheckboxPainter(
+                    animation: _controller,
+                    activeColor: widget.activeColor,
+                    borderColor: widget.borderColor,
+                    checkColor: widget.checkColor,
+                  ),
+                ),
               ),
             ),
           ),

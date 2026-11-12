@@ -26,6 +26,9 @@ class ShakeEffect extends FxEffect {
   final bool horizontal;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     final offset = math.sin(t * math.pi * 2 * count) * amplitude * (1 - t);
     acc.transform.multiply(
@@ -64,6 +67,9 @@ class BounceEffect extends FxEffect {
   final int count;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     final offset = -(math.sin(t * math.pi * count).abs()) * amplitude * (1 - t);
     acc.transform.multiply(Matrix4.translationValues(0, offset, 0));
@@ -94,6 +100,9 @@ class PulseEffect extends FxEffect {
 
   /// Fractional peak growth (0.1 == +10%).
   final double amount;
+
+  @override
+  bool get paintOnly => true;
 
   @override
   void apply(FxAccumulator acc, double t) {

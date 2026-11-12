@@ -1,7 +1,10 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A radio button whose inner dot scales in and ring tints when selected.
+/// While enabled it is keyboard-focusable; Enter / Space select it.
 ///
 /// ```dart
 /// FxAnimatedRadio<int>(value: 1, groupValue: _sel, onChanged: (v) => …);
@@ -66,6 +69,13 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
     super.dispose();
   }
 
+  void _select() {
+    final onChanged = widget.onChanged;
+    if (onChanged == null) return;
+    HapticFeedback.lightImpact();
+    onChanged(widget.value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final enabled = widget.onChanged != null;
@@ -74,22 +84,27 @@ class _FxAnimatedRadioState<T> extends State<FxAnimatedRadio<T>>
         inMutuallyExclusiveGroup: true,
         checked: widget.value == widget.groupValue,
         enabled: enabled,
-        child: Opacity(
-          opacity: enabled ? 1 : 0.4,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: enabled
-                ? () {
-                    HapticFeedback.lightImpact();
-                    widget.onChanged!(widget.value);
-                  }
-                : null,
-            child: CustomPaint(
-              size: Size.square(widget.size),
-              painter: _RadioPainter(
-                animation: _controller,
+        // Focusable (and Enter / Space select it) only while enabled.
+        child: FxFocusableControl(
+          enabled: enabled,
+          onActivate: _select,
+          builder: (context, showFocus) => Opacity(
+            opacity: enabled ? 1 : 0.4,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: enabled ? _select : null,
+              child: FxFocusRing(
+                visible: showFocus,
                 color: widget.color,
-                borderColor: widget.borderColor,
+                circle: true,
+                child: CustomPaint(
+                  size: Size.square(widget.size),
+                  painter: _RadioPainter(
+                    animation: _controller,
+                    color: widget.color,
+                    borderColor: widget.borderColor,
+                  ),
+                ),
               ),
             ),
           ),

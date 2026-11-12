@@ -3,13 +3,15 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/core/fx_motion.dart';
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
 
 /// A button that **wobbles like jelly** when tapped — a quick decaying
 /// squash-and-skew that makes taps feel springy. Pass `null` for [onPressed]
 /// to render a dimmed, disabled state.
 ///
 /// Fires a light haptic on tap and honors "reduce motion" (it just dips
-/// instead of wobbling).
+/// instead of wobbling). While enabled it is keyboard-focusable and Enter /
+/// Space press it.
 ///
 /// ```dart
 /// FxJellyButton(onPressed: send, child: const Text('Send'));
@@ -78,47 +80,57 @@ class _FxJellyButtonState extends State<FxJellyButton>
     return Semantics(
       button: true,
       enabled: enabled,
-      child: Opacity(
-        opacity: enabled ? 1 : 0.5,
-        child: RepaintBoundary(
-          child: GestureDetector(
-            onTapDown: enabled ? (_) => setState(() => _down = true) : null,
-            onTapUp: enabled ? (_) => setState(() => _down = false) : null,
-            onTapCancel: () => setState(() => _down = false),
-            onTap: enabled ? _handleTap : null,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, child) {
-                final t = _controller.value;
-                // Decaying skew + squash wobble.
-                final wobble = math.sin(t * math.pi * 3) * (1 - t);
-                final press = _down ? 0.06 : 0.0;
-                final sx = 1 + wobble * 0.08 - press;
-                final sy = 1 - wobble * 0.08 + press;
-                final matrix = Matrix4.identity()
-                  ..setEntry(0, 0, sx)
-                  ..setEntry(1, 1, sy)
-                  ..setEntry(0, 1, wobble * 0.12);
-                return Transform(
-                  alignment: Alignment.center,
-                  transform: matrix,
-                  child: child,
-                );
-              },
-              child: DecoratedBox(
-                decoration: BoxDecoration(
+      // Focusable (and Enter / Space activate it) only while enabled.
+      child: FxFocusableControl(
+        enabled: enabled,
+        onActivate: _handleTap,
+        builder: (context, showFocus) => Opacity(
+          opacity: enabled ? 1 : 0.5,
+          child: RepaintBoundary(
+            child: GestureDetector(
+              onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+              onTapUp: enabled ? (_) => setState(() => _down = false) : null,
+              onTapCancel: () => setState(() => _down = false),
+              onTap: enabled ? _handleTap : null,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final t = _controller.value;
+                  // Decaying skew + squash wobble.
+                  final wobble = math.sin(t * math.pi * 3) * (1 - t);
+                  final press = _down ? 0.06 : 0.0;
+                  final sx = 1 + wobble * 0.08 - press;
+                  final sy = 1 - wobble * 0.08 + press;
+                  final matrix = Matrix4.identity()
+                    ..setEntry(0, 0, sx)
+                    ..setEntry(1, 1, sy)
+                    ..setEntry(0, 1, wobble * 0.12);
+                  return Transform(
+                    alignment: Alignment.center,
+                    transform: matrix,
+                    child: child,
+                  );
+                },
+                child: FxFocusRing(
+                  visible: showFocus,
                   color: widget.color,
                   borderRadius: .circular(widget.borderRadius),
-                ),
-                child: Padding(
-                  padding: widget.padding,
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(
-                      color: widget.textColor,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: widget.color,
+                      borderRadius: .circular(widget.borderRadius),
                     ),
-                    child: widget.child,
+                    child: Padding(
+                      padding: widget.padding,
+                      child: DefaultTextStyle.merge(
+                        style: TextStyle(
+                          color: widget.textColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                        child: widget.child,
+                      ),
+                    ),
                   ),
                 ),
               ),

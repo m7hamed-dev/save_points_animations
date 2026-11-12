@@ -3,7 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// A "like" heart that pops and emits a small burst when toggled on.
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
+/// A "like" heart that pops and emits a small burst when toggled on. It is
+/// keyboard-focusable; Enter / Space toggle it.
 ///
 /// ```dart
 /// FxHeartButton(isLiked: liked, onChanged: (v) => setState(() => liked = v));
@@ -58,35 +61,47 @@ class _FxHeartButtonState extends State<FxHeartButton>
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
+      enabled: true,
       toggled: widget.isLiked,
-      child: RepaintBoundary(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: _tap,
-          child: SizedBox.square(
-            dimension: widget.size * 1.8,
-            child: AnimatedBuilder(
-              animation: _controller,
-              builder: (context, _) {
-                final v = _controller.value;
-                final scale = 1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
-                return CustomPaint(
-                  painter: _BurstPainter(progress: v, color: widget.color),
-                  child: Center(
-                    child: Transform.scale(
-                      scale: widget.isLiked ? scale : 1.0,
-                      child: CustomPaint(
-                        size: Size.square(widget.size),
-                        painter: _HeartPainter(
-                          color: widget.isLiked
-                              ? widget.color
-                              : widget.inactiveColor,
+      // Enter / Space toggle the like when it has keyboard focus.
+      child: FxFocusableControl(
+        enabled: true,
+        onActivate: _tap,
+        builder: (context, showFocus) => RepaintBoundary(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _tap,
+            child: FxFocusRing(
+              visible: showFocus,
+              color: widget.color,
+              circle: true,
+              child: SizedBox.square(
+                dimension: widget.size * 1.8,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    final v = _controller.value;
+                    final scale =
+                        1 + math.sin(v.clamp(0.0, 1.0) * math.pi) * 0.45;
+                    return CustomPaint(
+                      painter: _BurstPainter(progress: v, color: widget.color),
+                      child: Center(
+                        child: Transform.scale(
+                          scale: widget.isLiked ? scale : 1.0,
+                          child: CustomPaint(
+                            size: Size.square(widget.size),
+                            painter: _HeartPainter(
+                              color: widget.isLiked
+                                  ? widget.color
+                                  : widget.inactiveColor,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ),

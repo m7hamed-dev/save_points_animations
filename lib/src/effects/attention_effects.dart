@@ -30,6 +30,11 @@ abstract class _AttentionEffect extends FxEffect {
     super.duration,
     super.curve = Curves.linear,
   });
+
+  // Every attention seeker only moves, scales, rotates or fades the child,
+  // except [GlowEffect], which opts out.
+  @override
+  bool get paintOnly => true;
 }
 
 /// Opacity flashes on and off (Animate.css `flash`).
@@ -134,12 +139,7 @@ class WobbleEffect extends _AttentionEffect {
         ]) *
         amplitude;
     if (rot != 0) acc.transform.multiply(Matrix4.rotationZ(_deg2rad(rot)));
-    if (tx != 0) {
-      acc.addWrap(
-        (child) =>
-            FractionalTranslation(translation: Offset(tx, 0), child: child),
-      );
-    }
+    if (tx != 0) acc.fractionalTranslation += Offset(tx, 0);
   }
 
   @override
@@ -397,6 +397,9 @@ class GlowEffect extends _AttentionEffect {
   final Color color;
   final double maxBlur;
   final double maxSpread;
+
+  @override
+  bool get paintOnly => false;
 
   @override
   void apply(FxAccumulator acc, double t) {

@@ -12,16 +12,14 @@ class RollInEffect extends FxEffect {
   const RollInEffect({super.delay, super.duration, super.curve});
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     acc.opacity *= t.clamp(0.0, 1.0);
     acc.transform.multiply(Matrix4.rotationZ(_deg2rad(fxLerp(-120, 0, t))));
     final dx = fxLerp(-1.0, 0, t);
-    if (dx != 0) {
-      acc.addWrap(
-        (child) =>
-            FractionalTranslation(translation: Offset(dx, 0), child: child),
-      );
-    }
+    if (dx != 0) acc.fractionalTranslation += Offset(dx, 0);
   }
 
   @override
@@ -49,6 +47,9 @@ class PopEffect extends FxEffect {
 
   /// Peak scale reached before settling to 1 (1.1 == +10%).
   final double overshoot;
+
+  @override
+  bool get paintOnly => true;
 
   @override
   void apply(FxAccumulator acc, double t) {
@@ -88,6 +89,9 @@ class HingeEffect extends FxEffect {
   const HingeEffect({super.delay, super.duration, super.curve = Curves.linear});
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     final rot = fxKeyframe(t, const [
       [0, 0],
@@ -120,6 +124,9 @@ class HingeEffect extends FxEffect {
 /// Pop out of a box: tiny + rotated → full (Animate.css `jackInTheBox`).
 class JackInTheBoxEffect extends FxEffect {
   const JackInTheBoxEffect({super.delay, super.duration, super.curve});
+
+  @override
+  bool get paintOnly => true;
 
   @override
   void apply(FxAccumulator acc, double t) {

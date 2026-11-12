@@ -1,8 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A self-contained slider with an animated thumb that grows and casts a soft
-/// glow while dragging, plus a value bubble that floats above it.
+/// glow while dragging, plus a value bubble that floats above it. It is
+/// keyboard-focusable; the arrow keys step it by [step].
 ///
 /// ```dart
 /// FxAnimatedSlider(value: v, onChanged: (x) => setState(() => v = x));
@@ -83,6 +86,16 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
   String _format(double value) =>
       value.toStringAsFixed(widget.max - widget.min <= 1 ? 2 : 0);
 
+  // Arrow keys step exactly like the semantics increase/decrease actions.
+  late final Map<Type, Action<Intent>> _keyActions = {
+    FxAdjustIntent: CallbackAction<FxAdjustIntent>(
+      onInvoke: (intent) {
+        _nudge(intent.increase ? _step : -_step);
+        return null;
+      },
+    ),
+  };
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -108,78 +121,92 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
           decreasedValue: _format(_nudged(-_step)),
           onIncrease: () => _nudge(_step),
           onDecrease: () => _nudge(-_step),
-          child: RepaintBoundary(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onHorizontalDragStart: (_) => setState(() => _dragging = true),
-              onHorizontalDragEnd: (_) => setState(() => _dragging = false),
-              onHorizontalDragUpdate: (d) =>
-                  _updateFromDx(d.localPosition.dx, width),
-              onTapDown: (d) => _updateFromDx(d.localPosition.dx, width),
-              child: SizedBox(
-                height: widget.height,
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    // Inactive track.
-                    Align(
-                      child: Container(
-                        height: widget.trackHeight,
-                        decoration: BoxDecoration(
-                          color: widget.trackColor,
-                          borderRadius: .circular(widget.trackHeight),
-                        ),
-                      ),
-                    ),
-                    // Active track.
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: FractionallySizedBox(
-                        widthFactor: fraction,
+          child: FxFocusableControl(
+            enabled: true,
+            shortcuts: fxAdjustShortcuts,
+            actions: _keyActions,
+            builder: (context, showFocus) => RepaintBoundary(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragStart: (_) => setState(() => _dragging = true),
+                onHorizontalDragEnd: (_) => setState(() => _dragging = false),
+                onHorizontalDragUpdate: (d) =>
+                    _updateFromDx(d.localPosition.dx, width),
+                onTapDown: (d) => _updateFromDx(d.localPosition.dx, width),
+                child: SizedBox(
+                  height: widget.height,
+                  child: Stack(
+                    alignment: Alignment.centerLeft,
+                    children: [
+                      // Inactive track.
+                      Align(
                         child: Container(
                           height: widget.trackHeight,
                           decoration: BoxDecoration(
-                            color: widget.activeColor,
+                            color: widget.trackColor,
                             borderRadius: .circular(widget.trackHeight),
                           ),
                         ),
                       ),
-                    ),
-                    // Value bubble.
-                    if (widget.showBubble && _dragging)
-                      Positioned(
-                        left: (paintCenter - 18).clamp(0.0, width - 36),
-                        top: 0,
-                        child: _Bubble(color: widget.activeColor, text: label),
-                      ),
-                    // Thumb.
-                    Positioned(
-                      left: paintCenter - thumbSize / 2,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        curve: Curves.easeOut,
-                        width: thumbSize,
-                        height: thumbSize,
-                        decoration: BoxDecoration(
-                          color: widget.thumbColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: widget.activeColor,
-                            width: 3,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.activeColor.withValues(
-                                alpha: _dragging ? 0.4 : 0.2,
-                              ),
-                              blurRadius: _dragging ? 12 : 4,
-                              spreadRadius: _dragging ? 2 : 0,
+                      // Active track.
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FractionallySizedBox(
+                          widthFactor: fraction,
+                          child: Container(
+                            height: widget.trackHeight,
+                            decoration: BoxDecoration(
+                              color: widget.activeColor,
+                              borderRadius: .circular(widget.trackHeight),
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      // Value bubble (also shown while keyboard-focused, so
+                      // arrow-key changes are visible).
+                      if (widget.showBubble && (_dragging || showFocus))
+                        Positioned(
+                          left: (paintCenter - 18).clamp(0.0, width - 36),
+                          top: 0,
+                          child: _Bubble(
+                            color: widget.activeColor,
+                            text: label,
+                          ),
+                        ),
+                      // Thumb.
+                      Positioned(
+                        left: paintCenter - thumbSize / 2,
+                        child: FxFocusRing(
+                          visible: showFocus,
+                          color: widget.activeColor,
+                          circle: true,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            curve: Curves.easeOut,
+                            width: thumbSize,
+                            height: thumbSize,
+                            decoration: BoxDecoration(
+                              color: widget.thumbColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: widget.activeColor,
+                                width: 3,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: widget.activeColor.withValues(
+                                    alpha: _dragging ? 0.4 : 0.2,
+                                  ),
+                                  blurRadius: _dragging ? 12 : 4,
+                                  spreadRadius: _dragging ? 2 : 0,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

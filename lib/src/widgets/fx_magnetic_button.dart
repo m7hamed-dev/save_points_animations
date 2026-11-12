@@ -1,10 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/core/fx_motion.dart';
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
 
 /// A target that leans toward the pointer while hovered (desktop/web) and
 /// springs back to center when the pointer leaves — a "magnetic" button feel.
-/// On touch it simply forwards taps.
+/// On touch it simply forwards taps. With an [onTap] it is also a keyboard-
+/// focusable button (Enter / Space activate it; focus lifts it like a hover).
 ///
 /// ```dart
 /// FxMagneticButton(onTap: go, child: myButton);
@@ -68,37 +70,56 @@ class _FxMagneticButtonState extends State<FxMagneticButton>
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
+    final onTap = widget.onTap;
+    final interactive = onTap != null;
+    final region = MouseRegion(
       onHover: _onHover,
       onExit: (_) => _reset(),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            _size = constraints.biggest;
-            return ValueListenableBuilder<_MagneticState>(
-              valueListenable: _state,
-              child: widget.child,
-              builder: (context, state, child) {
-                return TweenAnimationBuilder<Offset>(
-                  tween: Tween<Offset>(end: state.offset),
-                  duration: state.hovering
-                      ? const Duration(milliseconds: 90)
-                      : const Duration(milliseconds: 420),
-                  curve: state.hovering ? Curves.easeOut : Curves.elasticOut,
-                  builder: (context, offset, child) =>
-                      Transform.translate(offset: offset, child: child),
-                  child: AnimatedScale(
-                    scale: state.hovering ? widget.scaleOnHover : 1,
-                    duration: const Duration(milliseconds: 180),
-                    child: child,
-                  ),
-                );
-              },
-            );
-          },
+      // Without an onTap this is a purely decorative wrapper (the child may be
+      // its own button), so it only becomes a focusable button with one.
+      child: FxFocusableControl(
+        enabled: interactive,
+        onActivate: onTap,
+        builder: (context, showFocus) => GestureDetector(
+          onTap: onTap,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              _size = constraints.biggest;
+              return ValueListenableBuilder<_MagneticState>(
+                valueListenable: _state,
+                child: widget.child,
+                builder: (context, state, child) {
+                  // Keyboard focus lifts the target like a hover (no pull),
+                  // instantly under reduced motion.
+                  final lifted = state.hovering || showFocus;
+                  return TweenAnimationBuilder<Offset>(
+                    tween: Tween<Offset>(end: state.offset),
+                    duration: state.hovering
+                        ? const Duration(milliseconds: 90)
+                        : const Duration(milliseconds: 420),
+                    curve: state.hovering ? Curves.easeOut : Curves.elasticOut,
+                    builder: (context, offset, child) =>
+                        Transform.translate(offset: offset, child: child),
+                    child: AnimatedScale(
+                      scale: lifted ? widget.scaleOnHover : 1,
+                      duration: reduceMotion
+                          ? Duration.zero
+                          : const Duration(milliseconds: 180),
+                      child: child,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
+    );
+    // Kept in the tree either way so toggling onTap doesn't remount the child.
+    return Semantics(
+      button: interactive ? true : null,
+      enabled: interactive ? true : null,
+      child: region,
     );
   }
 }

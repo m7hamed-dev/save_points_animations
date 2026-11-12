@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
+import 'support/fx_probe.dart';
+
 Widget _host(Widget child) => Directionality(
   textDirection: TextDirection.ltr,
   child: Center(child: child),
@@ -21,18 +23,14 @@ void main() {
         ),
       );
       await tester.pump();
-      // Not started: fully transparent -> an Opacity(0) wrapper exists.
-      expect(find.byType(Opacity), findsOneWidget);
-      expect(
-        tester.widget<Opacity>(find.byType(Opacity)).opacity,
-        closeTo(0.0, 1e-3),
-      );
+      // Not started: fully transparent.
+      expect(fxPaintedOpacity(tester, find.text('tap me')), closeTo(0, 1e-3));
 
       await tester.tap(find.text('tap me'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 200));
-      // Played to the end: wrapper dropped (fully opaque).
-      expect(find.byType(Opacity), findsNothing);
+      // Played to the end: fully opaque.
+      expect(fxPaintedOpacity(tester, find.text('tap me')), 1.0);
     });
 
     testWidgets('onVisible plays when on screen at mount', (tester) async {
@@ -47,12 +45,12 @@ void main() {
       );
       await tester.pump(); // post-frame visibility check fires restart
       await tester.pump(const Duration(milliseconds: 150));
-      expect(find.byType(Opacity), findsNothing);
+      expect(fxPaintedOpacity(tester, find.text('seen')), 1.0);
     });
 
     group('onVisible fires once scrolled into view', () {
-      Finder opacityOf(String text) =>
-          find.ancestor(of: find.text(text), matching: find.byType(Opacity));
+      double opacityOf(WidgetTester tester, String text) =>
+          fxPaintedOpacity(tester, find.text(text));
 
       Widget target(String text) => Text(text)
           .animate()
@@ -88,10 +86,10 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 150));
         // Below the fold: not fired yet, still fully transparent.
-        expect(tester.widget<Opacity>(opacityOf('below')).opacity, 0.0);
+        expect(opacityOf(tester, 'below'), 0.0);
 
         await scrollTo(tester, find.byType(Scrollable), 1300);
-        expect(opacityOf('below'), findsNothing);
+        expect(opacityOf(tester, 'below'), 1.0);
       });
 
       testWidgets('in a horizontal scroll view', (tester) async {
@@ -113,10 +111,10 @@ void main() {
         await tester.pump(const Duration(milliseconds: 150));
         // Off-screen to the right: must not fire just because it is
         // vertically within the screen.
-        expect(tester.widget<Opacity>(opacityOf('right')).opacity, 0.0);
+        expect(opacityOf(tester, 'right'), 0.0);
 
         await scrollTo(tester, find.byType(Scrollable), 1300);
-        expect(opacityOf('right'), findsNothing);
+        expect(opacityOf(tester, 'right'), 1.0);
       });
 
       testWidgets('when an outer (ancestor) scroll view moves', (tester) async {
@@ -143,11 +141,11 @@ void main() {
         );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 150));
-        expect(tester.widget<Opacity>(opacityOf('nested')).opacity, 0.0);
+        expect(opacityOf(tester, 'nested'), 0.0);
 
         // Only the outer, vertical scroll view moves.
         await scrollTo(tester, find.byType(Scrollable).first, 1300);
-        expect(opacityOf('nested'), findsNothing);
+        expect(opacityOf(tester, 'nested'), 1.0);
       });
     });
 

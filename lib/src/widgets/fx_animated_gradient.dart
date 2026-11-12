@@ -44,6 +44,17 @@ class _FxAnimatedGradientState extends State<FxAnimatedGradient>
   }
 
   @override
+  void didUpdateWidget(covariant FxAnimatedGradient oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+      // A running repeat keeps its old period until restarted; a
+      // controller stopped for reduced motion stays stopped.
+      if (_controller.isAnimating) _controller.repeat();
+    }
+  }
+
+  @override
   void onReduceMotionChanged(bool reduceMotion) {
     if (reduceMotion) {
       _controller.stop();

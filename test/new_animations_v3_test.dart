@@ -64,9 +64,7 @@ void main() {
       expect(taps, 1);
 
       // Null onPressed → disabled, no callback.
-      await tester.pumpWidget(
-        _host(const FxGlowButton(child: Text('Go'))),
-      );
+      await tester.pumpWidget(_host(const FxGlowButton(child: Text('Go'))));
       await tester.tap(find.text('Go'));
       expect(taps, 1);
       expect(tester.takeException(), isNull);
@@ -189,9 +187,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
       expect(taps, 1);
 
-      await tester.pumpWidget(
-        _host(const FxJellyButton(child: Text('J'))),
-      );
+      await tester.pumpWidget(_host(const FxJellyButton(child: Text('J'))));
       await tester.tap(find.text('J'));
       expect(taps, 1);
       await tester.pumpWidget(const SizedBox());

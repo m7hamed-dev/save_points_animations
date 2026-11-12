@@ -79,7 +79,9 @@ class _FxScrollLinkedState extends State<FxScrollLinked> {
   @override
   Widget build(BuildContext context) {
     final t = widget.curve.transform(_progress);
-    final acc = FxAccumulator();
+    final acc = FxAccumulator(
+      textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
+    );
     for (final effect in widget.effects) {
       effect.apply(acc, (effect.curve ?? Curves.linear).transform(t));
     }

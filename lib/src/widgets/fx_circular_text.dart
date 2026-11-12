@@ -44,6 +44,19 @@ class _FxCircularTextState extends State<FxCircularText>
     _buildPainters();
   }
 
+  bool _kicked = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*, so start the first
+    // spin here once the flag is known.
+    if (!_kicked) {
+      _kicked = true;
+      if (widget.spin && !reduceMotion) _controller.repeat();
+    }
+  }
+
   @override
   void onReduceMotionChanged(bool reduceMotion) {
     if (reduceMotion || !widget.spin) {
@@ -58,6 +71,8 @@ class _FxCircularTextState extends State<FxCircularText>
     super.didUpdateWidget(oldWidget);
     if (oldWidget.spinDuration != widget.spinDuration) {
       _controller.duration = widget.spinDuration;
+      // A running repeat keeps its old period until restarted.
+      if (_controller.isAnimating) _controller.repeat();
     }
     if (oldWidget.text != widget.text || oldWidget.style != widget.style) {
       _buildPainters();

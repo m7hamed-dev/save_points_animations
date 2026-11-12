@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/core/fx_motion.dart';
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
 
 /// A solid pill button wrapped in a soft **glow halo that breathes** — the
 /// shadow blur and spread pulse continuously to draw the eye, and the button
@@ -8,7 +9,8 @@ import 'package:save_points_animations/src/core/fx_motion.dart';
 /// state.
 ///
 /// Honors the platform "reduce motion" setting (the glow holds steady) and
-/// fires a light haptic on tap.
+/// fires a light haptic on tap. While enabled it is keyboard-focusable and
+/// Enter / Space press it.
 ///
 /// ```dart
 /// FxGlowButton(onPressed: buy, child: const Text('Get Pro'));
@@ -49,11 +51,23 @@ class _FxGlowButtonState extends State<FxGlowButton>
     with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
   bool _down = false;
+  bool _kicked = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*, so start the first
+    // breathe here once the flag is known.
+    if (!_kicked) {
+      _kicked = true;
+      if (!reduceMotion) _controller.repeat(reverse: true);
+    }
   }
 
   @override
@@ -95,45 +109,55 @@ class _FxGlowButtonState extends State<FxGlowButton>
     return Semantics(
       button: true,
       enabled: enabled,
-      child: Opacity(
-        opacity: enabled ? 1 : 0.5,
-        child: RepaintBoundary(
-          child: GestureDetector(
-            onTapDown: enabled ? (_) => setState(() => _down = true) : null,
-            onTapUp: enabled ? (_) => setState(() => _down = false) : null,
-            onTapCancel: () => setState(() => _down = false),
-            onTap: enabled ? _handleTap : null,
-            child: AnimatedScale(
-              scale: _down ? 0.95 : 1,
-              duration: const Duration(milliseconds: 120),
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  final p = _controller.value; // 0..1, mirrored by repeat.
-                  return DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: widget.color,
-                      borderRadius: .circular(widget.borderRadius),
-                      boxShadow: [
-                        BoxShadow(
-                          color: glow.withValues(alpha: 0.35 + 0.35 * p),
-                          blurRadius: 12 + 20 * p,
-                          spreadRadius: 1 + 3 * p,
+      // Focusable (and Enter / Space activate it) only while enabled.
+      child: FxFocusableControl(
+        enabled: enabled,
+        onActivate: _handleTap,
+        builder: (context, showFocus) => Opacity(
+          opacity: enabled ? 1 : 0.5,
+          child: RepaintBoundary(
+            child: GestureDetector(
+              onTapDown: enabled ? (_) => setState(() => _down = true) : null,
+              onTapUp: enabled ? (_) => setState(() => _down = false) : null,
+              onTapCancel: () => setState(() => _down = false),
+              onTap: enabled ? _handleTap : null,
+              child: AnimatedScale(
+                scale: _down ? 0.95 : 1,
+                duration: const Duration(milliseconds: 120),
+                child: FxFocusRing(
+                  visible: showFocus,
+                  color: glow,
+                  borderRadius: .circular(widget.borderRadius),
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      final p = _controller.value; // 0..1, mirrored by repeat.
+                      return DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: widget.color,
+                          borderRadius: .circular(widget.borderRadius),
+                          boxShadow: [
+                            BoxShadow(
+                              color: glow.withValues(alpha: 0.35 + 0.35 * p),
+                              blurRadius: 12 + 20 * p,
+                              spreadRadius: 1 + 3 * p,
+                            ),
+                          ],
                         ),
-                      ],
+                        child: child,
+                      );
+                    },
+                    child: Padding(
+                      padding: widget.padding,
+                      child: DefaultTextStyle.merge(
+                        style: TextStyle(
+                          color: widget.textColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                        child: widget.child,
+                      ),
                     ),
-                    child: child,
-                  );
-                },
-                child: Padding(
-                  padding: widget.padding,
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(
-                      color: widget.textColor,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                    child: widget.child,
                   ),
                 ),
               ),

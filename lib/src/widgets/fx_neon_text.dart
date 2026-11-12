@@ -31,6 +31,7 @@ class FxNeonText extends StatefulWidget {
 class _FxNeonTextState extends State<FxNeonText>
     with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  bool _kicked = false;
 
   @override
   void initState() {
@@ -39,7 +40,30 @@ class _FxNeonTextState extends State<FxNeonText>
   }
 
   @override
-  void onReduceMotionChanged(bool reduceMotion) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*, so start the first
+    // flicker loop here once the flag is known.
+    if (!_kicked) {
+      _kicked = true;
+      _sync();
+    }
+  }
+
+  @override
+  void onReduceMotionChanged(bool reduceMotion) => _sync();
+
+  @override
+  void didUpdateWidget(covariant FxNeonText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+      if (_controller.isAnimating) _controller.repeat();
+    }
+    if (widget.flicker != oldWidget.flicker) _sync();
+  }
+
+  void _sync() {
     if (reduceMotion || !widget.flicker) {
       // Settle to a static, fully-bright frame.
       _controller.value = 0;

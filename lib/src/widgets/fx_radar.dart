@@ -34,11 +34,23 @@ class FxRadar extends StatefulWidget {
 class _FxRadarState extends State<FxRadar>
     with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  bool _kicked = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*, so start the first
+    // loop here once the flag is known.
+    if (!_kicked) {
+      _kicked = true;
+      if (!reduceMotion) _controller.repeat();
+    }
   }
 
   @override

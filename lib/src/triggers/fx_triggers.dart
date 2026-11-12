@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/builders/fx_builder.dart';
 import 'package:save_points_animations/src/controllers/fx_controller.dart';
@@ -54,20 +56,42 @@ extension FxTriggerExtension on FxBuilder {
   /// Play this chain once when it first mounts (explicit form of autoplay).
   Widget onAppear() => _FxTriggered(builder: this, trigger: FxTrigger.appear);
 
-  /// Play this chain once when it first scrolls into the viewport.
+  /// Play this chain when it scrolls into the viewport.
   ///
-  /// Fires once at least [visibleFraction] of the widget's area is on screen.
-  /// Works in any scroll view — lazy (`ListView.builder`) or eager
+  /// The widget counts as shown once at least [visibleFraction] of its area
+  /// is on screen, and as hidden again once it has fully left. Works in any
+  /// scroll view — lazy (`ListView.builder`) or eager
   /// (`SingleChildScrollView`), vertical or horizontal, nested or not.
-  Widget onVisible({double visibleFraction = 0.1}) => _FxTriggered(
+  ///
+  /// With [once] (the default) the chain plays the first time only; with
+  /// `once: false` it rewinds whenever the widget leaves and replays each time
+  /// it comes back. [onShown] and [onHidden] fire on every entry and exit.
+  Widget onVisible({
+    double visibleFraction = 0.1,
+    bool once = true,
+    VoidCallback? onShown,
+    VoidCallback? onHidden,
+  }) => _FxTriggered(
     builder: this,
     trigger: FxTrigger.visible,
     visibleFraction: visibleFraction,
+    once: once,
+    onEvent: onShown,
+    onHidden: onHidden,
   );
 
   /// Alias for [onVisible].
-  Widget animateOnVisible({double visibleFraction = 0.1}) =>
-      onVisible(visibleFraction: visibleFraction);
+  Widget animateOnVisible({
+    double visibleFraction = 0.1,
+    bool once = true,
+    VoidCallback? onShown,
+    VoidCallback? onHidden,
+  }) => onVisible(
+    visibleFraction: visibleFraction,
+    once: once,
+    onShown: onShown,
+    onHidden: onHidden,
+  );
 }
 
 class _FxTriggered extends StatefulWidget {
@@ -76,12 +100,21 @@ class _FxTriggered extends StatefulWidget {
     required this.trigger,
     this.onEvent,
     this.visibleFraction = 0.1,
-  });
+    this.once = true,
+    this.onHidden,
+  }) : assert(
+         visibleFraction > 0 && visibleFraction <= 1,
+         'visibleFraction must be in (0, 1]',
+       );
 
   final FxBuilder builder;
   final FxTrigger trigger;
+
+  /// The trigger's callback (for `visible`: each time the widget is shown).
   final VoidCallback? onEvent;
   final double visibleFraction;
+  final bool once;
+  final VoidCallback? onHidden;
 
   @override
   State<_FxTriggered> createState() => _FxTriggeredState();
@@ -89,8 +122,20 @@ class _FxTriggered extends StatefulWidget {
 
 class _FxTriggeredState extends State<_FxTriggered> {
   final FxController _controller = FxController();
-  bool _firedVisible = false;
   bool _visibleCheckScheduled = false;
+  Timer? _delayTimer;
+
+  /// Whether the widget currently counts as on screen.
+  bool _shown = false;
+
+  /// Whether the chain has played at least once on visibility.
+  bool _played = false;
+
+  /// Whether visibility no longer matters (played once, no callbacks left).
+  bool _doneWatching = false;
+
+  bool get _keepWatching =>
+      !widget.once || widget.onEvent != null || widget.onHidden != null;
 
   /// Every enclosing scroll position, nearest first. Scroll notifications only
   /// bubble *up* from a `Scrollable`, so a listener placed inside the scrolled
@@ -101,8 +146,22 @@ class _FxTriggeredState extends State<_FxTriggered> {
   bool get _playOnMount => widget.trigger == FxTrigger.appear;
 
   void _fire() {
-    _controller.restart();
+    _play();
     widget.onEvent?.call();
+  }
+
+  /// Restart the chain, after the chain's `animate(delay:)` if it has one.
+  void _play() {
+    _delayTimer?.cancel();
+    final delay = widget.builder.startDelay ?? Duration.zero;
+    if (delay <= Duration.zero) {
+      _controller.restart();
+      return;
+    }
+    _controller.reset();
+    _delayTimer = Timer(delay, () {
+      if (mounted) _controller.restart();
+    });
   }
 
   void _subscribeToScrolling() {
@@ -139,7 +198,7 @@ class _FxTriggeredState extends State<_FxTriggered> {
   /// Measure after the next layout, when the scrolled offset is applied —
   /// reading geometry inside the scroll listener would lag one frame behind.
   void _scheduleVisibleCheck() {
-    if (_firedVisible || _visibleCheckScheduled) return;
+    if (_doneWatching || _visibleCheckScheduled) return;
     _visibleCheckScheduled = true;
     WidgetsBinding.instance
       ..addPostFrameCallback((_) {
@@ -150,7 +209,7 @@ class _FxTriggeredState extends State<_FxTriggered> {
   }
 
   void _checkVisible() {
-    if (_firedVisible) return;
+    if (_doneWatching) return;
     final box = context.findRenderObject() as RenderBox?;
     if (box == null || !box.attached || !box.hasSize) return;
     final size = box.size;
@@ -161,18 +220,30 @@ class _FxTriggeredState extends State<_FxTriggered> {
     final fraction = visible.width <= 0 || visible.height <= 0
         ? 0.0
         : (visible.width * visible.height) / area;
-    if (fraction >= widget.visibleFraction) {
-      _firedVisible = true;
-      _unsubscribeFromScrolling();
-      _controller.restart();
+    if (!_shown && fraction >= widget.visibleFraction) {
+      _shown = true;
+      if (!widget.once || !_played) _play();
+      _played = true;
       widget.onEvent?.call();
+      if (!_keepWatching) {
+        _doneWatching = true;
+        _unsubscribeFromScrolling();
+      }
+    } else if (_shown && fraction <= 0) {
+      _shown = false;
+      // Rewind while off screen so the next entry replays from the start.
+      if (!widget.once) {
+        _delayTimer?.cancel();
+        _controller.reset();
+      }
+      widget.onHidden?.call();
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (widget.trigger == .visible && !_firedVisible) {
+    if (widget.trigger == .visible && !_doneWatching) {
       _subscribeToScrolling();
       _scheduleVisibleCheck();
     }
@@ -180,6 +251,7 @@ class _FxTriggeredState extends State<_FxTriggered> {
 
   @override
   void dispose() {
+    _delayTimer?.cancel();
     _unsubscribeFromScrolling();
     super.dispose();
   }

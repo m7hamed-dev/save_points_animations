@@ -6,15 +6,25 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze-and-test:
+    name: Package (Flutter ${{ matrix.flutter-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The minimum supported release (see pubspec.yaml) and the latest stable.
+        flutter-version: ["3.44.6", "3.x"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.44.6
+          flutter-version: ${{ matrix.flutter-version }}
           channel: stable
           cache: true
 
@@ -24,23 +34,56 @@ jobs:
       - name: Install package dependencies
         run: flutter pub get
 
+      # The formatter's output is pinned by the package's language version, so
+      # checking it once, on the minimum release, is enough.
       - name: Verify formatting
+        if: matrix.flutter-version == '3.44.6'
         run: dart format --output=none --set-exit-if-changed lib test example/lib
 
       - name: Analyze package
+        if: matrix.flutter-version == '3.44.6'
         run: flutter analyze lib test
+
+      # Newer releases add deprecations ahead of the minimum one; report them
+      # without failing, but still fail on warnings and errors.
+      - name: Analyze package (deprecations are informational)
+        if: matrix.flutter-version != '3.44.6'
+        run: flutter analyze --no-fatal-infos lib test
 
       - name: Run tests (excluding platform-sensitive goldens)
         run: flutter test --exclude-tags golden --coverage
 
       - name: Upload coverage artifact
+        if: matrix.flutter-version == '3.44.6'
         uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: coverage/lcov.info
           if-no-files-found: ignore
 
+  package-health:
+    name: Publish readiness (dry run) and pana
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.x
+          channel: stable
+          cache: true
+
+      # Validates the package without uploading anything.
+      - name: pub publish --dry-run
+        run: flutter pub publish --dry-run
+
+      - name: pana score
+        run: |
+          dart pub global activate pana
+          dart pub global run pana --no-warning --exit-code-threshold 20 .
+
   example:
+    name: Example app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,8 +94,15 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Analyze example app
+      - name: Analyze and test the example app
         working-directory: example
         run: |
           flutter pub get
           flutter analyze
+          flutter test
+
+      # Build only, as a smoke test; deploying the demo is the manual
+      # "Deploy web demo" workflow.
+      - name: Build the web demo
+        working-directory: example
+        run: flutter build web --release

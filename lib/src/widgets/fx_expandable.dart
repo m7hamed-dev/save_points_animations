@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A tappable header with a collapsible [body] that animates open/closed while
-/// a chevron rotates.
+/// a chevron rotates. The header is keyboard-focusable; Enter / Space toggle it.
 ///
 /// ```dart
 /// FxExpandable(
@@ -34,10 +36,7 @@ class FxExpandable extends StatefulWidget {
 class _FxExpandableState extends State<FxExpandable>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _curved = CurvedAnimation(
-    parent: _controller,
-    curve: widget.curve,
-  );
+  late CurvedAnimation _curved;
 
   late bool _expanded = widget.initiallyExpanded;
 
@@ -49,6 +48,19 @@ class _FxExpandableState extends State<FxExpandable>
       duration: widget.duration,
       value: widget.initiallyExpanded ? 1 : 0,
     );
+    _curved = CurvedAnimation(parent: _controller, curve: widget.curve);
+  }
+
+  @override
+  void didUpdateWidget(covariant FxExpandable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+    }
+    if (widget.curve != oldWidget.curve) {
+      _curved.dispose();
+      _curved = CurvedAnimation(parent: _controller, curve: widget.curve);
+    }
   }
 
   void _toggle() {
@@ -62,6 +74,7 @@ class _FxExpandableState extends State<FxExpandable>
 
   @override
   void dispose() {
+    _curved.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -75,21 +88,35 @@ class _FxExpandableState extends State<FxExpandable>
         children: [
           Semantics(
             button: true,
+            enabled: true,
             expanded: _expanded,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: _toggle,
-              child: Row(
-                children: [
-                  Expanded(child: widget.header),
-                  RotationTransition(
-                    turns: Tween<double>(begin: 0, end: 0.5).animate(_curved),
-                    child: CustomPaint(
-                      size: const Size(14, 14),
-                      painter: _ChevronPainter(widget.chevronColor),
-                    ),
+            // Enter / Space toggle the header when it has keyboard focus.
+            child: FxFocusableControl(
+              enabled: true,
+              onActivate: _toggle,
+              builder: (context, showFocus) => FxFocusRing(
+                visible: showFocus,
+                color: widget.chevronColor,
+                borderRadius: .circular(6),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _toggle,
+                  child: Row(
+                    children: [
+                      Expanded(child: widget.header),
+                      RotationTransition(
+                        turns: Tween<double>(
+                          begin: 0,
+                          end: 0.5,
+                        ).animate(_curved),
+                        child: CustomPaint(
+                          size: const Size(14, 14),
+                          painter: _ChevronPainter(widget.chevronColor),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

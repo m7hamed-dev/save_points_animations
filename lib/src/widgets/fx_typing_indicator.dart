@@ -34,11 +34,32 @@ class FxTypingIndicator extends StatefulWidget {
 class _FxTypingIndicatorState extends State<FxTypingIndicator>
     with SingleTickerProviderStateMixin, FxMotionAware {
   late final AnimationController _controller;
+  bool _kicked = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // FxMotionAware only reports reduce-motion *flips*, so start the first
+    // pulse loop here once the flag is known.
+    if (!_kicked) {
+      _kicked = true;
+      if (!reduceMotion) _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant FxTypingIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+      if (_controller.isAnimating) _controller.repeat();
+    }
   }
 
   @override

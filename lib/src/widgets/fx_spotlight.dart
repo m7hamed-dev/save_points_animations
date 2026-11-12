@@ -54,6 +54,24 @@ class _FxSpotlightState extends State<FxSpotlight>
   }
 
   @override
+  void didUpdateWidget(covariant FxSpotlight oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.duration != oldWidget.duration) {
+      _controller.duration = widget.duration;
+      // A running repeat keeps its old period until restarted.
+      if (_controller.isAnimating) _controller.repeat();
+    }
+    if (widget.followPointer != oldWidget.followPointer) {
+      // The drift loop only runs when not following the pointer.
+      if (widget.followPointer) {
+        _controller.stop();
+      } else if (!reduceMotion) {
+        _controller.repeat();
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

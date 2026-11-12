@@ -7,21 +7,55 @@ extension FxAnimate on Widget {
   /// Begin an animation chain around this widget.
   ///
   /// ```dart
-  /// Text('Hi').animate().fade().moveY(50).duration(600.ms);
+  /// Text('Hi')
+  ///     .animate(duration: 600.ms, delay: 200.ms, curve: FxCurves.snappy)
+  ///     .fade()
+  ///     .moveY(50);
   /// ```
+  ///
+  /// [duration] and [curve] are defaults for every effect in the chain that
+  /// doesn't set (or inherit) its own; [delay] waits before the first
+  /// automatic play — or, with a trigger such as `onVisible()`, before each
+  /// triggered play. With [target] the chain is driven declaratively instead
+  /// of auto-playing — it sits at [target] (`0..1`) and animates whenever the
+  /// value changes:
+  ///
+  /// ```dart
+  /// card.animate(target: selected ? 1 : 0).scale(begin: 1, end: 1.05);
+  /// ```
+  ///
+  /// [onPlay] fires whenever playback starts forward, [onComplete] whenever
+  /// it finishes (never for an endless loop).
   FxBuilder animate({
     FxController? controller,
     bool autoPlay = true,
     bool addRepaintBoundary = true,
+    Duration? duration,
+    Duration? delay,
+    Curve? curve,
+    double? target,
+    VoidCallback? onPlay,
+    VoidCallback? onComplete,
   }) => FxBuilder(
     controller: controller,
     autoPlay: autoPlay,
     addRepaintBoundary: addRepaintBoundary,
+    duration: duration,
+    delay: delay,
+    curve: curve,
+    target: target,
+    onPlay: onPlay,
+    onComplete: onComplete,
     child: this,
   );
+}
 
-  // One-shot sugar — each is `animate().<preset>()` so it stays chainable.
-
+/// One-call presets on any widget, e.g. `Text('Hi').fadeIn()`.
+///
+/// Each is `animate().<preset>()`, so the result stays chainable. These are
+/// exported by `save_points_animations.dart` but not by `core.dart`, for apps
+/// that prefer to keep `Widget`'s namespace to [FxAnimate.animate] alone.
+extension FxAnimateShortcuts on Widget {
   /// Fade + gentle slide up.
   FxBuilder fadeIn({double from = 0.05}) => animate().fadeIn(from: from);
 
@@ -49,6 +83,14 @@ extension FxAnimate on Widget {
   /// Slide in from the right.
   FxBuilder slideFromRight({double distance = 0.25}) =>
       animate().slideFromRight(distance: distance);
+
+  /// Slide in from the leading edge (mirrors in right-to-left locales).
+  FxBuilder slideFromStart({double distance = 0.25}) =>
+      animate().slideFromStart(distance: distance);
+
+  /// Slide in from the trailing edge (mirrors in right-to-left locales).
+  FxBuilder slideFromEnd({double distance = 0.25}) =>
+      animate().slideFromEnd(distance: distance);
 
   /// Damped shake (looping attention grabber when combined with `.looping()`).
   FxBuilder shake({double amplitude = 10, int count = 3}) =>

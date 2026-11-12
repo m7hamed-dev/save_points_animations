@@ -12,9 +12,11 @@ bool fxReduceMotion(BuildContext context) =>
 /// animation and wants to honor the OS "reduce motion" setting.
 ///
 /// It tracks the flag, exposes it as [reduceMotion], and calls
-/// [onReduceMotionChanged] whenever it flips (including once on first
-/// [didChangeDependencies]) so the widget can start/stop its controller and
-/// settle to a static frame. Reacting to *changes* — not just reading the flag
+/// [onReduceMotionChanged] whenever it flips so the widget can start/stop its
+/// controller and settle to a static frame. The flag starts out `false`, so
+/// on the first [didChangeDependencies] the callback only fires if reduced
+/// motion is already on — start your animation in `initState` (or check
+/// [reduceMotion]) rather than waiting for a call that may never come. Reacting to *changes* — not just reading the flag
 /// once at mount — means toggling the setting at runtime takes effect
 /// immediately.
 ///

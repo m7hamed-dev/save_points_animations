@@ -18,6 +18,9 @@ class FadeEffect extends FxEffect {
   final double end;
 
   @override
+  bool get paintOnly => true;
+
+  @override
   void apply(FxAccumulator acc, double t) {
     acc.opacity *= fxLerp(begin, end, t).clamp(0.0, 1.0);
   }

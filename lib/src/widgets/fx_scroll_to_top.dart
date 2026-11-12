@@ -1,9 +1,12 @@
 import 'package:flutter/widgets.dart';
 
+import 'package:save_points_animations/src/widgets/fx_focusable.dart';
+
 /// A floating "scroll to top" button that fades and scales in once its
 /// [controller] scrolls past [threshold], and animates back out near the top.
 /// Tapping it smoothly scrolls to offset 0. Place it in a `Stack` above your
-/// scroll view (typically bottom-right).
+/// scroll view (typically bottom-right). While shown it is keyboard-focusable
+/// and Enter / Space activate it.
 ///
 /// ```dart
 /// Stack(children: [listView, FxScrollToTop(controller: _scroll)]);
@@ -89,35 +92,46 @@ class _FxScrollToTopState extends State<FxScrollToTop> {
             duration: const Duration(milliseconds: 200),
             child: Semantics(
               button: true,
+              enabled: _visible,
               label: 'Scroll to top',
-              child: GestureDetector(
-                onTap: _toTop,
-                child: Container(
-                  width: widget.size,
-                  height: widget.size,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
+              // Focusable (Enter / Space scroll up) only while shown.
+              child: FxFocusableControl(
+                enabled: _visible,
+                onActivate: _toTop,
+                builder: (context, showFocus) => GestureDetector(
+                  onTap: _toTop,
+                  child: FxFocusRing(
+                    visible: showFocus,
                     color: widget.color,
-                    shape: BoxShape.circle,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x33000000),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
+                    circle: true,
+                    child: Container(
+                      width: widget.size,
+                      height: widget.size,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: widget.color,
+                        shape: BoxShape.circle,
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
+                      child:
+                          widget.child ??
+                          Text(
+                            '↑',
+                            style: TextStyle(
+                              color: widget.iconColor,
+                              fontSize: widget.size * 0.5,
+                              fontWeight: FontWeight.w700,
+                              height: 1,
+                            ),
+                          ),
+                    ),
                   ),
-                  child:
-                      widget.child ??
-                      Text(
-                        '↑',
-                        style: TextStyle(
-                          color: widget.iconColor,
-                          fontSize: widget.size * 0.5,
-                          fontWeight: FontWeight.w700,
-                          height: 1,
-                        ),
-                      ),
                 ),
               ),
             ),
