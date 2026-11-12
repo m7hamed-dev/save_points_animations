@@ -69,13 +69,19 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
     widget.onChanged(next);
   }
 
+  double _nudged(double delta) =>
+      (widget.value + delta).clamp(widget.min, widget.max);
+
   void _nudge(double delta) {
-    final next = (widget.value + delta).clamp(widget.min, widget.max);
+    final next = _nudged(delta);
     if (next != widget.value) {
       HapticFeedback.selectionClick();
       widget.onChanged(next);
     }
   }
+
+  String _format(double value) =>
+      value.toStringAsFixed(widget.max - widget.min <= 1 ? 2 : 0);
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +98,14 @@ class _FxAnimatedSliderState extends State<FxAnimatedSlider> {
           thumbSize / 2,
           width - thumbSize / 2,
         );
-        final label = widget.value.toStringAsFixed(
-          widget.max - widget.min <= 1 ? 2 : 0,
-        );
+        final label = _format(widget.value);
         return Semantics(
           slider: true,
           value: label,
+          // Screen readers announce the value an increase/decrease would
+          // produce; Flutter asserts these accompany `value` and the actions.
+          increasedValue: _format(_nudged(_step)),
+          decreasedValue: _format(_nudged(-_step)),
           onIncrease: () => _nudge(_step),
           onDecrease: () => _nudge(-_step),
           child: RepaintBoundary(

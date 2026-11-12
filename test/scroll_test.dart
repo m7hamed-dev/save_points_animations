@@ -46,6 +46,33 @@ void main() {
       expect(find.text('reveal-me'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets('keeps its child State while the reveal completes', (
+      tester,
+    ) async {
+      _MountCounter.mounts = 0;
+      await tester.pumpWidget(
+        _scrollHost([
+          const SizedBox(height: 1200),
+          const _MountCounter().animateOnScroll(const [FadeEffect()]),
+          const SizedBox(height: 1200),
+        ]),
+      );
+      await tester.pump();
+
+      // Fully reveal it: the Opacity wrapper is dropped at progress 1.
+      await tester.drag(find.byType(Scrollable), const Offset(0, -1100));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.ancestor(
+          of: find.byType(_MountCounter),
+          matching: find.byType(Opacity),
+        ),
+        findsNothing,
+      );
+      expect(_MountCounter.mounts, 1);
+    });
   });
 
   group('FxParallax', () {
@@ -77,4 +104,25 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
+}
+
+/// Counts how many times its State is created (i.e. how often it is mounted).
+class _MountCounter extends StatefulWidget {
+  const _MountCounter();
+
+  static int mounts = 0;
+
+  @override
+  State<_MountCounter> createState() => _MountCounterState();
+}
+
+class _MountCounterState extends State<_MountCounter> {
+  @override
+  void initState() {
+    super.initState();
+    _MountCounter.mounts++;
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox(width: 40, height: 40);
 }

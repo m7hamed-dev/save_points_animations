@@ -441,6 +441,12 @@ class _FxRunnerState extends State<_FxRunner>
   bool _started = false;
   double _totalMs = 1;
 
+  /// Keeps the animated child's subtree (and any `State` inside it) alive
+  /// while the composed wrappers above it come and go. No-op wrappers are
+  /// dropped at rest, which changes the widget type above the child; without
+  /// a stable [GlobalKey] Flutter would unmount and re-create the child there.
+  final GlobalKey _childKey = GlobalKey(debugLabel: 'FxBuilder.child');
+
   @override
   void initState() {
     super.initState();
@@ -502,10 +508,12 @@ class _FxRunnerState extends State<_FxRunner>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (reduced) {
-        _controller.value =
-            defaults.reducedMotionBehavior == FxReducedMotionBehavior.disable
-            ? 0.0
-            : 1.0;
+        // `disable` renders the child untouched (see build), so only
+        // `jumpToEnd` needs the controller parked on the final frame.
+        if (defaults.reducedMotionBehavior ==
+            FxReducedMotionBehavior.jumpToEnd) {
+          _controller.value = 1.0;
+        }
         return;
       }
       if (widget.config._repeat) {
@@ -524,11 +532,16 @@ class _FxRunnerState extends State<_FxRunner>
     final reduced = _reducedMotion(defaults);
     _startOnce(reduced, defaults);
 
-    if (resolved.isEmpty) return widget.config.child;
+    final child = KeyedSubtree(key: _childKey, child: widget.config.child);
+    if (resolved.isEmpty) return child;
+    if (reduced &&
+        defaults.reducedMotionBehavior == FxReducedMotionBehavior.disable) {
+      return child;
+    }
 
     return AnimatedBuilder(
       animation: _controller,
-      child: widget.config.child,
+      child: child,
       builder: (context, child) {
         final acc = FxAccumulator();
         final elapsed = _controller.value * _totalMs;

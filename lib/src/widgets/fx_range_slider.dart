@@ -105,21 +105,22 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
     return span <= 0 ? 0 : span / 20;
   }
 
+  // Each thumb is bounded by the track and by the other thumb.
+  double _nudgedStart(double delta) =>
+      (widget.values.start + delta).clamp(widget.min, widget.values.end);
+
+  double _nudgedEnd(double delta) =>
+      (widget.values.end + delta).clamp(widget.values.start, widget.max);
+
   void _nudgeStart(double delta) {
-    final v = (widget.values.start + delta).clamp(
-      widget.min,
-      widget.values.end,
-    );
+    final v = _nudgedStart(delta);
     if (v != widget.values.start) {
       widget.onChanged(widget.values.copyWith(start: v));
     }
   }
 
   void _nudgeEnd(double delta) {
-    final v = (widget.values.end + delta).clamp(
-      widget.values.start,
-      widget.max,
-    );
+    final v = _nudgedEnd(delta);
     if (v != widget.values.end) {
       widget.onChanged(widget.values.copyWith(end: v));
     }
@@ -167,6 +168,8 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
                   width,
                   active: _activeThumb == 0,
                   value: widget.values.start,
+                  increasedValue: _nudgedStart(_step),
+                  decreasedValue: _nudgedStart(-_step),
                   onIncrease: () => _nudgeStart(_step),
                   onDecrease: () => _nudgeStart(-_step),
                 ),
@@ -175,6 +178,8 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
                   width,
                   active: _activeThumb == 1,
                   value: widget.values.end,
+                  increasedValue: _nudgedEnd(_step),
+                  decreasedValue: _nudgedEnd(-_step),
                   onIncrease: () => _nudgeEnd(_step),
                   onDecrease: () => _nudgeEnd(-_step),
                 ),
@@ -191,6 +196,8 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
     double width, {
     required bool active,
     required double value,
+    required double increasedValue,
+    required double decreasedValue,
     required VoidCallback onIncrease,
     required VoidCallback onDecrease,
   }) {
@@ -201,6 +208,10 @@ class _FxRangeSliderState extends State<FxRangeSlider> {
       child: Semantics(
         slider: true,
         value: value.toStringAsFixed(2),
+        // Screen readers announce the value an increase/decrease would
+        // produce; Flutter asserts these accompany `value` and the actions.
+        increasedValue: increasedValue.toStringAsFixed(2),
+        decreasedValue: decreasedValue.toStringAsFixed(2),
         onIncrease: onIncrease,
         onDecrease: onDecrease,
         child: AnimatedContainer(

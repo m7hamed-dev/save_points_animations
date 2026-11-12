@@ -1,3 +1,31 @@
+## Unreleased
+
+### Fixed
+- `.animate()` and `animateOnScroll` no longer reset the animated child's
+  `State`. The engine drops no-op `Opacity` / `Transform` / wrapper widgets at
+  rest, which changed the widget type above the child and made Flutter
+  re-create it — a `TextField` lost focus, a nested count-up or animation
+  restarted, etc. (`.fade()` mounted the child twice, `.shake()` three times).
+  The child is now held under a stable `GlobalKey`, so it is moved, not rebuilt.
+- `onVisible()` / `animateOnVisible()` now fire when the widget is scrolled
+  into view. They relied on scroll notifications, which only bubble *up* from a
+  `Scrollable` and never reach its content, so they worked only for widgets
+  already visible at mount (or mounted lazily by a `ListView`) — in a
+  `SingleChildScrollView` an off-screen entrance stayed invisible forever. The
+  trigger now listens to every enclosing scroll position (nested scroll views
+  included) and measures the visible fraction on both axes, so off-screen items
+  in horizontal lists no longer fire at mount.
+- `FxReducedMotionBehavior.disable` now shows the child untouched, as
+  documented. It parked the animation on its first frame instead, so an
+  entrance such as `.fade()` left the widget at opacity 0 for users with
+  "reduce motion" enabled.
+- `FxAnimatedSlider` and `FxRangeSlider` no longer trip Flutter's semantics
+  assertion (*"A SemanticsNode with action "increase" needs to be annotated
+  with either both "value" and "increasedValue" or neither"*) when a screen
+  reader or semantics is on. They now report `increasedValue` /
+  `decreasedValue` — the value an increase/decrease would produce, clamped to
+  the track and, on the range slider, to the other thumb.
+
 ## 0.44.0
 
 Widgets as extensions, more page transitions & lifecycle fixes.

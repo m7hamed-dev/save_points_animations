@@ -39,6 +39,10 @@ class _FxScrollLinkedState extends State<FxScrollLinked> {
   ScrollPosition? _position;
   double _progress = 0;
 
+  /// Keeps the child's `State` alive as no-op wrappers appear and disappear
+  /// with scroll progress (see `_FxRunnerState._childKey`).
+  final GlobalKey _childKey = GlobalKey(debugLabel: 'FxScrollLinked.child');
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -79,7 +83,10 @@ class _FxScrollLinkedState extends State<FxScrollLinked> {
     for (final effect in widget.effects) {
       effect.apply(acc, (effect.curve ?? Curves.linear).transform(t));
     }
-    return fxComposeFrame(widget.child, acc);
+    return fxComposeFrame(
+      KeyedSubtree(key: _childKey, child: widget.child),
+      acc,
+    );
   }
 }
 

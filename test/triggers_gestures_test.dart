@@ -50,6 +50,107 @@ void main() {
       expect(find.byType(Opacity), findsNothing);
     });
 
+    group('onVisible fires once scrolled into view', () {
+      Finder opacityOf(String text) =>
+          find.ancestor(of: find.text(text), matching: find.byType(Opacity));
+
+      Widget target(String text) => Text(text)
+          .animate()
+          .fade()
+          .duration(const Duration(milliseconds: 150))
+          .onVisible();
+
+      Future<void> scrollTo(
+        WidgetTester tester,
+        Finder scrollable,
+        double offset,
+      ) async {
+        tester.state<ScrollableState>(scrollable).position.jumpTo(offset);
+        // Frame 1: layout at the new offset, then the post-frame visibility
+        // check restarts the chain; it ticks from the following frame on.
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('in an eager vertical scroll view', (tester) async {
+        await tester.pumpWidget(
+          _host(
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 1500),
+                  target('below'),
+                  const SizedBox(height: 600),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 150));
+        // Below the fold: not fired yet, still fully transparent.
+        expect(tester.widget<Opacity>(opacityOf('below')).opacity, 0.0);
+
+        await scrollTo(tester, find.byType(Scrollable), 1300);
+        expect(opacityOf('below'), findsNothing);
+      });
+
+      testWidgets('in a horizontal scroll view', (tester) async {
+        await tester.pumpWidget(
+          _host(
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  const SizedBox(width: 1500, height: 10),
+                  target('right'),
+                  const SizedBox(width: 900, height: 10),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 150));
+        // Off-screen to the right: must not fire just because it is
+        // vertically within the screen.
+        expect(tester.widget<Opacity>(opacityOf('right')).opacity, 0.0);
+
+        await scrollTo(tester, find.byType(Scrollable), 1300);
+        expect(opacityOf('right'), findsNothing);
+      });
+
+      testWidgets('when an outer (ancestor) scroll view moves', (tester) async {
+        await tester.pumpWidget(
+          _host(
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 1500),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        target('nested'),
+                        const SizedBox(width: 2000, height: 10),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 600),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 150));
+        expect(tester.widget<Opacity>(opacityOf('nested')).opacity, 0.0);
+
+        // Only the outer, vertical scroll view moves.
+        await scrollTo(tester, find.byType(Scrollable).first, 1300);
+        expect(opacityOf('nested'), findsNothing);
+      });
+    });
+
     testWidgets('onAppear renders and plays', (tester) async {
       await tester.pumpWidget(
         _host(const Text('hi').animate().fade().onAppear()),

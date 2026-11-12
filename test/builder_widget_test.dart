@@ -49,6 +49,67 @@ void main() {
     expect(find.byType(Opacity), findsNothing);
   });
 
+  testWidgets('reduced motion "disable" shows the child untouched', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        FxTheme(
+          reducedMotionBehavior: FxReducedMotionBehavior.disable,
+          child: const Text('Hi').animate().fade().scale(begin: 0.5),
+        ),
+        disableAnimations: true,
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    // No effect applied at all — in particular the entrance fade must not
+    // leave the child stuck at opacity 0.
+    expect(find.text('Hi'), findsOneWidget);
+    expect(find.byType(Opacity), findsNothing);
+    expect(
+      find.ancestor(of: find.text('Hi'), matching: find.byType(Transform)),
+      findsNothing,
+    );
+  });
+
+  group('child State survives wrappers appearing/disappearing', () {
+    Future<int> mountsDuring(WidgetTester tester, FxBuilder chain) async {
+      _MountCounter.mounts = 0;
+      await tester.pumpWidget(_host(chain));
+      await tester.pumpAndSettle();
+      return _MountCounter.mounts;
+    }
+
+    testWidgets('fade (Opacity dropped at rest)', (tester) async {
+      expect(
+        await mountsDuring(tester, const _MountCounter().animate().fade()),
+        1,
+      );
+    });
+
+    testWidgets('shake (Transform added after frame 0, dropped at rest)', (
+      tester,
+    ) async {
+      expect(
+        await mountsDuring(tester, const _MountCounter().animate().shake()),
+        1,
+      );
+    });
+
+    testWidgets('blur + slide (wrapping effects dropped at rest)', (
+      tester,
+    ) async {
+      expect(
+        await mountsDuring(
+          tester,
+          const _MountCounter().animate().blur().slideY(0.3),
+        ),
+        1,
+      );
+    });
+  });
+
   testWidgets('disposes its ticker without leaks', (tester) async {
     await tester.pumpWidget(_host(const Text('Hi').animate().fade()));
     await tester.pump();
@@ -99,4 +160,25 @@ void main() {
     }
     expect(find.byType(FxBuilder), findsNWidgets(4));
   });
+}
+
+/// Counts how many times its State is created (i.e. how often it is mounted).
+class _MountCounter extends StatefulWidget {
+  const _MountCounter();
+
+  static int mounts = 0;
+
+  @override
+  State<_MountCounter> createState() => _MountCounterState();
+}
+
+class _MountCounterState extends State<_MountCounter> {
+  @override
+  void initState() {
+    super.initState();
+    _MountCounter.mounts++;
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox(width: 40, height: 40);
 }

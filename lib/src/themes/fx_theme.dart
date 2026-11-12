@@ -23,7 +23,8 @@ enum FxReducedMotionBehavior {
   /// Jump straight to the animation's final frame (default).
   jumpToEnd,
 
-  /// Skip the animation entirely, showing the child untouched at its start.
+  /// Skip the animation entirely, showing the child untouched — no effect is
+  /// applied, so an entrance such as `.fade()` never leaves it invisible.
   disable,
 
   /// Ignore the request and play normally.
