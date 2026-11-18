@@ -549,15 +549,15 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 <details>
 <summary><b>🔄 Pull to refresh</b></summary>
 
-`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point, timing and `onRefresh` future, so it can replace one without touching your refresh logic. It comes in five styles and needs no Material ancestor:
+`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in five styles and needs no Material ancestor:
 
 | Style | While pulling | While refreshing | When done |
 |---|---|---|---|
-| `ring` | an arc winds up on a floating disc | a breathing spinner | the arc closes into a check |
-| `capsule` | a pill: arrow + "Pull to refresh", then "Release to refresh" | spinner + "Refreshing…" | check + "Updated" |
-| `liquid` | a drop stretches out of the top edge, then pinches off | a spinner inside the drop | pops with a ripple |
-| `dots` | three dots assemble | the dots ride a wave | they merge into one |
-| `line` | a hairline grows from the center of the top edge | a comet sweeps across | it fills out and fades |
+| `ring` | a gradient refresh arrow winds up on a frosted disc, then closes into a glowing ring with a pop | a comet orbits the ring | the disc floods with the accent behind a check |
+| `capsule` | a frosted pill grows out of a round badge: arrow + "Pull to refresh", then "Release to refresh" | spinner + "Refreshing…" with a sheen | the pill floods with the accent: check + "Updated" |
+| `liquid` | a glossy drop stretches out of the top edge, then pinches off with a jiggle | it wobbles around a spinner | bursts into droplets with a ripple |
+| `dots` | three gradient dots rise in, then ripple | they bounce with squash and stretch | they merge into a check badge |
+| `line` | a gradient string bows down, glows, and twangs back when let go | a comet runs along it | it flashes out from the middle |
 
 ```dart
 FxRefreshIndicator(
@@ -583,7 +583,7 @@ MaterialApp(
 );
 ```
 
-By default it draws in the surrounding text color on a surface that matches it, so it follows your theme in light and dark mode. Pass `color` and `backgroundColor`, or set them in `FxRefreshTheme`, for your brand colors. It mirrors under right-to-left text, holds a still frame under reduced motion, and reports each `FxRefreshStatus` to `onStatusChange`. The example app has a screen for trying every style.
+By default it draws in the surrounding text color on a frosted surface that matches it, so it follows your theme in light and dark mode. Pass `color` (and `secondaryColor`, the gradient partner it otherwise derives from `color`) and `backgroundColor`, or set them in `FxRefreshTheme`, for your brand colors. It mirrors under right-to-left text, holds a still frame under reduced motion, and reports each `FxRefreshStatus` to `onStatusChange`. The example app has a screen for trying every style.
 
 </details>
 

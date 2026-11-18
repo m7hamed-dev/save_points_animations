@@ -5,9 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
-// FxRefreshIndicator keeps Material RefreshIndicator's mechanics, so most of
-// these mirror its behavior; the rest cover the styles, theming and
-// accessibility. Built on package:flutter/widgets.dart only: the indicator
+// FxRefreshIndicator keeps Material RefreshIndicator's mechanics (apart from
+// refreshing on any release past the trigger point), so most of these mirror
+// its behavior; the rest cover the styles, theming and accessibility. Built on package:flutter/widgets.dart only: the indicator
 // must not need a Material ancestor.
 
 const _lightText = Color(0xFF222222);
@@ -104,6 +104,7 @@ void main() {
   Widget indicator({
     Key? key,
     FxRefreshStyle? style = FxRefreshStyle.ring,
+    Color? color,
     FxRefreshTriggerMode triggerMode = FxRefreshTriggerMode.onEdge,
     ScrollNotificationPredicate notificationPredicate =
         defaultScrollNotificationPredicate,
@@ -115,6 +116,7 @@ void main() {
     return FxRefreshIndicator(
       key: key,
       style: style,
+      color: color,
       onRefresh: onRefresh,
       onStatusChange: statuses.add,
       triggerMode: triggerMode,
@@ -143,6 +145,25 @@ void main() {
     await tester.pumpAndSettle();
     expect(statuses.skip(4), [FxRefreshStatus.done, null]);
     expect(refreshes, 1);
+  });
+
+  testWidgets('letting go just past the trigger point refreshes, short of '
+      'the full pull', (tester) async {
+    // 125px: past the trigger point (100px) but short of the full pull
+    // (150px) that RefreshIndicator waits for with clamping physics.
+    await tester.pumpWidget(_host(indicator()));
+    await _pull(tester, 125);
+    await _frames(tester, 300);
+    expect(refreshes, 1);
+    expect(statuses, [
+      FxRefreshStatus.drag,
+      FxRefreshStatus.armed,
+      FxRefreshStatus.snap,
+      FxRefreshStatus.refresh,
+    ]);
+    refresh.complete();
+    await tester.pumpAndSettle();
+    expect(statuses.last, isNull);
   });
 
   testWidgets('a pull short of the trigger point cancels', (tester) async {
@@ -413,6 +434,34 @@ void main() {
       expect(find.text('Updated'), findsNothing);
     });
 
+    // When done the label sits on the accent fill, so it must read on any
+    // brand color, light or deep.
+    for (final accent in [
+      null,
+      const Color(0xFF3F51B5),
+      const Color(0xFFFFC107),
+      const Color(0xFF0EA5E9),
+      const Color(0xFF7C3AED),
+    ]) {
+      testWidgets('its done label reads on the accent '
+          '${accent ?? 'default'}', (tester) async {
+        await tester.pumpWidget(
+          _host(indicator(style: FxRefreshStyle.capsule, color: accent)),
+        );
+        await _pull(tester, _past);
+        await _frames(tester, 300);
+        refresh.complete();
+        await tester.pump();
+        await _frames(tester, 400);
+        final text = tester.widget<Text>(find.text('Updated')).style!.color!;
+        expect(
+          _contrast(text, accent ?? _lightText),
+          greaterThanOrEqualTo(4.5),
+        );
+        await tester.pumpAndSettle();
+      });
+    }
+
     for (final dark in [false, true]) {
       testWidgets('its label meets WCAG AA contrast '
           '(${dark ? 'dark' : 'light'})', (tester) async {
@@ -423,12 +472,15 @@ void main() {
         await _frames(tester, 400);
         final label = find.text('Pull to refresh');
         final text = tester.widget<Text>(label).style!.color!;
-        final surface = tester
+        final glass = tester
             .widgetList<DecoratedBox>(
               find.ancestor(of: label, matching: find.byType(DecoratedBox)),
             )
             .map((box) => (box.decoration as BoxDecoration).color)
             .firstWhere((color) => color != null)!;
+        // The surface is frosted glass: judge it over the worst content that
+        // could show through, text of the label's own color.
+        final surface = Color.alphaBlend(glass, text);
         expect(_contrast(text, surface), greaterThanOrEqualTo(4.5));
       });
     }

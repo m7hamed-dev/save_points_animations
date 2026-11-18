@@ -58,14 +58,17 @@
   appears only under keyboard focus; disabled controls are skipped.
 - `FxRefreshIndicator`: pull-to-refresh in five styles (`FxRefreshStyle.ring`,
   `capsule`, `liquid`, `dots` and `line`), each with its own motion for the
-  pull, the refresh and the finish. It keeps Material `RefreshIndicator`'s
-  mechanics (trigger point, timing, `triggerMode`, `notificationPredicate`,
-  `show()` and the `onRefresh` future) without needing a Material ancestor.
-  It follows the surrounding text color in light and dark themes, mirrors
-  under right-to-left text and holds a still frame under reduced motion.
-  `FxRefreshTheme` sets the style, the colors and the capsule's translatable
-  `FxRefreshLabels` app-wide. Also available as `.fxRefreshIndicator()`, and
-  as a demo screen in the example app.
+  pull, the trigger point, the refresh and the finish, drawn with a two-tone
+  accent gradient on frosted surfaces. It keeps Material `RefreshIndicator`'s
+  mechanics (trigger point, `triggerMode`, `notificationPredicate`, `show()`
+  and the `onRefresh` future) without needing a Material ancestor, and
+  refreshes on any release past the trigger point, on every platform. It
+  follows the surrounding text color in light and dark themes, mirrors under
+  right-to-left text and holds a still frame under reduced motion.
+  `FxRefreshTheme` sets the style, the colors (`color`, `secondaryColor`,
+  `backgroundColor`) and the capsule's translatable `FxRefreshLabels`
+  app-wide. Also available as `.fxRefreshIndicator()`, and as a demo screen
+  in the example app.
 - `FxSlideToConfirmController` is now exported. It is the type of
   `FxSlideToConfirm.controller`, but apps could only reach it through
   `package:save_points_animations/src/…`.

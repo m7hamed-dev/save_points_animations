@@ -29,25 +29,31 @@ const Duration _kSpinPeriod = Duration(milliseconds: 1200);
 /// The look of an [FxRefreshIndicator]. Each style has its own shape and its
 /// own motion for the pull, the refresh and the finish.
 enum FxRefreshStyle {
-  /// A floating disc whose arc winds up as you pull, spins while refreshing
-  /// and closes into a check mark when done.
+  /// A floating glass disc: a gradient refresh arrow winds up as you pull,
+  /// closes into a glowing ring with a pop at the trigger point, orbits as a
+  /// comet while refreshing and floods with the accent behind a check mark
+  /// when done.
   ring,
 
-  /// A floating labeled pill: an arrow that flips at the trigger point and
-  /// a label that reads pull, release, refreshing and done in turn (see
-  /// [FxRefreshLabels]).
+  /// A floating glass pill that grows out of a round badge as you pull: an
+  /// arrow that flips at the trigger point and a label that reads pull,
+  /// release, refreshing (with a sheen) and done in turn (see
+  /// [FxRefreshLabels]). It floods with the accent when done.
   capsule,
 
-  /// A drop stretched out of the top edge that snaps free at the trigger
-  /// point, spins while refreshing and pops when done.
+  /// A glossy drop stretched out of the top edge that snaps free with a
+  /// jiggle at the trigger point, wobbles around a spinner while refreshing
+  /// and bursts into droplets when done.
   liquid,
 
-  /// Three dots that assemble as you pull, ride a wave while refreshing and
-  /// merge into one when done.
+  /// Three gradient dots on a glass pill that rise in as you pull, ripple at
+  /// the trigger point, bounce while refreshing and merge into a check badge
+  /// when done.
   dots,
 
-  /// A hairline along the top edge that grows from the center as you pull,
-  /// sweeps while refreshing and fills out when done.
+  /// A gradient string along the top edge that bows down as you pull, glows
+  /// at the trigger point and twangs back when let go, carries a comet while
+  /// refreshing and flashes out from the middle when done.
   line,
 }
 
@@ -139,6 +145,7 @@ class FxRefreshTheme extends InheritedWidget {
     super.key,
     this.style,
     this.color,
+    this.secondaryColor,
     this.backgroundColor,
     this.labels,
     required super.child,
@@ -149,6 +156,9 @@ class FxRefreshTheme extends InheritedWidget {
 
   /// Default [FxRefreshIndicator.color].
   final Color? color;
+
+  /// Default [FxRefreshIndicator.secondaryColor].
+  final Color? secondaryColor;
 
   /// Default [FxRefreshIndicator.backgroundColor].
   final Color? backgroundColor;
@@ -164,6 +174,7 @@ class FxRefreshTheme extends InheritedWidget {
   bool updateShouldNotify(FxRefreshTheme oldWidget) =>
       style != oldWidget.style ||
       color != oldWidget.color ||
+      secondaryColor != oldWidget.secondaryColor ||
       backgroundColor != oldWidget.backgroundColor ||
       labels != oldWidget.labels;
 }
@@ -174,10 +185,12 @@ class FxRefreshTheme extends InheritedWidget {
 /// It works like Material's `RefreshIndicator`: drag the [child] past its top
 /// edge and let go to run [onRefresh]; the indicator stays until the returned
 /// future completes, then plays its finish animation. The trigger point,
-/// timing, [triggerMode], [notificationPredicate] and
-/// [FxRefreshIndicatorState.show] behave the same, so it can replace one
-/// without changing your refresh logic. Unlike `RefreshIndicator` it needs no
-/// Material ancestor.
+/// [triggerMode], [notificationPredicate] and [FxRefreshIndicatorState.show]
+/// behave the same, so it can replace one without changing your refresh
+/// logic. Unlike `RefreshIndicator` it needs no Material ancestor, and
+/// letting go anywhere past the trigger point refreshes, on every platform:
+/// `RefreshIndicator` does so with bouncing (iOS) scroll physics, but with
+/// clamping (Android) physics it waits for a pull half as long again.
 ///
 /// ```dart
 /// FxRefreshIndicator(
@@ -188,10 +201,10 @@ class FxRefreshTheme extends InheritedWidget {
 /// ```
 ///
 /// **Colors.** By default the indicator draws in the surrounding text color
-/// ([DefaultTextStyle]) on a light or dark surface picked to match it, so it
-/// follows Material, Cupertino and custom themes in light and dark mode. Pass
-/// [color] (your brand color) and [backgroundColor], or set them app-wide with
-/// [FxRefreshTheme].
+/// ([DefaultTextStyle]) on a frosted light or dark surface picked to match
+/// it, so it follows Material, Cupertino and custom themes in light and dark
+/// mode. Pass [color] (your brand color), [secondaryColor] and
+/// [backgroundColor], or set them app-wide with [FxRefreshTheme].
 ///
 /// The [child] must be a scrollable that can overscroll or bounce at its top,
 /// such as a [ListView] with `AlwaysScrollableScrollPhysics` when the content
@@ -208,6 +221,7 @@ class FxRefreshIndicator extends StatefulWidget {
     required this.child,
     this.style,
     this.color,
+    this.secondaryColor,
     this.backgroundColor,
     this.labels,
     this.displacement = 40,
@@ -230,13 +244,21 @@ class FxRefreshIndicator extends StatefulWidget {
   /// The look. Defaults to [FxRefreshTheme.style], then [FxRefreshStyle.ring].
   final FxRefreshStyle? style;
 
-  /// The accent: the arc, drop, dots, line or capsule icon. Defaults to
-  /// [FxRefreshTheme.color], then the surrounding text color.
+  /// The accent: the arc, drop, dots, line or capsule badge, and the fill
+  /// when done. Defaults to [FxRefreshTheme.color], then the surrounding text
+  /// color.
   final Color? color;
 
-  /// The surface behind the ring, capsule and dots, and the spinner color on
-  /// the liquid drop. Defaults to [FxRefreshTheme.backgroundColor], then
-  /// white, or a dark gray when the surrounding text is light.
+  /// The accent's gradient partner: the tail of arcs and comets and the far
+  /// end of gradient fills. Defaults to [FxRefreshTheme.secondaryColor], then
+  /// [color] turned a step around the color wheel (a lighter or darker shade
+  /// for grays). Pass [color] itself for a single flat color.
+  final Color? secondaryColor;
+
+  /// The surface behind the ring, capsule and dots. A translucent color
+  /// frosts the content behind it. Defaults to
+  /// [FxRefreshTheme.backgroundColor], then a frosted white, or a frosted
+  /// dark gray when the surrounding text is light.
   final Color? backgroundColor;
 
   /// The texts of [FxRefreshStyle.capsule]. Defaults to
@@ -367,11 +389,9 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
     } else if (notification is ScrollEndNotification) {
       switch (_status) {
         case FxRefreshStatus.armed:
-          if (_position.value < 1.0) {
-            _dismiss(FxRefreshStatus.canceled);
-          } else {
-            _show();
-          }
+          // Armed means ready: the indicator has said so, so a release
+          // anywhere past the trigger point refreshes.
+          _show();
         case FxRefreshStatus.drag:
           _dismiss(FxRefreshStatus.canceled);
         case FxRefreshStatus.snap ||
@@ -453,6 +473,7 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
         await _position.animateTo(
           0,
           duration: quick ? Duration.zero : _kCancelDuration,
+          curve: Curves.easeOutCubic,
         );
       case FxRefreshStatus.drag ||
           FxRefreshStatus.armed ||
@@ -475,6 +496,7 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
         .animateTo(
           1.0 / _kDragSizeFactorLimit,
           duration: reduceMotion ? Duration.zero : _kSnapDuration,
+          curve: Curves.easeOutCubic,
         )
         .then<void>((_) {
           if (!mounted || _status != FxRefreshStatus.snap) return;
@@ -560,16 +582,20 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
         : MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark;
     final foreground =
         ambient ?? (dark ? const Color(0xFFF2F2F5) : const Color(0xFF1C1C1F));
+    final accent = widget.color ?? theme?.color ?? foreground;
     return FxRefreshFrame(
       status: status,
       pull: _pull,
       spin: _spin,
       exit: _exit,
-      color: widget.color ?? theme?.color ?? foreground,
+      color: accent,
+      secondary:
+          widget.secondaryColor ?? theme?.secondaryColor ?? _partner(accent),
+      onAccent: _onColor(accent),
       background:
           widget.backgroundColor ??
           theme?.backgroundColor ??
-          (dark ? const Color(0xFF303036) : const Color(0xFFFFFFFF)),
+          (dark ? const Color(0xE62C2C33) : const Color(0xEBFFFFFF)),
       foreground: foreground,
       dark: dark,
       rtl: Directionality.maybeOf(context) == TextDirection.rtl,
@@ -577,5 +603,26 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
       labels: widget.labels ?? theme?.labels ?? const FxRefreshLabels(),
       reduceMotion: reduceMotion,
     );
+  }
+
+  /// Whichever of white and near-black contrasts more with [accent].
+  static Color _onColor(Color accent) {
+    const light = Color(0xFFFFFFFF);
+    const dark = Color(0xFF15161A);
+    final l = accent.computeLuminance() + 0.05;
+    final onLight = 1.05 / l;
+    final onDark = l / (dark.computeLuminance() + 0.05);
+    return onLight >= onDark ? light : dark;
+  }
+
+  /// A gradient partner for [accent]: a step around the color wheel, or a
+  /// lighter or darker shade of a gray.
+  static Color _partner(Color accent) {
+    final hsl = HSLColor.fromColor(accent);
+    if (hsl.saturation < 0.15) {
+      final l = hsl.lightness;
+      return hsl.withLightness(l > 0.5 ? l - 0.2 : l + 0.22).toColor();
+    }
+    return hsl.withHue((hsl.hue + 32) % 360).toColor();
   }
 }
