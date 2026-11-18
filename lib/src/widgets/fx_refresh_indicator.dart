@@ -55,6 +55,31 @@ enum FxRefreshStyle {
   /// at the trigger point and twangs back when let go, carries a comet while
   /// refreshing and flashes out from the middle when done.
   line,
+
+  /// A glossy gradient shape that grows out of a circle as you pull, spins
+  /// with a pop at the trigger point, morphs through soft many-lobed shapes
+  /// while refreshing and settles into a disc with a check mark when done.
+  morph,
+
+  /// Petals on a frosted disc that appear one by one around the dial as you
+  /// pull and flash at the trigger point, chase each other round while
+  /// refreshing and fly off around a check mark when done.
+  spokes,
+
+  /// Five gradient bars on a frosted tile that rise like a signal meter as
+  /// you pull and hop at the trigger point, dance like an equalizer while
+  /// refreshing and fall away around a check mark when done.
+  bars,
+
+  /// An infinity loop on a frosted pill that draws itself as you pull and
+  /// glows at the trigger point, carries a comet round while refreshing and
+  /// unties into a check mark when done.
+  infinity,
+
+  /// A gradient tile that tips up into view in 3D as you pull, flips over at
+  /// the trigger point, keeps flipping while refreshing and lands on a check
+  /// mark when done.
+  flip,
 }
 
 /// Where an [FxRefreshIndicator] is in a pull-to-refresh gesture. Matches the
@@ -179,7 +204,7 @@ class FxRefreshTheme extends InheritedWidget {
       labels != oldWidget.labels;
 }
 
-/// Pull-to-refresh for any vertical scrollable, in one of five
+/// Pull-to-refresh for any vertical scrollable, in one of ten
 /// [FxRefreshStyle]s.
 ///
 /// It works like Material's `RefreshIndicator`: drag the [child] past its top

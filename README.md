@@ -549,7 +549,7 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 <details>
 <summary><b>🔄 Pull to refresh</b></summary>
 
-`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in five styles and needs no Material ancestor:
+`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in ten styles and needs no Material ancestor. Pulling past the trigger point stretches with a soft rubber-band resistance:
 
 | Style | While pulling | While refreshing | When done |
 |---|---|---|---|
@@ -558,6 +558,11 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 | `liquid` | a glossy drop stretches out of the top edge, then pinches off with a jiggle | it wobbles around a spinner | bursts into droplets with a ripple |
 | `dots` | three gradient dots rise in, then ripple | they bounce with squash and stretch | they merge into a check badge |
 | `line` | a gradient string bows down, glows, and twangs back when let go | a comet runs along it | it flashes out from the middle |
+| `morph` | a glossy circle grows soft lobes and spins a quarter turn with a pop | it morphs through 4-, 7-, 5- and 8-lobed shapes as it turns | it smooths into a disc behind a check |
+| `spokes` | gradient petals appear one by one around a frosted dial, then flash round | a bright head chases round the petals | the petals fly outward around a check |
+| `bars` | five gradient bars rise like a signal meter, then hop | they dance like an equalizer | they drop to dots and a check draws over them |
+| `infinity` | an infinity loop draws itself on a frosted pill, then glows | a comet runs round the loop | the loop unties into a check |
+| `flip` | a gradient tile tips up in 3D, then flips over to point up | it keeps flipping, showing a refresh glyph | it lands on a check |
 
 ```dart
 FxRefreshIndicator(

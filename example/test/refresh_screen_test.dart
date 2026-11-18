@@ -22,13 +22,28 @@ void main() {
   testWidgets('every style refreshes the list, in light/dark and LTR/RTL', (
     tester,
   ) async {
+    // Tall enough to keep every fetched message on screen.
+    tester.view
+      ..physicalSize = const Size(800, 1400)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(const MaterialApp(home: RefreshScreen()));
     await tester.pumpAndSettle();
     expect(find.text('now'), findsNothing);
 
     var fetched = 0;
     for (final style in FxRefreshStyle.values) {
-      await tester.tap(find.widgetWithText(ChoiceChip, style.name));
+      // The later chips start off screen in the scrolling row.
+      final chip = find.widgetWithText(ChoiceChip, style.name);
+      await tester.scrollUntilVisible(
+        chip,
+        100,
+        scrollable: find.descendant(
+          of: find.byKey(const ValueKey('styles')),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.tap(chip);
       await tester.pumpAndSettle();
       await pullToRefresh(tester);
       expect(find.text('now'), findsNWidgets(++fetched), reason: style.name);

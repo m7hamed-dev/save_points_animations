@@ -1,12 +1,15 @@
-/// The five looks of `FxRefreshIndicator`. Internal: the indicator picks one
-/// by its `FxRefreshStyle` and hands it an [FxRefreshFrame].
+/// The looks of `FxRefreshIndicator`. Internal: the indicator picks one by
+/// its `FxRefreshStyle` and hands it an [FxRefreshFrame]. The first five
+/// live here with the shared pieces; the rest are in the part file.
 library;
 
 import 'dart:math' as math;
-import 'dart:ui' show ImageFilter, lerpDouble;
+import 'dart:ui' show ImageFilter, PathMetric, lerpDouble;
 
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/widgets/fx_refresh_indicator.dart';
+
+part 'fx_refresh_styles_more.dart';
 
 /// Everything a style needs to draw one indicator.
 @immutable
@@ -109,6 +112,11 @@ Widget fxRefreshIndicatorFor(FxRefreshStyle style, FxRefreshFrame frame) =>
       FxRefreshStyle.liquid => _LiquidIndicator(frame),
       FxRefreshStyle.dots => _DotsIndicator(frame),
       FxRefreshStyle.line => _LineIndicator(frame),
+      FxRefreshStyle.morph => _MorphIndicator(frame),
+      FxRefreshStyle.spokes => _SpokesIndicator(frame),
+      FxRefreshStyle.bars => _BarsIndicator(frame),
+      FxRefreshStyle.infinity => _InfinityIndicator(frame),
+      FxRefreshStyle.flip => _FlipIndicator(frame),
     };
 
 /// How long [style]'s finish animation runs.
@@ -119,6 +127,11 @@ Duration fxRefreshExitDuration(FxRefreshStyle style) => switch (style) {
   FxRefreshStyle.liquid => const Duration(milliseconds: 750),
   FxRefreshStyle.dots => const Duration(milliseconds: 1000),
   FxRefreshStyle.line => const Duration(milliseconds: 700),
+  FxRefreshStyle.morph => const Duration(milliseconds: 900),
+  FxRefreshStyle.spokes => const Duration(milliseconds: 900),
+  FxRefreshStyle.bars => const Duration(milliseconds: 950),
+  FxRefreshStyle.infinity => const Duration(milliseconds: 1100),
+  FxRefreshStyle.flip => const Duration(milliseconds: 1000),
 };
 
 /// The height of the strip below the top edge that [style] draws in.
@@ -129,6 +142,11 @@ double fxRefreshAreaHeight(FxRefreshStyle style, double displacement) {
     FxRefreshStyle.liquid => _LiquidIndicator.radius * 2,
     FxRefreshStyle.dots => _DotsIndicator.size.height,
     FxRefreshStyle.line => 0.0,
+    FxRefreshStyle.morph => _MorphIndicator.size,
+    FxRefreshStyle.spokes => _SpokesIndicator.size,
+    FxRefreshStyle.bars => _BarsIndicator.size,
+    FxRefreshStyle.infinity => _InfinityIndicator.size.height,
+    FxRefreshStyle.flip => _FlipIndicator.size,
   };
   if (style == FxRefreshStyle.line) return _LinePainter.area;
   // Overpulled position plus room for the shadow or the liquid's burst.
@@ -158,10 +176,19 @@ LinearGradient _diagonal(FxRefreshFrame frame) => LinearGradient(
   colors: [frame.secondary, frame.color],
 );
 
-/// Places a floating indicator [extent] tall the way Material's indicator
-/// moves: hidden above the edge at pull 0, `displacement` below it at the
-/// trigger point, lower still when overpulled. It fades and grows in over the
-/// pull.
+/// Where the top of a floating indicator [extent] tall sits for [pull]:
+/// hidden above the edge at 0 and [displacement] below it at the trigger
+/// point, the way Material's indicator moves. Past the trigger point it
+/// stretches on less and less, like a rubber band.
+double _travel(double pull, double displacement, double extent) {
+  final span = displacement + extent;
+  if (pull <= 1) return pull * span - extent;
+  final over = ((pull - 1) / 0.5).clamp(0.0, 1.0);
+  return displacement + span * 0.36 * Curves.easeOutCubic.transform(over);
+}
+
+/// Places a floating indicator [extent] tall along [_travel]. It fades and
+/// grows in over the pull.
 class _Floating extends StatelessWidget {
   const _Floating({
     required this.frame,
@@ -184,7 +211,7 @@ class _Floating extends StatelessWidget {
         return Align(
           alignment: Alignment.topCenter,
           child: Transform.translate(
-            offset: Offset(0, pull * (frame.displacement + extent) - extent),
+            offset: Offset(0, _travel(pull, frame.displacement, extent)),
             child: Opacity(
               opacity: shown,
               child: Transform.scale(scale: 0.8 + 0.2 * shown, child: child),
@@ -278,9 +305,9 @@ class _KickState extends State<_Kick> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) => widget.builder(context, _kick);
 }
 
-/// The raised surface behind the ring, capsule and dots: frosted glass when
-/// the background is translucent, a hairline edge, a soft shadow and, in
-/// light surroundings, a glow in the accent.
+/// The raised surface behind the floating indicators: frosted glass when the
+/// background is translucent, a sheen across its top, a hairline edge, a
+/// soft shadow and a glow in the accent.
 class _Surface extends StatelessWidget {
   const _Surface({
     required this.frame,
@@ -305,7 +332,25 @@ class _Surface extends StatelessWidget {
           width: 0.8,
         ),
       ),
-      child: child,
+      // Light from above: a sheen across the top of a dark surface, a faint
+      // shade toward the bottom of a light one.
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: shape,
+          gradient: dark
+              ? const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [Color(0x1AFFFFFF), Color(0x00FFFFFF)],
+                )
+              : const LinearGradient(
+                  begin: Alignment.center,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x00101828), Color(0x0D101828)],
+                ),
+        ),
+        child: child,
+      ),
     );
     if (frame.background.a < 1) {
       body = ClipRRect(
@@ -444,7 +489,7 @@ void _drawArrowHead(
   final out = Offset(math.cos(angle), math.sin(angle));
   final along = Offset(-math.sin(angle), math.cos(angle));
   final base = center + out * radius;
-  final s = 4.4 * scale;
+  final s = 5 * scale;
   final tip = base + along * (1.15 * s);
   final a = base + out * s - along * (0.25 * s);
   final b = base - out * s - along * (0.25 * s);
@@ -1193,7 +1238,7 @@ class _LiquidPainter extends CustomPainter {
     final cx = size.width / 2;
     // Same travel as the floating styles: hidden at 0, resting at the
     // displacement at the trigger point.
-    final cy = frame.pull.value * (frame.displacement + 2 * r) - r;
+    final cy = _travel(frame.pull.value, frame.displacement, 2 * r) + r;
     final center = Offset(cx, cy);
 
     switch (frame.status) {
@@ -1202,18 +1247,18 @@ class _LiquidPainter extends CustomPainter {
         // away while a ripple spreads.
         final e = frame.exit.value;
         final squeeze = Curves.easeInOut.transform(_interval(e, 0, 0.22));
-        final burst = _interval(e, 0.22, 1);
+        final burst = _interval(e, 0.22, 0.85);
         final out = Curves.easeOutCubic.transform(burst);
-        if (burst > 0) {
+        if (burst > 0 && burst < 1) {
           canvas.drawCircle(
             center,
-            r * (0.9 + 1.5 * out),
+            r * (0.9 + 1.3 * out),
             _stroke(_fade(frame.color, 0.5 * (1 - out)), 0.4 + 2.2 * (1 - out)),
           );
           final left = 1 - Curves.easeInCubic.transform(burst);
           for (var i = 0; i < 8; i++) {
             final angle = -math.pi / 2 + (i + 0.5) * math.pi / 4;
-            final reach = r * (0.55 + (i.isEven ? 1.5 : 1.15) * out);
+            final reach = r * (0.55 + (i.isEven ? 1.25 : 0.95) * out);
             final droplet = (i.isEven ? 4.4 : 3.3) * left;
             if (droplet <= 0.3) continue;
             canvas.drawCircle(

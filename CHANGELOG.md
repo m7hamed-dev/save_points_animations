@@ -56,10 +56,12 @@
   `FxProgressButton`, `FxHoldButton` — hold the key to fill),
   `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring
   appears only under keyboard focus; disabled controls are skipped.
-- `FxRefreshIndicator`: pull-to-refresh in five styles (`FxRefreshStyle.ring`,
-  `capsule`, `liquid`, `dots` and `line`), each with its own motion for the
-  pull, the trigger point, the refresh and the finish, drawn with a two-tone
-  accent gradient on frosted surfaces. It keeps Material `RefreshIndicator`'s
+- `FxRefreshIndicator`: pull-to-refresh in ten styles (`FxRefreshStyle.ring`,
+  `capsule`, `liquid`, `dots`, `line`, `morph`, `spokes`, `bars`, `infinity`
+  and `flip`), each with its own motion for the pull, the trigger point, the
+  refresh and the finish, drawn with a two-tone accent gradient on frosted,
+  glossy surfaces. Pulling past the trigger point stretches with a soft
+  rubber-band resistance. It keeps Material `RefreshIndicator`'s
   mechanics (trigger point, `triggerMode`, `notificationPredicate`, `show()`
   and the `onRefresh` future) without needing a Material ancestor, and
   refreshes on any release past the trigger point, on every platform. It

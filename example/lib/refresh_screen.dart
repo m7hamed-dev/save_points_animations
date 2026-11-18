@@ -107,7 +107,7 @@ class _RefreshScreenState extends State<RefreshScreen> {
   Widget _buildScreen(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     // App-wide defaults would usually sit in MaterialApp.builder.
-    return FxRefreshTheme(
+    final screen = FxRefreshTheme(
       color: scheme.primary,
       labels: _rtl ? _arabicLabels : null,
       child: Scaffold(
@@ -139,6 +139,7 @@ class _RefreshScreenState extends State<RefreshScreen> {
             child: SizedBox(
               height: 52,
               child: ListView(
+                key: const ValueKey('styles'),
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
                 children: [
@@ -160,27 +161,29 @@ class _RefreshScreenState extends State<RefreshScreen> {
           key: _indicator,
           style: _style,
           onRefresh: _reload,
-          // On desktop a list scrolls by touch and trackpad only; let a
-          // mouse drag pull it too, so every style can be tried there.
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(
-              context,
-            ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
-            child: ListView(
-              // Pullable even when the list is shorter than the screen.
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              children: [
-                for (final m in _messages)
-                  KeyedSubtree(
-                    key: ValueKey(m.id),
-                    child: _tile(context, m, isNew: m.id >= _inbox.length),
-                  ),
-              ],
-            ),
+          child: ListView(
+            // Pullable even when the list is shorter than the screen.
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            children: [
+              for (final m in _messages)
+                KeyedSubtree(
+                  key: ValueKey(m.id),
+                  child: _tile(context, m, isNew: m.id >= _inbox.length),
+                ),
+            ],
           ),
         ),
       ),
+    );
+    // On desktop a list scrolls by touch and trackpad only; let a mouse drag
+    // pull the list and scroll the style chips too, so every style can be
+    // tried there.
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(
+        context,
+      ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+      child: screen,
     );
   }
 

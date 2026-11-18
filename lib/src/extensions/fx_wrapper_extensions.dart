@@ -290,7 +290,7 @@ extension FxWrap on Widget {
   );
 
   /// Wrap this scrollable in [FxRefreshIndicator]: pull past the top edge to
-  /// run [onRefresh], in one of five [FxRefreshStyle]s.
+  /// run [onRefresh], in one of ten [FxRefreshStyle]s.
   FxRefreshIndicator fxRefreshIndicator({
     Key? key,
     required Future<void> Function() onRefresh,
