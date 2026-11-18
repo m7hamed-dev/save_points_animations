@@ -1,6 +1,7 @@
 @Tags(['golden'])
 library;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
@@ -737,6 +738,52 @@ void main() {
       () =>
           FxBadge(count: 7, child: catalogSwatch(_blue, width: 44, height: 44)),
     );
+    // One per style, refreshing: pulled past the trigger point and let go.
+    _covered.add('FxRefreshIndicator');
+    for (final style in FxRefreshStyle.values) {
+      catalogTestWidgets(
+        'FxRefreshIndicator (${style.name})',
+        semanticsEnabled: false,
+        (tester) => _capture(
+          tester,
+          file: '$c/fx_refresh_indicator_${style.name}',
+          background: const Color(0xFFF1F3F8),
+          // Catch the line's sweep mid-way across.
+          run: style == FxRefreshStyle.line
+              ? const Duration(milliseconds: 800)
+              : _kRun,
+          child: FxRefreshIndicator(
+            style: style,
+            color: _blue,
+            onRefresh: () => Completer<void>().future,
+            child: ListView(
+              padding: const EdgeInsets.all(12),
+              children: [
+                for (var i = 0; i < 8; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: catalogSwatch(
+                      const Color(0xFFDCE1EA),
+                      height: 22,
+                      radius: 6,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          prepare: () async {
+            final gesture = await tester.startGesture(
+              tester.getCenter(find.byType(ListView)),
+            );
+            for (var i = 0; i < 8; i++) {
+              await gesture.moveBy(const Offset(0, 10));
+              await tester.pump(const Duration(milliseconds: 16));
+            }
+            await gesture.up();
+          },
+        ),
+      );
+    }
   });
 
   group('data display', () {
@@ -1073,7 +1120,8 @@ void main() {
 
   test('catalog covers every exported widget', () {
     // Exported names that are not widgets (data classes, controllers, enums,
-    // typedefs and extensions).
+    // typedefs, extensions, states and inherited defaults with no look of
+    // their own).
     const notWidgets = {
       'FxBadgeExtension',
       'FxButtonState',
@@ -1083,6 +1131,12 @@ void main() {
       'FxNavItem',
       'FxParallaxLayer',
       'FxRange',
+      'FxRefreshIndicatorState',
+      'FxRefreshLabels',
+      'FxRefreshStatus',
+      'FxRefreshStyle',
+      'FxRefreshTheme',
+      'FxRefreshTriggerMode',
       'FxSlideToConfirmController',
       'FxSpinWheelController',
       'FxSwitcherEffect',

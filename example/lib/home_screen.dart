@@ -3,6 +3,7 @@ import 'package:save_points_animations/save_points_animations.dart';
 
 import 'package:save_points_animations_example/detail_screen.dart';
 import 'package:save_points_animations_example/playground_screen.dart';
+import 'package:save_points_animations_example/refresh_screen.dart';
 import 'package:save_points_animations_example/widgets/demo_chip.dart';
 
 part 'sections/effects_section.dart';
@@ -80,6 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
           'Save Points Animations V 1.0',
         ).animate().fade().slideY(-0.5).duration(400.ms),
         actions: [
+          IconButton(
+            tooltip: 'Pull to refresh',
+            icon: const Icon(Icons.swipe_down),
+            onPressed: () => context.fxPush<void>(const RefreshScreen()),
+          ),
           IconButton(
             tooltip: 'Playground',
             icon: const Icon(Icons.tune),

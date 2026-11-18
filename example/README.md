@@ -89,6 +89,9 @@ on, so try it with that setting off.
   charts, inputs and the rest of the widget catalog, each section a live demo.
 - **Playground:** pick effects, timing, direction and play mode, watch the
   result, and copy the chain that produces it.
+- **Pull to refresh:** the five `FxRefreshIndicator` styles on a list that
+  fetches a message on every refresh, with light/dark and left-to-right /
+  right-to-left switches.
 - **Detail screen:** opened with `context.fxPush`, to try the page
   transitions and Hero flights.
 

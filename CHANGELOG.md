@@ -56,6 +56,16 @@
   `FxProgressButton`, `FxHoldButton` — hold the key to fill),
   `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring
   appears only under keyboard focus; disabled controls are skipped.
+- `FxRefreshIndicator`: pull-to-refresh in five styles (`FxRefreshStyle.ring`,
+  `capsule`, `liquid`, `dots` and `line`), each with its own motion for the
+  pull, the refresh and the finish. It keeps Material `RefreshIndicator`'s
+  mechanics (trigger point, timing, `triggerMode`, `notificationPredicate`,
+  `show()` and the `onRefresh` future) without needing a Material ancestor.
+  It follows the surrounding text color in light and dark themes, mirrors
+  under right-to-left text and holds a still frame under reduced motion.
+  `FxRefreshTheme` sets the style, the colors and the capsule's translatable
+  `FxRefreshLabels` app-wide. Also available as `.fxRefreshIndicator()`, and
+  as a demo screen in the example app.
 - `FxSlideToConfirmController` is now exported. It is the type of
   `FxSlideToConfirm.controller`, but apps could only reach it through
   `package:save_points_animations/src/…`.

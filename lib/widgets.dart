@@ -93,6 +93,15 @@ export 'src/widgets/fx_rain.dart' show FxRain;
 export 'src/widgets/fx_range_slider.dart' show FxRange, FxRangeSlider;
 export 'src/widgets/fx_rating.dart' show FxRating;
 export 'src/widgets/fx_reaction_bar.dart' show FxReactionBar;
+export 'src/widgets/fx_refresh_indicator.dart'
+    show
+        FxRefreshIndicator,
+        FxRefreshIndicatorState,
+        FxRefreshLabels,
+        FxRefreshStatus,
+        FxRefreshStyle,
+        FxRefreshTheme,
+        FxRefreshTriggerMode;
 export 'src/widgets/fx_ripple.dart' show FxRipple;
 export 'src/widgets/fx_ripple_grid.dart' show FxRippleGrid;
 export 'src/widgets/fx_rotating_words.dart' show FxRotatingWords;

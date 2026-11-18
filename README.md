@@ -547,6 +547,47 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 </details>
 
 <details>
+<summary><b>🔄 Pull to refresh</b></summary>
+
+`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point, timing and `onRefresh` future, so it can replace one without touching your refresh logic. It comes in five styles and needs no Material ancestor:
+
+| Style | While pulling | While refreshing | When done |
+|---|---|---|---|
+| `ring` | an arc winds up on a floating disc | a breathing spinner | the arc closes into a check |
+| `capsule` | a pill: arrow + "Pull to refresh", then "Release to refresh" | spinner + "Refreshing…" | check + "Updated" |
+| `liquid` | a drop stretches out of the top edge, then pinches off | a spinner inside the drop | pops with a ripple |
+| `dots` | three dots assemble | the dots ride a wave | they merge into one |
+| `line` | a hairline grows from the center of the top edge | a comet sweeps across | it fills out and fades |
+
+```dart
+FxRefreshIndicator(
+  style: FxRefreshStyle.liquid,
+  onRefresh: () => repository.reload(), // stays refreshing until this completes
+  child: ListView(physics: const AlwaysScrollableScrollPhysics(), children: tiles),
+);
+
+listView.fxRefreshIndicator(onRefresh: reload, style: FxRefreshStyle.capsule);
+
+// Refresh from code, e.g. from a toolbar button:
+final refresher = GlobalKey<FxRefreshIndicatorState>();
+refresher.currentState?.show();
+
+// App-wide defaults; an argument on the indicator still wins:
+MaterialApp(
+  builder: (context, child) => FxRefreshTheme(
+    style: FxRefreshStyle.ring,
+    color: Theme.of(context).colorScheme.primary,
+    labels: const FxRefreshLabels(pull: 'اسحب للتحديث', release: 'أفلت للتحديث'),
+    child: child!,
+  ),
+);
+```
+
+By default it draws in the surrounding text color on a surface that matches it, so it follows your theme in light and dark mode. Pass `color` and `backgroundColor`, or set them in `FxRefreshTheme`, for your brand colors. It mirrors under right-to-left text, holds a still frame under reduced motion, and reports each `FxRefreshStatus` to `onStatusChange`. The example app has a screen for trying every style.
+
+</details>
+
+<details>
 <summary><b>🌌 Decorative & ambient backdrops</b></summary>
 
 ```dart
@@ -659,7 +700,7 @@ Motion is opt-out-able and controls are operable without a pointer.
 - **Reduced motion.** The engine and *every* looping widget check `MediaQuery.disableAnimations`. Under the OS "reduce motion" setting, one-shot effects jump to their end frame and continuous animations settle to a static frame — reacting to runtime toggles, not just at mount. Set `FxTheme(respectReducedMotion: true)` (the default) to opt in globally, or `FxReducedMotionBehavior` to choose *jump-to-end* vs *disable*.
 - **Keyboard.** `FxAnimatedSlider` and `FxRangeSlider` step with the arrow keys (each range thumb is its own focus stop). Enter / Space activate the toggles, checkboxes, radios, animated buttons (hold the key on `FxHoldButton`), `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring appears only under keyboard focus, and disabled controls are skipped.
 - **Semantics.** Interactive widgets expose the right roles and state — buttons, `selected` tabs/nav items, `checked` checkboxes/radios, `slider` values with increase/decrease actions, and live-region announcements for countdowns and progress.
-- **Haptics.** Toggles, sliders, ratings, steppers and confirm actions fire `HapticFeedback` on interaction.
+- **Haptics.** Toggles, sliders, ratings, steppers and confirm actions fire `HapticFeedback` on interaction, and `FxRefreshIndicator` ticks once at its trigger point.
 
 > [!TIP]
 > Building your own looping widget? Mix in `FxMotionAware` and override `onReduceMotionChanged(bool)` to start/stop your controller — the same helper the built-ins use.

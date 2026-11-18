@@ -28,6 +28,7 @@ import 'package:save_points_animations/src/widgets/fx_marquee.dart';
 import 'package:save_points_animations/src/widgets/fx_particles.dart';
 import 'package:save_points_animations/src/widgets/fx_progress_button.dart';
 import 'package:save_points_animations/src/widgets/fx_pulse.dart';
+import 'package:save_points_animations/src/widgets/fx_refresh_indicator.dart';
 import 'package:save_points_animations/src/widgets/fx_ripple.dart';
 import 'package:save_points_animations/src/widgets/fx_scratch_card.dart';
 import 'package:save_points_animations/src/widgets/fx_shimmer_button.dart';
@@ -285,6 +286,42 @@ extension FxWrap on Widget {
     maxRadius: maxRadius,
     rings: rings,
     duration: duration,
+    child: this,
+  );
+
+  /// Wrap this scrollable in [FxRefreshIndicator]: pull past the top edge to
+  /// run [onRefresh], in one of five [FxRefreshStyle]s.
+  FxRefreshIndicator fxRefreshIndicator({
+    Key? key,
+    required Future<void> Function() onRefresh,
+    FxRefreshStyle? style,
+    Color? color,
+    Color? backgroundColor,
+    FxRefreshLabels? labels,
+    double displacement = 40,
+    double edgeOffset = 0,
+    FxRefreshTriggerMode triggerMode = FxRefreshTriggerMode.onEdge,
+    ScrollNotificationPredicate notificationPredicate =
+        defaultScrollNotificationPredicate,
+    ValueChanged<FxRefreshStatus?>? onStatusChange,
+    String? semanticsLabel,
+    String? semanticsValue,
+    bool enableFeedback = true,
+  }) => FxRefreshIndicator(
+    key: key,
+    onRefresh: onRefresh,
+    style: style,
+    color: color,
+    backgroundColor: backgroundColor,
+    labels: labels,
+    displacement: displacement,
+    edgeOffset: edgeOffset,
+    triggerMode: triggerMode,
+    notificationPredicate: notificationPredicate,
+    onStatusChange: onStatusChange,
+    semanticsLabel: semanticsLabel,
+    semanticsValue: semanticsValue,
+    enableFeedback: enableFeedback,
     child: this,
   );
 
