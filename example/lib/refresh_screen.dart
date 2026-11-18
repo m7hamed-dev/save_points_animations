@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:material_ui/material_ui.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
@@ -158,17 +160,24 @@ class _RefreshScreenState extends State<RefreshScreen> {
           key: _indicator,
           style: _style,
           onRefresh: _reload,
-          child: ListView(
-            // Pullable even when the list is shorter than the screen.
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            children: [
-              for (final m in _messages)
-                KeyedSubtree(
-                  key: ValueKey(m.id),
-                  child: _tile(context, m, isNew: m.id >= _inbox.length),
-                ),
-            ],
+          // On desktop a list scrolls by touch and trackpad only; let a
+          // mouse drag pull it too, so every style can be tried there.
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(
+              context,
+            ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
+            child: ListView(
+              // Pullable even when the list is shorter than the screen.
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                for (final m in _messages)
+                  KeyedSubtree(
+                    key: ValueKey(m.id),
+                    child: _tile(context, m, isNew: m.id >= _inbox.length),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

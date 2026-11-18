@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:save_points_animations/save_points_animations.dart';
@@ -45,4 +47,29 @@ void main() {
     expect(find.text('now'), findsNWidgets(++fetched));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'a mouse drag pulls to refresh on desktop',
+    variant: TargetPlatformVariant.only(TargetPlatform.macOS),
+    (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: RefreshScreen()));
+      await tester.pumpAndSettle();
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.text('Ava Thompson').first),
+        kind: PointerDeviceKind.mouse,
+      );
+      // Bouncing (macOS) overscroll has friction, so the mouse travels far.
+      for (var i = 0; i < 50; i++) {
+        await gesture.moveBy(const Offset(0, 10));
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await gesture.up();
+      for (var i = 0; i < 20; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await tester.pumpAndSettle();
+      expect(find.text('now'), findsOneWidget);
+    },
+  );
 }
