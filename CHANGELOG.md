@@ -118,7 +118,9 @@
 - `pressScale()` / `pressBounce()` stayed pressed while the finger scrolled
   the list they sit in, and a quick tap barely dipped. A finger that moves
   past the touch slop now releases the press at once, and a lifted finger
-  lets the dip finish before springing back.
+  lets the dip finish before springing back. They also follow new arguments
+  (scale, durations, curves) when rebuilt, instead of keeping the first ones
+  — e.g. a control built disabled with `scale: 1` dips once enabled.
 - `FxConfetti` ignored reduced motion. Bursts are now skipped while the
   platform asks for reduced motion, and one in flight is cleared when the
   setting turns on; the child is shown as usual.

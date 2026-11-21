@@ -234,6 +234,28 @@ void main() {
       await gesture.up();
     });
 
+    testWidgets('pressScale follows a new scale on rebuild', (tester) async {
+      Future<void> pump(double scale) => tester.pumpWidget(
+        _host(const SizedBox(width: 100, height: 100).pressScale(scale: scale)),
+      );
+      double scale() => tester
+          .widget<ScaleTransition>(find.byType(ScaleTransition))
+          .scale
+          .value;
+
+      // Built still (scale 1, as for a disabled control), then switched on.
+      await pump(1);
+      await pump(0.9);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(ScaleTransition)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(scale(), closeTo(0.9, 1e-3));
+      await gesture.up();
+      await tester.pumpAndSettle();
+    });
+
     testWidgets('hoverScale grows on pointer enter', (tester) async {
       await tester.pumpWidget(
         _host(const SizedBox(width: 100, height: 100).hoverScale(scale: 1.2)),

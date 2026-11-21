@@ -84,17 +84,37 @@ class _FxPressableState extends State<_FxPressable>
     reverseDuration: widget.releaseDuration,
   );
 
-  late final Animation<double> _scale =
-      Tween<double>(begin: 1.0, end: widget.pressedScale).animate(
-        CurvedAnimation(
-          parent: _controller,
-          curve: widget.pressCurve,
-          reverseCurve: widget.releaseCurve,
-        ),
-      );
+  late CurvedAnimation _curve = _curved();
+  late Animation<double> _scale = _scaled();
+
+  CurvedAnimation _curved() => CurvedAnimation(
+    parent: _controller,
+    curve: widget.pressCurve,
+    reverseCurve: widget.releaseCurve,
+  );
+
+  Animation<double> _scaled() =>
+      Tween<double>(begin: 1.0, end: widget.pressedScale).animate(_curve);
+
+  @override
+  void didUpdateWidget(_FxPressable old) {
+    super.didUpdateWidget(old);
+    _controller
+      ..duration = widget.pressDuration
+      ..reverseDuration = widget.releaseDuration;
+    if (old.pressCurve != widget.pressCurve ||
+        old.releaseCurve != widget.releaseCurve) {
+      _curve.dispose();
+      _curve = _curved();
+      _scale = _scaled();
+    } else if (old.pressedScale != widget.pressedScale) {
+      _scale = _scaled();
+    }
+  }
 
   @override
   void dispose() {
+    _curve.dispose();
     _controller.dispose();
     super.dispose();
   }
