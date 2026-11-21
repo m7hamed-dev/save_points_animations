@@ -108,6 +108,19 @@
   `material_ui` is a dev dependency only.
 
 ### Fixed
+- `FxPageTransition.sharedAxisHorizontal` and `FxPageTransition.cupertino`
+  ignored right-to-left text: the new page always came in from the right.
+  They now follow the reading direction, so in Arabic or Hebrew the new page
+  enters from the left and the old one leaves to the right. `FxPageRoute`
+  (and `context.fxPush`) pass the ambient `Directionality`;
+  `buildFxTransition` takes it as `textDirection` (LTR by default).
+  `slideFrom` stays a physical edge.
+- `pressScale()` / `pressBounce()` stayed pressed while the finger scrolled
+  the list they sit in, and a quick tap barely dipped. A finger that moves
+  past the touch slop now releases the press at once, and a lifted finger
+  lets the dip finish before springing back. They also follow new arguments
+  (scale, durations, curves) when rebuilt, instead of keeping the first ones
+  — e.g. a control built disabled with `scale: 1` dips once enabled.
 - `FxConfetti` ignored reduced motion. Bursts are now skipped while the
   platform asks for reduced motion, and one in flight is cleared when the
   setting turns on; the child is shown as usual.
