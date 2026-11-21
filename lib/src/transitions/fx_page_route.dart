@@ -61,6 +61,7 @@ class FxPageRoute<T> extends PageRouteBuilder<T> {
       revealAlignment: revealAlignment,
       originRect: originRect,
       curve: curve ?? FxTheme.of(context).transitionCurve,
+      textDirection: Directionality.maybeOf(context) ?? TextDirection.ltr,
       animation: animation,
       secondaryAnimation: secondaryAnimation,
       child: child,

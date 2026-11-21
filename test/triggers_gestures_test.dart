@@ -186,6 +186,54 @@ void main() {
       expect(scale(), closeTo(1.0, 1e-3));
     });
 
+    testWidgets('pressScale shows the full dip on a quick tap', (tester) async {
+      await tester.pumpWidget(
+        _host(const SizedBox(width: 100, height: 100).pressScale(scale: 0.9)),
+      );
+      double scale() => tester
+          .widget<ScaleTransition>(find.byType(ScaleTransition))
+          .scale
+          .value;
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(ScaleTransition)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 20));
+      await gesture.up();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 110));
+      expect(scale(), closeTo(0.9, 1e-2));
+
+      await tester.pumpAndSettle();
+      expect(scale(), closeTo(1.0, 1e-3));
+    });
+
+    testWidgets('pressScale lets go once the finger moves past the slop', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(const SizedBox(width: 100, height: 100).pressScale(scale: 0.9)),
+      );
+      double scale() => tester
+          .widget<ScaleTransition>(find.byType(ScaleTransition))
+          .scale
+          .value;
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(ScaleTransition)),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 120));
+      expect(scale(), lessThan(1.0));
+
+      await gesture.moveBy(const Offset(0, kTouchSlop + 2));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(scale(), closeTo(1.0, 1e-3));
+      await gesture.up();
+    });
+
     testWidgets('hoverScale grows on pointer enter', (tester) async {
       await tester.pumpWidget(
         _host(const SizedBox(width: 100, height: 100).hoverScale(scale: 1.2)),

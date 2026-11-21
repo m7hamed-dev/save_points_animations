@@ -1,9 +1,14 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
 /// Interactive, state-driven gesture animations (distinct from the one-shot
 /// timeline effects — these track pointer state continuously).
 extension FxGestures on Widget {
   /// Scale down while pressed, springing back on release.
+  ///
+  /// Even the quickest tap shows the full dip before springing back, and a
+  /// finger that moves past the touch slop (to scroll a list the widget sits
+  /// in, say) releases it straight away.
   ///
   /// ```dart
   /// button.pressScale();
@@ -94,6 +99,42 @@ class _FxPressableState extends State<_FxPressable>
     super.dispose();
   }
 
+  /// Where the pressing finger landed, while one is down.
+  Offset? _down;
+
+  void _press(PointerDownEvent event) {
+    _down = event.position;
+    _controller.forward();
+  }
+
+  /// A finger that drifts past the touch slop is scrolling or dragging, not
+  /// pressing: let go at once.
+  void _move(PointerMoveEvent event) {
+    final down = _down;
+    if (down != null && (event.position - down).distance > kTouchSlop) {
+      _cancel();
+    }
+  }
+
+  /// Lifted: finish the dip first, so even the quickest tap shows it, then
+  /// spring back (unless a new press has started meanwhile).
+  void _lift(PointerUpEvent event) {
+    if (_down == null) return;
+    _down = null;
+    if (_controller.status == AnimationStatus.forward) {
+      _controller.forward().whenCompleteOrCancel(() {
+        if (mounted && _down == null) _controller.reverse();
+      });
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  void _cancel([PointerCancelEvent? event]) {
+    _down = null;
+    _controller.reverse();
+  }
+
   @override
   Widget build(BuildContext context) {
     // A raw Listener drives the scale so feedback is immediate on pointer
@@ -101,9 +142,10 @@ class _FxPressableState extends State<_FxPressable>
     // GestureDetector supplies tap semantics for [onTap].
     return Listener(
       behavior: HitTestBehavior.opaque,
-      onPointerDown: (_) => _controller.forward(),
-      onPointerUp: (_) => _controller.reverse(),
-      onPointerCancel: (_) => _controller.reverse(),
+      onPointerDown: _press,
+      onPointerMove: _move,
+      onPointerUp: _lift,
+      onPointerCancel: _cancel,
       child: GestureDetector(
         onTap: widget.onTap,
         child: ScaleTransition(scale: _scale, child: widget.child),
