@@ -19,6 +19,7 @@ import 'package:save_points_animations/src/widgets/fx_draggable_sheet.dart';
 import 'package:save_points_animations/src/widgets/fx_fireworks.dart';
 import 'package:save_points_animations/src/widgets/fx_glass_card.dart';
 import 'package:save_points_animations/src/widgets/fx_glitch.dart';
+import 'package:save_points_animations/src/widgets/fx_glow.dart';
 import 'package:save_points_animations/src/widgets/fx_gradient_border.dart';
 import 'package:save_points_animations/src/widgets/fx_gradient_button.dart';
 import 'package:save_points_animations/src/widgets/fx_hold_button.dart';
@@ -137,6 +138,31 @@ extension FxWrap on Widget {
     Duration duration = const Duration(milliseconds: 1600),
   }) =>
       FxGlitch(key: key, intensity: intensity, duration: duration, child: this);
+
+  /// Wrap this widget in [FxGlow]: an animated glow around the child, in one
+  /// of the [FxGlowStyle]s.
+  FxGlow fxGlow({
+    Key? key,
+    FxGlowStyle style = FxGlowStyle.pulse,
+    Color color = const Color(0xFF2575FC),
+    Color? secondaryColor,
+    double borderRadius = 16,
+    BoxShape shape = BoxShape.rectangle,
+    double spread = 18,
+    double intensity = 1,
+    Duration? duration,
+  }) => FxGlow(
+    key: key,
+    style: style,
+    color: color,
+    secondaryColor: secondaryColor,
+    borderRadius: borderRadius,
+    shape: shape,
+    spread: spread,
+    intensity: intensity,
+    duration: duration,
+    child: this,
+  );
 
   /// Wrap this widget in [FxGradientBorder]: a continuously rotating gradient
   /// border around the child.

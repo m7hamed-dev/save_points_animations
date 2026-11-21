@@ -54,6 +54,7 @@ export 'src/widgets/fx_frosted_nav_bar.dart' show FxFrostedNavBar;
 export 'src/widgets/fx_gauge.dart' show FxGauge;
 export 'src/widgets/fx_glass_card.dart' show FxGlassCard;
 export 'src/widgets/fx_glitch.dart' show FxGlitch;
+export 'src/widgets/fx_glow.dart' show FxGlow, FxGlowStyle;
 export 'src/widgets/fx_glow_button.dart' show FxGlowButton;
 export 'src/widgets/fx_gooey_nav_bar.dart' show FxGooeyNavBar;
 export 'src/widgets/fx_gradient_border.dart' show FxGradientBorder;

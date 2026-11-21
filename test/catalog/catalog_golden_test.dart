@@ -3,6 +3,7 @@ library;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -992,6 +993,40 @@ void main() {
       'FxBorderBeam',
       () => FxBorderBeam(child: card(const Color(0xFF1B2333))),
     );
+    // One per style, on a dark stage where a glow reads best.
+    _covered.add('FxGlow');
+    for (final style in FxGlowStyle.values) {
+      TestGesture? mouse;
+      catalogTestWidgets(
+        'FxGlow (${style.name})',
+        semanticsEnabled: false,
+        (tester) => _capture(
+          tester,
+          file: '$c/fx_glow_${style.name}',
+          background: kCatalogDark,
+          child: FxGlow(
+            style: style,
+            color: _blue,
+            borderRadius: 12,
+            child: card(const Color(0xFF1B2333)),
+          ),
+          // The hover glow shows with the mouse over the card's left side.
+          prepare: style == FxGlowStyle.hover
+              ? () async {
+                  mouse = await tester.createGesture(
+                    kind: PointerDeviceKind.mouse,
+                  );
+                  await mouse!.addPointer(location: Offset.zero);
+                  await mouse!.moveTo(
+                    tester.getCenter(find.byType(FxGlow)) -
+                        const Offset(50, 10),
+                  );
+                }
+              : null,
+          cleanup: () async => mouse?.removePointer(),
+        ),
+      );
+    }
     _golden(c, 'FxGradientBorder', () => FxGradientBorder(child: card()));
     _golden(
       c,
@@ -1128,6 +1163,7 @@ void main() {
       'FxConfettiController',
       'FxEntranceBuilder',
       'FxFlipCardController',
+      'FxGlowStyle',
       'FxNavItem',
       'FxParallaxLayer',
       'FxRange',

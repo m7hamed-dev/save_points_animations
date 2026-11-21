@@ -71,6 +71,13 @@
   `backgroundColor`) and the capsule's translatable `FxRefreshLabels`
   app-wide. Also available as `.fxRefreshIndicator()`, and as a demo screen
   in the example app.
+- `FxGlow`: wraps any widget in an animated glow in six styles
+  (`FxGlowStyle.pulse`, `aurora`, `beacon`, `neon`, `orbit` and `hover`) that
+  follows its rounded corners or a circle, without changing its size. `color`,
+  `secondaryColor`, `spread`, `intensity` and `duration` tune it. The glow
+  paints on its own layer so the child never repaints, and it holds a still
+  frame under reduced motion. Also available as `.fxGlow()`, and as a demo
+  screen in the example app.
 - `FxSlideToConfirmController` is now exported. It is the type of
   `FxSlideToConfirm.controller`, but apps could only reach it through
   `package:save_points_animations/src/…`.

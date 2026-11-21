@@ -593,6 +593,34 @@ By default it draws in the surrounding text color on a frosted surface that matc
 </details>
 
 <details>
+<summary><b>🌟 Glow</b></summary>
+
+`FxGlow` wraps any widget in an animated glow that follows its rounded corners (`borderRadius`) or a circle (`shape: BoxShape.circle`). It comes in six styles:
+
+| Style | Looks like | Good for |
+|---|---|---|
+| `pulse` | a soft two-tone halo that breathes in and out | call-to-action buttons |
+| `aurora` | a spectrum of colors turning round the child, with a thin light on its border | "AI" cards and inputs |
+| `beacon` | glowing rings that radiate outward and fade | live avatars, map pins |
+| `neon` | a bright tube on the border in a wide halo that hums and flickers now and then | signs, promos, featured tiles |
+| `orbit` | two lights chasing each other round the border | syncing or in-progress cards |
+| `hover` | a faint halo that lights up under the mouse and flares on press | desktop and web cards |
+
+```dart
+FxGlow(
+  style: FxGlowStyle.aurora,
+  borderRadius: 20,
+  child: askAiCard,
+);
+
+avatar.fxGlow(style: FxGlowStyle.beacon, shape: BoxShape.circle, color: Colors.green);
+```
+
+Tune it with `color` and `secondaryColor` (derived from `color` when left out), `spread` (how far it reaches, 18 by default), `intensity` (opacity) and `duration` (one cycle). The glow paints around the child without changing its size, so leave about `spread` of room around it and keep clipping ancestors away. It paints on its own layer, so the child never repaints while it glows, and it holds a still frame under reduced motion. The example app has a screen for trying every style.
+
+</details>
+
+<details>
 <summary><b>🌌 Decorative & ambient backdrops</b></summary>
 
 ```dart

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:save_points_animations/save_points_animations.dart';
 
 import 'package:save_points_animations_example/detail_screen.dart';
+import 'package:save_points_animations_example/glow_screen.dart';
 import 'package:save_points_animations_example/playground_screen.dart';
 import 'package:save_points_animations_example/refresh_screen.dart';
 import 'package:save_points_animations_example/widgets/demo_chip.dart';
@@ -85,6 +86,11 @@ class _HomeScreenState extends State<HomeScreen> {
             tooltip: 'Pull to refresh',
             icon: const Icon(Icons.swipe_down),
             onPressed: () => context.fxPush<void>(const RefreshScreen()),
+          ),
+          IconButton(
+            tooltip: 'Glow',
+            icon: const Icon(Icons.auto_awesome),
+            onPressed: () => context.fxPush<void>(const GlowScreen()),
           ),
           IconButton(
             tooltip: 'Playground',

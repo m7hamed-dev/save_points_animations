@@ -92,6 +92,8 @@ on, so try it with that setting off.
 - **Pull to refresh:** the ten `FxRefreshIndicator` styles on a list that
   fetches a message on every refresh, with light/dark and left-to-right /
   right-to-left switches.
+- **Glow:** the six `FxGlow` styles on a button, a card and an avatar, with
+  colors, the spread and light/dark to play with.
 - **Detail screen:** opened with `context.fxPush`, to try the page
   transitions and Hero flights.
 
