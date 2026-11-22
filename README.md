@@ -549,7 +549,7 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 <details>
 <summary><b>🔄 Pull to refresh</b></summary>
 
-`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in thirteen styles and needs no Material ancestor. Pulling past the trigger point stretches with a soft rubber-band resistance:
+`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in eighteen styles and needs no Material ancestor. Pulling past the trigger point stretches with a soft rubber-band resistance:
 
 | Style | While pulling | While refreshing | When done |
 |---|---|---|---|
@@ -566,8 +566,13 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 | `textFill` | your word fills with a gradient liquid as you pull, and brims at the trigger point | the liquid sloshes up and down inside the letters | it fills to the top and a shine sweeps across |
 | `textWave` | the letters rise into place one by one, then hop in a ripple | a wave runs through the letters | each letter hops once in turn |
 | `textShimmer` | the word draws itself in from the start as you pull, then turns to the accent | a bright shimmer sweeps across it | the accent washes across it with a shine |
+| `textNeon` | a neon sign warms up as you pull, then flickers on | a surge of light runs through the glowing letters | it flashes bright |
+| `textFlip` | the letters flip up into place in 3D like a split-flap board, then roll over in turn | they keep rolling over one after another | they roll once more and land in the accent |
+| `textScramble` | the word decodes from scrambled symbols as you pull, then turns to the accent | its letters scramble and decode one after another | it scrambles and decodes all at once |
+| `textOutline` | an outline of the word draws itself as you pull, and flashes full at the trigger point | a light runs along the outline | the accent pours into it |
+| `textTypewriter` | the word is typed letter by letter as you pull, with a caret | it is deleted and typed again, the caret blinking between | it finishes typing and the caret fades |
 
-The three text styles draw `text`, such as your app's name, in `textStyle` (for your brand font), set on the indicator or app-wide in `FxRefreshTheme`. The word stays on one line, ends with an ellipsis if it does not fit, and keeps Arabic and other joined scripts shaped as they should be.
+The eight text styles draw `text`, such as your app's name, in `textStyle` (for your brand font), set on the indicator or app-wide in `FxRefreshTheme`. The word stays on one line, ends with an ellipsis if it does not fit, and keeps Arabic and other joined scripts shaped as they should be.
 
 ```dart
 FxRefreshIndicator(

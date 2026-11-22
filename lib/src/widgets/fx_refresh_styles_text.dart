@@ -1,12 +1,15 @@
 part of 'fx_refresh_styles.dart';
 
-// The text styles: textFill, textWave and textShimmer draw the indicator's
-// word (such as an app's name) on a frosted pill. They share the floating
-// placement, the kick and the frosted surface with the other styles.
+// The text styles draw the indicator's word (such as an app's name) on a
+// frosted pill. They share the floating placement, the kick and the frosted
+// surface with the other styles. textFill, textWave and textShimmer are drawn
+// here; the rest are in fx_refresh_styles_text_more.dart.
 
 /// The laid-out word: its painter, one box per letter and its line metrics.
+/// The outline and the scramble symbols are laid out the first time a style
+/// asks for them.
 class _Word {
-  _Word(this.painter) {
+  _Word(this.painter, this.maxWidth) {
     final text = painter.plainText;
     var offset = 0;
     while (offset < text.length) {
@@ -31,6 +34,7 @@ class _Word {
   }
 
   final TextPainter painter;
+  final double maxWidth;
 
   /// Each letter's box, in reading order.
   final List<Rect> letters = [];
@@ -38,9 +42,63 @@ class _Word {
   late final double ascent;
   late final double descent;
 
+  TextPainter? _outline;
+  List<TextPainter>? _symbols;
+
+  String get text => (painter.text! as TextSpan).text!;
+  TextStyle get style => (painter.text! as TextSpan).style!;
+
+  /// The font size after text scaling.
+  double get fontSize => painter.textScaler.scale(style.fontSize ?? 22);
+
   Size get size => painter.size;
 
   void paint(Canvas canvas) => painter.paint(canvas, Offset.zero);
+
+  /// The word as a stroked outline, laid out like the word.
+  TextPainter get outline => _outline ??= TextPainter(
+    text: TextSpan(
+      text: text,
+      style: style.copyWith(
+        foreground: Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = (fontSize * 0.06).clamp(1.1, 2.6)
+          ..strokeJoin = StrokeJoin.round
+          ..color = const Color(0xFFFFFFFF),
+      ),
+    ),
+    textDirection: painter.textDirection,
+    textScaler: painter.textScaler,
+    maxLines: 1,
+    ellipsis: '…',
+  )..layout(maxWidth: maxWidth);
+
+  /// Symbols for textScramble, one painter each, in a set that suits the
+  /// word: its own case for cased scripts, Arabic digits for Arabic and
+  /// digits otherwise.
+  List<TextPainter> get symbols => _symbols ??= [
+    for (final symbol in _symbolsFor(text).split(''))
+      TextPainter(
+        text: TextSpan(text: symbol, style: style),
+        textDirection: painter.textDirection,
+        textScaler: painter.textScaler,
+      )..layout(),
+  ];
+
+  static String _symbolsFor(String text) {
+    if (RegExp('[؀-ۿ]').hasMatch(text)) return '٠١٢٣٤٥٦٧٨٩#%*+';
+    if (text.toLowerCase() == text.toUpperCase()) return '0123456789#%&*+?';
+    if (text == text.toLowerCase()) return 'abcdefghjkmnpqrstuvwxyz#%&*?';
+    return 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*';
+  }
+
+  void dispose() {
+    painter.dispose();
+    _outline?.dispose();
+    for (final symbol in _symbols ?? const <TextPainter>[]) {
+      symbol.dispose();
+    }
+  }
 }
 
 /// The word on a frosted pill, in one of the text styles.
@@ -65,13 +123,48 @@ class _WordIndicator extends StatefulWidget {
   State<_WordIndicator> createState() => _WordIndicatorState();
 }
 
-class _WordIndicatorState extends State<_WordIndicator> {
+class _WordIndicatorState extends State<_WordIndicator>
+    with SingleTickerProviderStateMixin {
   _Word? _word;
   Object? _key;
 
+  /// A slower loop than the frame's spin, for textTypewriter to delete and
+  /// type the word again. It holds where it is when the refresh ends.
+  late final AnimationController _loop = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2600),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _syncLoop();
+  }
+
+  @override
+  void didUpdateWidget(_WordIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncLoop();
+  }
+
+  void _syncLoop() {
+    final frame = widget.frame;
+    final run =
+        widget.style == FxRefreshStyle.textTypewriter &&
+        frame.status == FxRefreshStatus.refresh &&
+        !frame.reduceMotion;
+    if (run && !_loop.isAnimating) {
+      _loop.repeat();
+    } else if (!run && _loop.isAnimating) {
+      _loop.stop();
+    }
+    if (frame.beforeTrigger && _loop.value != 0) _loop.value = 0;
+  }
+
   @override
   void dispose() {
-    _word?.painter.dispose();
+    _loop.dispose();
+    _word?.dispose();
     super.dispose();
   }
 
@@ -107,7 +200,7 @@ class _WordIndicatorState extends State<_WordIndicator> {
     final key = (frame.text, style, scaler, direction, maxWidth);
     final cached = _word;
     if (cached != null && key == _key) return cached;
-    cached?.painter.dispose();
+    cached?.dispose();
     _key = key;
     TextPainter lay(TextStyle style, TextScaler scaler) => TextPainter(
       text: TextSpan(text: frame.text, style: style),
@@ -125,7 +218,7 @@ class _WordIndicatorState extends State<_WordIndicator> {
       painter.dispose();
       painter = lay(style.copyWith(fontSize: fontSize), TextScaler.noScaling);
     }
-    return _word = _Word(painter);
+    return _word = _Word(painter, math.max(0, maxWidth));
   }
 
   @override
@@ -180,6 +273,7 @@ class _WordIndicatorState extends State<_WordIndicator> {
                           word,
                           kick,
                           settle,
+                          _loop,
                         ),
                       ),
                     ),
@@ -195,14 +289,27 @@ class _WordIndicatorState extends State<_WordIndicator> {
 }
 
 class _WordPainter extends CustomPainter {
-  _WordPainter(this.frame, this.style, this.word, this.kick, this.settle)
-    : super(repaint: Listenable.merge([frame.ticks, kick, settle]));
+  _WordPainter(
+    this.frame,
+    this.style,
+    this.word,
+    this.kick,
+    this.settle,
+    this.loop,
+  ) : super(repaint: Listenable.merge([frame.ticks, kick, settle, loop]));
 
   final FxRefreshFrame frame;
   final FxRefreshStyle style;
   final _Word word;
+
+  /// Plays from 0 to 1 at the trigger point; rests at 1.
   final Animation<double> kick;
+
+  /// Plays from 0 to 1 as refreshing starts; rests at 1.
   final Animation<double> settle;
+
+  /// The typewriter's slow loop.
+  final Animation<double> loop;
 
   static const Color _white = Color(0xFFFFFFFF);
 
@@ -275,10 +382,31 @@ class _WordPainter extends CustomPainter {
         _wave(canvas, size);
       case FxRefreshStyle.textShimmer:
         _shimmer(canvas, size);
+      case FxRefreshStyle.textNeon:
+        _neon(canvas, size);
+      case FxRefreshStyle.textFlip:
+        _flip(canvas, size);
+      case FxRefreshStyle.textScramble:
+        _scramble(canvas, size);
+      case FxRefreshStyle.textOutline:
+        _outline(canvas, size);
+      case FxRefreshStyle.textTypewriter:
+        _typewriter(canvas, size);
       case _:
         _fill(canvas, size);
     }
   }
+
+  /// How much of the accent the word shows: none before the trigger point,
+  /// fading in with the kick there and staying after.
+  double get _accentShare => frame.beforeTrigger
+      ? 0
+      : Curves.easeOut.transform(_interval(kick.value, 0, 0.4));
+
+  /// The gap between letter starts in a staggered run over [count] letters
+  /// that must fit in [span] of the run.
+  static double _step(int count, double most, double span) =>
+      count > 1 ? math.min(most, span / (count - 1)) : 0;
 
   /// Where the liquid's surface sits in the refresh loop at [s]: it sloshes
   /// between a third full and nearly full.
@@ -544,5 +672,6 @@ class _WordPainter extends CustomPainter {
       old.style != style ||
       old.word != word ||
       old.kick != kick ||
-      old.settle != settle;
+      old.settle != settle ||
+      old.loop != loop;
 }

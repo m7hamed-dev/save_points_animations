@@ -89,7 +89,7 @@ on, so try it with that setting off.
   charts, inputs and the rest of the widget catalog, each section a live demo.
 - **Playground:** pick effects, timing, direction and play mode, watch the
   result, and copy the chain that produces it.
-- **Pull to refresh:** the thirteen `FxRefreshIndicator` styles on a list that
+- **Pull to refresh:** the eighteen `FxRefreshIndicator` styles on a list that
   fetches a message on every refresh, with light/dark and left-to-right /
   right-to-left switches, and a choice of word for the text styles.
 - **Glow:** the six `FxGlow` styles on a button, a card and an avatar, with

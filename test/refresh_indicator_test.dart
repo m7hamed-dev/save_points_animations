@@ -640,11 +640,26 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    for (final style in [
-      FxRefreshStyle.textFill,
-      FxRefreshStyle.textWave,
-      FxRefreshStyle.textShimmer,
-    ]) {
+    final textStyles = [
+      for (final style in FxRefreshStyle.values)
+        if (style.name.startsWith('text')) style,
+    ];
+    test('there are eight text styles', () {
+      expect(textStyles, hasLength(8));
+    });
+
+    for (final style in textStyles) {
+      testWidgets('${style.name} can be removed while refreshing', (
+        tester,
+      ) async {
+        await tester.pumpWidget(_host(indicator(style: style, text: 'savyo')));
+        await _pull(tester, _past);
+        await _frames(tester, 900);
+        await tester.pumpWidget(_host(const SizedBox()));
+        await tester.pump(const Duration(seconds: 3));
+        expect(tester.takeException(), isNull);
+      });
+
       for (final reduceMotion in [false, true]) {
         testWidgets('${style.name} runs a full cycle right to left with '
             'Arabic and emoji${reduceMotion ? ', under reduced motion' : ''}', (
@@ -659,7 +674,8 @@ void main() {
             ),
           );
           await _pull(tester, _past);
-          await _frames(tester, 1500);
+          // Longer than the typewriter's loop.
+          await _frames(tester, 3000);
           expect(refreshes, 1);
           refresh.complete();
           await tester.pumpAndSettle();

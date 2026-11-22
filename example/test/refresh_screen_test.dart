@@ -24,7 +24,7 @@ void main() {
   ) async {
     // Tall enough to keep every fetched message on screen.
     tester.view
-      ..physicalSize = const Size(800, 1400)
+      ..physicalSize = const Size(800, 1900)
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const MaterialApp(home: RefreshScreen()));
@@ -73,7 +73,7 @@ void main() {
     final words = find.byKey(const ValueKey('words'));
     expect(words, findsNothing);
 
-    await tester.tap(find.widgetWithText(ChoiceChip, 'textWave'));
+    await tester.tap(find.widgetWithText(ChoiceChip, 'textFill'));
     await tester.pumpAndSettle();
     expect(words, findsOneWidget);
     String? word() =>

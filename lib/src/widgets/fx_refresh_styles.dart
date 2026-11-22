@@ -12,6 +12,7 @@ import 'package:save_points_animations/src/widgets/fx_refresh_indicator.dart';
 
 part 'fx_refresh_styles_more.dart';
 part 'fx_refresh_styles_text.dart';
+part 'fx_refresh_styles_text_more.dart';
 
 /// Everything a style needs to draw one indicator.
 @immutable
@@ -131,7 +132,12 @@ Widget fxRefreshIndicatorFor(FxRefreshStyle style, FxRefreshFrame frame) =>
       FxRefreshStyle.flip => _FlipIndicator(frame),
       FxRefreshStyle.textFill ||
       FxRefreshStyle.textWave ||
-      FxRefreshStyle.textShimmer => _WordIndicator(frame, style),
+      FxRefreshStyle.textShimmer ||
+      FxRefreshStyle.textNeon ||
+      FxRefreshStyle.textFlip ||
+      FxRefreshStyle.textScramble ||
+      FxRefreshStyle.textOutline ||
+      FxRefreshStyle.textTypewriter => _WordIndicator(frame, style),
     };
 
 /// How long [style]'s finish animation runs.
@@ -149,7 +155,12 @@ Duration fxRefreshExitDuration(FxRefreshStyle style) => switch (style) {
   FxRefreshStyle.flip => const Duration(milliseconds: 1000),
   FxRefreshStyle.textFill ||
   FxRefreshStyle.textWave ||
-  FxRefreshStyle.textShimmer => const Duration(milliseconds: 1000),
+  FxRefreshStyle.textShimmer ||
+  FxRefreshStyle.textNeon ||
+  FxRefreshStyle.textFlip ||
+  FxRefreshStyle.textScramble ||
+  FxRefreshStyle.textOutline ||
+  FxRefreshStyle.textTypewriter => const Duration(milliseconds: 1000),
 };
 
 /// The height of the strip below the top edge that [style] draws in.
@@ -167,7 +178,12 @@ double fxRefreshAreaHeight(FxRefreshStyle style, double displacement) {
     FxRefreshStyle.flip => _FlipIndicator.size,
     FxRefreshStyle.textFill ||
     FxRefreshStyle.textWave ||
-    FxRefreshStyle.textShimmer => _WordIndicator.maxHeight,
+    FxRefreshStyle.textShimmer ||
+    FxRefreshStyle.textNeon ||
+    FxRefreshStyle.textFlip ||
+    FxRefreshStyle.textScramble ||
+    FxRefreshStyle.textOutline ||
+    FxRefreshStyle.textTypewriter => _WordIndicator.maxHeight,
   };
   if (style == FxRefreshStyle.line) return _LinePainter.area;
   // Overpulled position plus room for the shadow or the liquid's burst.

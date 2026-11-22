@@ -66,11 +66,11 @@ const _arabicLabels = FxRefreshLabels(
   done: 'تم التحديث',
 );
 
-/// The styles that draw a word, and some words to try in them.
-const _wordStyles = {
-  FxRefreshStyle.textFill,
-  FxRefreshStyle.textWave,
-  FxRefreshStyle.textShimmer,
+/// The styles that draw a word (textFill to textTypewriter), and some words
+/// to try in them.
+final _wordStyles = {
+  for (final style in FxRefreshStyle.values)
+    if (style.name.startsWith('text')) style,
 };
 const _words = ['savyo', 'hunger', 'تحديث'];
 

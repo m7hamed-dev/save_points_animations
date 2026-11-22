@@ -98,6 +98,35 @@ enum FxRefreshStyle {
   /// point. A band of light sweeps across it while refreshing, and a last
   /// sweep fills it with the accent when done.
   textShimmer,
+
+  /// Your word (see [FxRefreshIndicator.text]) as a neon sign that warms up
+  /// as you pull and flickers on at the trigger point. Its letters light in
+  /// a chase while refreshing, and it flashes bright when done.
+  textNeon,
+
+  /// Your word (see [FxRefreshIndicator.text]) whose letters flip up into
+  /// place in 3D as you pull, like a split-flap board. They roll over in
+  /// turn at the trigger point and while refreshing, and land in the accent
+  /// when done.
+  textFlip,
+
+  /// Your word (see [FxRefreshIndicator.text]) decoded from scrambled
+  /// symbols as you pull. Its letters turn to the accent at the trigger
+  /// point, scramble and decode one after another while refreshing, and all
+  /// decode at once when done.
+  textScramble,
+
+  /// Your word (see [FxRefreshIndicator.text]) as an outline that draws
+  /// itself as you pull and flashes full at the trigger point. A light runs
+  /// along the outline while refreshing, and the accent pours into it when
+  /// done.
+  textOutline,
+
+  /// Your word (see [FxRefreshIndicator.text]) typed letter by letter as
+  /// you pull, with a blinking caret. It turns to the accent at the trigger
+  /// point, is deleted and typed again while refreshing, and finishes typing
+  /// when done.
+  textTypewriter,
 }
 
 /// Where an [FxRefreshIndicator] is in a pull-to-refresh gesture. Matches the
@@ -233,7 +262,7 @@ class FxRefreshTheme extends InheritedWidget {
       textStyle != oldWidget.textStyle;
 }
 
-/// Pull-to-refresh for any vertical scrollable, in one of thirteen
+/// Pull-to-refresh for any vertical scrollable, in one of eighteen
 /// [FxRefreshStyle]s.
 ///
 /// It works like Material's `RefreshIndicator`: drag the [child] past its top
@@ -321,10 +350,10 @@ class FxRefreshIndicator extends StatefulWidget {
   /// [FxRefreshTheme.labels], then English.
   final FxRefreshLabels? labels;
 
-  /// The word that [FxRefreshStyle.textFill], [FxRefreshStyle.textWave] and
-  /// [FxRefreshStyle.textShimmer] draw, such as your app's name. Defaults to
-  /// [FxRefreshTheme.text], then 'Refresh'. Keep it short: one line that fits
-  /// the width, cut off with an ellipsis if it does not.
+  /// The word that the text styles ([FxRefreshStyle.textFill] to
+  /// [FxRefreshStyle.textTypewriter]) draw, such as your app's name.
+  /// Defaults to [FxRefreshTheme.text], then 'Refresh'. Keep it short: one
+  /// line that fits the width, cut off with an ellipsis if it does not.
   final String? text;
 
   /// The look of [text], merged over a bold 22-point default in the
