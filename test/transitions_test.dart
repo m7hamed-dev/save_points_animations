@@ -37,6 +37,43 @@ void main() {
       });
     }
 
+    for (final transition in [
+      FxPageTransition.sharedAxisHorizontal,
+      FxPageTransition.cupertino,
+    ]) {
+      testWidgets('$transition mirrors under right-to-left text', (
+        tester,
+      ) async {
+        Offset start(TextDirection direction) => tester
+            .widgetList<SlideTransition>(find.byType(SlideTransition))
+            .map((slide) => slide.position.value)
+            .firstWhere((offset) => offset != Offset.zero);
+
+        for (final direction in TextDirection.values) {
+          await tester.pumpWidget(
+            Directionality(
+              textDirection: direction,
+              child: buildFxTransition(
+                transition: transition,
+                slideFrom: AxisDirection.right,
+                curve: Curves.linear,
+                animation: const AlwaysStoppedAnimation(0),
+                secondaryAnimation: const AlwaysStoppedAnimation(0),
+                textDirection: direction,
+                child: const SizedBox(),
+              ),
+            ),
+          );
+          final dx = start(direction).dx;
+          // The new page waits on the trailing side: right in LTR, left in RTL.
+          expect(
+            dx,
+            direction == TextDirection.ltr ? greaterThan(0) : lessThan(0),
+          );
+        }
+      });
+    }
+
     testWidgets('reverse (pop) animates back without error', (tester) async {
       await tester.pumpWidget(
         MaterialApp(

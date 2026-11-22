@@ -19,6 +19,13 @@ Offset _slideBegin(AxisDirection from) {
 
 /// The raw transition builder — also reusable as a `transitionsBuilder` in a
 /// custom [PageRouteBuilder] or `PageTransitionsBuilder`.
+///
+/// [textDirection] mirrors the transitions that move "forward" along the
+/// reading direction — [FxPageTransition.sharedAxisHorizontal] and
+/// [FxPageTransition.cupertino] — so under [TextDirection.rtl] the new page
+/// comes in from the left and the old one leaves to the right. Pass
+/// `Directionality.of(context)`; `FxPageRoute` does. [slideFrom] stays a
+/// physical edge in every locale.
 Widget buildFxTransition({
   required FxPageTransition transition,
   required AxisDirection slideFrom,
@@ -28,7 +35,10 @@ Widget buildFxTransition({
   required Widget child,
   Alignment revealAlignment = Alignment.center,
   Rect? originRect,
+  TextDirection textDirection = TextDirection.ltr,
 }) {
+  // +1 when "forward" is to the left (LTR), -1 when it is to the right.
+  final forward = textDirection == TextDirection.rtl ? -1.0 : 1.0;
   final opacity = animation.drive(CurveTween(curve: curve));
 
   switch (transition) {
@@ -91,6 +101,7 @@ Widget buildFxTransition({
         animation,
         secondaryAnimation,
         child,
+        forward: forward,
       );
 
     case FxPageTransition.sharedAxisVertical:
@@ -106,7 +117,13 @@ Widget buildFxTransition({
       return _fadeThrough(curve, animation, secondaryAnimation, child);
 
     case FxPageTransition.cupertino:
-      return _cupertino(curve, animation, secondaryAnimation, child);
+      return _cupertino(
+        curve,
+        animation,
+        secondaryAnimation,
+        child,
+        forward: forward,
+      );
 
     case FxPageTransition.depth:
       return _depth(curve, animation, secondaryAnimation, child);
@@ -260,12 +277,13 @@ Widget _cupertino(
   Curve curve,
   Animation<double> animation,
   Animation<double> secondaryAnimation,
-  Widget child,
-) {
+  Widget child, {
+  double forward = 1,
+}) {
   final incoming = SlideTransition(
     position: animation.drive(
       Tween<Offset>(
-        begin: const Offset(1, 0),
+        begin: Offset(forward, 0),
         end: Offset.zero,
       ).chain(CurveTween(curve: curve)),
     ),
@@ -297,7 +315,7 @@ Widget _cupertino(
     position: secondaryAnimation.drive(
       Tween<Offset>(
         begin: Offset.zero,
-        end: const Offset(-0.3, 0),
+        end: Offset(-0.3 * forward, 0),
       ).chain(CurveTween(curve: curve)),
     ),
     child: dimmed,
@@ -583,13 +601,14 @@ Widget _sharedAxis(
   Curve curve,
   Animation<double> animation,
   Animation<double> secondaryAnimation,
-  Widget child,
-) {
+  Widget child, {
+  double forward = 1,
+}) {
   final enterBegin = axis == Axis.horizontal
-      ? const Offset(0.3, 0)
+      ? Offset(0.3 * forward, 0)
       : const Offset(0, 0.3);
   final exitEnd = axis == Axis.horizontal
-      ? const Offset(-0.3, 0)
+      ? Offset(-0.3 * forward, 0)
       : const Offset(0, -0.3);
 
   final entering = FadeTransition(
