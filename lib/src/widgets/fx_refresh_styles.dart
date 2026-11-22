@@ -4,12 +4,14 @@
 library;
 
 import 'dart:math' as math;
+import 'dart:ui' as ui show Gradient;
 import 'dart:ui' show ImageFilter, PathMetric, lerpDouble;
 
 import 'package:flutter/widgets.dart';
 import 'package:save_points_animations/src/widgets/fx_refresh_indicator.dart';
 
 part 'fx_refresh_styles_more.dart';
+part 'fx_refresh_styles_text.dart';
 
 /// Everything a style needs to draw one indicator.
 @immutable
@@ -30,6 +32,8 @@ class FxRefreshFrame {
     required this.displacement,
     required this.labels,
     required this.reduceMotion,
+    this.text = 'Refresh',
+    this.textStyle,
   });
 
   /// Where the gesture is.
@@ -76,6 +80,12 @@ class FxRefreshFrame {
   /// Whether to hold still frames instead of looping.
   final bool reduceMotion;
 
+  /// The word of the text styles.
+  final String text;
+
+  /// The look of [text], merged over the default.
+  final TextStyle? textStyle;
+
   /// Pull toward the trigger point, 0 to 1.
   double get progress => pull.value.clamp(0.0, 1.0);
 
@@ -101,7 +111,9 @@ class FxRefreshFrame {
       other.dark == dark &&
       other.rtl == rtl &&
       other.displacement == displacement &&
-      other.reduceMotion == reduceMotion;
+      other.reduceMotion == reduceMotion &&
+      other.text == text &&
+      other.textStyle == textStyle;
 }
 
 /// The indicator for [style].
@@ -117,6 +129,9 @@ Widget fxRefreshIndicatorFor(FxRefreshStyle style, FxRefreshFrame frame) =>
       FxRefreshStyle.bars => _BarsIndicator(frame),
       FxRefreshStyle.infinity => _InfinityIndicator(frame),
       FxRefreshStyle.flip => _FlipIndicator(frame),
+      FxRefreshStyle.textFill ||
+      FxRefreshStyle.textWave ||
+      FxRefreshStyle.textShimmer => _WordIndicator(frame, style),
     };
 
 /// How long [style]'s finish animation runs.
@@ -132,6 +147,9 @@ Duration fxRefreshExitDuration(FxRefreshStyle style) => switch (style) {
   FxRefreshStyle.bars => const Duration(milliseconds: 950),
   FxRefreshStyle.infinity => const Duration(milliseconds: 1100),
   FxRefreshStyle.flip => const Duration(milliseconds: 1000),
+  FxRefreshStyle.textFill ||
+  FxRefreshStyle.textWave ||
+  FxRefreshStyle.textShimmer => const Duration(milliseconds: 1000),
 };
 
 /// The height of the strip below the top edge that [style] draws in.
@@ -147,6 +165,9 @@ double fxRefreshAreaHeight(FxRefreshStyle style, double displacement) {
     FxRefreshStyle.bars => _BarsIndicator.size,
     FxRefreshStyle.infinity => _InfinityIndicator.size.height,
     FxRefreshStyle.flip => _FlipIndicator.size,
+    FxRefreshStyle.textFill ||
+    FxRefreshStyle.textWave ||
+    FxRefreshStyle.textShimmer => _WordIndicator.maxHeight,
   };
   if (style == FxRefreshStyle.line) return _LinePainter.area;
   // Overpulled position plus room for the shadow or the liquid's burst.

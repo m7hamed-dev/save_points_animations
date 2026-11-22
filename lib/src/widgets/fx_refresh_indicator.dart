@@ -80,6 +80,24 @@ enum FxRefreshStyle {
   /// the trigger point, keeps flipping while refreshing and lands on a check
   /// mark when done.
   flip,
+
+  /// Your word (see [FxRefreshIndicator.text]) on a frosted pill, filling
+  /// with a gradient liquid as you pull. The liquid splashes to the top at
+  /// the trigger point, sloshes up and down while refreshing and fills the
+  /// word with a shine when done.
+  textFill,
+
+  /// Your word (see [FxRefreshIndicator.text]) on a frosted pill whose
+  /// letters rise in one by one as you pull, turn to the accent gradient
+  /// with a hop at the trigger point, ride a wave while refreshing and pop
+  /// in turn when done.
+  textWave,
+
+  /// Your word (see [FxRefreshIndicator.text]) on a frosted pill, written in
+  /// the text direction as you pull and lit with the accent at the trigger
+  /// point. A band of light sweeps across it while refreshing, and a last
+  /// sweep fills it with the accent when done.
+  textShimmer,
 }
 
 /// Where an [FxRefreshIndicator] is in a pull-to-refresh gesture. Matches the
@@ -150,7 +168,8 @@ class FxRefreshLabels {
 }
 
 /// App-wide defaults for every [FxRefreshIndicator] below it: the style, the
-/// colors and the capsule texts. An argument on the indicator itself wins.
+/// colors, the capsule texts and the word of the text styles. An argument on
+/// the indicator itself wins.
 ///
 /// Put it above your screens, for example in `MaterialApp.builder`, so the
 /// indicators use your brand color:
@@ -173,6 +192,8 @@ class FxRefreshTheme extends InheritedWidget {
     this.secondaryColor,
     this.backgroundColor,
     this.labels,
+    this.text,
+    this.textStyle,
     required super.child,
   });
 
@@ -191,6 +212,12 @@ class FxRefreshTheme extends InheritedWidget {
   /// Default [FxRefreshIndicator.labels].
   final FxRefreshLabels? labels;
 
+  /// Default [FxRefreshIndicator.text], such as your app's name.
+  final String? text;
+
+  /// Default [FxRefreshIndicator.textStyle], such as your brand font.
+  final TextStyle? textStyle;
+
   /// The nearest [FxRefreshTheme] above [context], if any.
   static FxRefreshTheme? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<FxRefreshTheme>();
@@ -201,10 +228,12 @@ class FxRefreshTheme extends InheritedWidget {
       color != oldWidget.color ||
       secondaryColor != oldWidget.secondaryColor ||
       backgroundColor != oldWidget.backgroundColor ||
-      labels != oldWidget.labels;
+      labels != oldWidget.labels ||
+      text != oldWidget.text ||
+      textStyle != oldWidget.textStyle;
 }
 
-/// Pull-to-refresh for any vertical scrollable, in one of ten
+/// Pull-to-refresh for any vertical scrollable, in one of thirteen
 /// [FxRefreshStyle]s.
 ///
 /// It works like Material's `RefreshIndicator`: drag the [child] past its top
@@ -249,6 +278,8 @@ class FxRefreshIndicator extends StatefulWidget {
     this.secondaryColor,
     this.backgroundColor,
     this.labels,
+    this.text,
+    this.textStyle,
     this.displacement = 40,
     this.edgeOffset = 0,
     this.triggerMode = FxRefreshTriggerMode.onEdge,
@@ -289,6 +320,19 @@ class FxRefreshIndicator extends StatefulWidget {
   /// The texts of [FxRefreshStyle.capsule]. Defaults to
   /// [FxRefreshTheme.labels], then English.
   final FxRefreshLabels? labels;
+
+  /// The word that [FxRefreshStyle.textFill], [FxRefreshStyle.textWave] and
+  /// [FxRefreshStyle.textShimmer] draw, such as your app's name. Defaults to
+  /// [FxRefreshTheme.text], then 'Refresh'. Keep it short: one line that fits
+  /// the width, cut off with an ellipsis if it does not.
+  final String? text;
+
+  /// The look of [text], merged over a bold 22-point default in the
+  /// surrounding font, for example to use your brand font. Its color is not
+  /// used: the styles paint the word in the accent. A font size that would
+  /// make the word taller than 38 logical pixels is shrunk to that height.
+  /// Defaults to [FxRefreshTheme.textStyle].
+  final TextStyle? textStyle;
 
   /// How far below the top edge the indicator rests while refreshing, in
   /// logical pixels.
@@ -626,6 +670,8 @@ class FxRefreshIndicatorState extends State<FxRefreshIndicator>
       rtl: Directionality.maybeOf(context) == TextDirection.rtl,
       displacement: widget.displacement,
       labels: widget.labels ?? theme?.labels ?? const FxRefreshLabels(),
+      text: widget.text ?? theme?.text ?? 'Refresh',
+      textStyle: widget.textStyle ?? theme?.textStyle,
       reduceMotion: reduceMotion,
     );
   }

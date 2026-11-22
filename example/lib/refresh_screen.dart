@@ -5,7 +5,8 @@ import 'package:save_points_animations/save_points_animations.dart';
 
 /// Pull-to-refresh in each [FxRefreshStyle] on a real list: every refresh
 /// fetches a message. Light/dark and LTR/RTL switch locally, so the screen
-/// shows how the indicators follow the theme and the text direction.
+/// shows how the indicators follow the theme and the text direction. The text
+/// styles draw a word picked from a second row of chips.
 class RefreshScreen extends StatefulWidget {
   const RefreshScreen({super.key});
 
@@ -65,10 +66,19 @@ const _arabicLabels = FxRefreshLabels(
   done: 'تم التحديث',
 );
 
+/// The styles that draw a word, and some words to try in them.
+const _wordStyles = {
+  FxRefreshStyle.textFill,
+  FxRefreshStyle.textWave,
+  FxRefreshStyle.textShimmer,
+};
+const _words = ['savyo', 'hunger', 'تحديث'];
+
 class _RefreshScreenState extends State<RefreshScreen> {
   final _indicator = GlobalKey<FxRefreshIndicatorState>();
   final List<_Message> _messages = [..._inbox];
   FxRefreshStyle _style = FxRefreshStyle.ring;
+  String _word = _words.first;
   bool _dark = false;
   bool _rtl = false;
   int _fetched = 0;
@@ -106,6 +116,7 @@ class _RefreshScreenState extends State<RefreshScreen> {
 
   Widget _buildScreen(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final wordy = _wordStyles.contains(_style);
     // App-wide defaults would usually sit in MaterialApp.builder.
     final screen = FxRefreshTheme(
       color: scheme.primary,
@@ -135,31 +146,33 @@ class _RefreshScreenState extends State<RefreshScreen> {
             ),
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(52),
-            child: SizedBox(
-              height: 52,
-              child: ListView(
-                key: const ValueKey('styles'),
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-                children: [
-                  for (final style in FxRefreshStyle.values)
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(end: 8),
-                      child: ChoiceChip(
-                        label: Text(style.name),
-                        selected: _style == style,
-                        onSelected: (_) => setState(() => _style = style),
-                      ),
-                    ),
-                ],
-              ),
+            preferredSize: Size.fromHeight(wordy ? 104 : 52),
+            child: Column(
+              children: [
+                _chips(
+                  key: const ValueKey('styles'),
+                  values: FxRefreshStyle.values,
+                  label: (style) => style.name,
+                  selected: _style,
+                  onSelected: (style) => setState(() => _style = style),
+                ),
+                // The text styles draw a word: pick one to try.
+                if (wordy)
+                  _chips(
+                    key: const ValueKey('words'),
+                    values: _words,
+                    label: (word) => word,
+                    selected: _word,
+                    onSelected: (word) => setState(() => _word = word),
+                  ),
+              ],
             ),
           ),
         ),
         body: FxRefreshIndicator(
           key: _indicator,
           style: _style,
+          text: _word,
           onRefresh: _reload,
           child: ListView(
             // Pullable even when the list is shorter than the screen.
@@ -184,6 +197,35 @@ class _RefreshScreenState extends State<RefreshScreen> {
         context,
       ).copyWith(dragDevices: PointerDeviceKind.values.toSet()),
       child: screen,
+    );
+  }
+
+  /// A row of choice chips, one per value, that scrolls sideways.
+  Widget _chips<T>({
+    required Key key,
+    required List<T> values,
+    required String Function(T value) label,
+    required T selected,
+    required ValueChanged<T> onSelected,
+  }) {
+    return SizedBox(
+      height: 52,
+      child: ListView(
+        key: key,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+        children: [
+          for (final value in values)
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: 8),
+              child: ChoiceChip(
+                label: Text(label(value)),
+                selected: selected == value,
+                onSelected: (_) => onSelected(value),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

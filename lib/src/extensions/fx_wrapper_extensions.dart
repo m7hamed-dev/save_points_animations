@@ -316,7 +316,7 @@ extension FxWrap on Widget {
   );
 
   /// Wrap this scrollable in [FxRefreshIndicator]: pull past the top edge to
-  /// run [onRefresh], in one of ten [FxRefreshStyle]s.
+  /// run [onRefresh], in one of thirteen [FxRefreshStyle]s.
   FxRefreshIndicator fxRefreshIndicator({
     Key? key,
     required Future<void> Function() onRefresh,
@@ -325,6 +325,8 @@ extension FxWrap on Widget {
     Color? secondaryColor,
     Color? backgroundColor,
     FxRefreshLabels? labels,
+    String? text,
+    TextStyle? textStyle,
     double displacement = 40,
     double edgeOffset = 0,
     FxRefreshTriggerMode triggerMode = FxRefreshTriggerMode.onEdge,
@@ -342,6 +344,8 @@ extension FxWrap on Widget {
     secondaryColor: secondaryColor,
     backgroundColor: backgroundColor,
     labels: labels,
+    text: text,
+    textStyle: textStyle,
     displacement: displacement,
     edgeOffset: edgeOffset,
     triggerMode: triggerMode,

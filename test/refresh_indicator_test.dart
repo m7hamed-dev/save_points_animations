@@ -111,12 +111,16 @@ void main() {
     bool enableFeedback = true,
     String? semanticsLabel,
     String? semanticsValue,
+    String? text,
+    TextStyle? textStyle,
     Widget? child,
   }) {
     return FxRefreshIndicator(
       key: key,
       style: style,
       color: color,
+      text: text,
+      textStyle: textStyle,
       onRefresh: onRefresh,
       onStatusChange: statuses.add,
       triggerMode: triggerMode,
@@ -541,6 +545,129 @@ void main() {
     refresh.complete();
     await tester.pumpAndSettle();
     expect(statuses.last, isNull);
+  });
+
+  group('text styles', () {
+    // The word is painted, not a Text widget, so these measure its canvas.
+    final word = find.byWidgetPredicate(
+      (w) => w is CustomPaint && '${w.painter.runtimeType}' == '_WordPainter',
+    );
+
+    Future<Size> measure(WidgetTester tester, Widget child) async {
+      await tester.pumpWidget(_host(child));
+      final gesture = await _pull(tester, _short, hold: true);
+      await _frames(tester, 200);
+      final size = tester.getSize(word);
+      await gesture.up();
+      await tester.pumpAndSettle();
+      return size;
+    }
+
+    testWidgets('draw the text argument, then the theme text, then '
+        '"Refresh"', (tester) async {
+      const style = FxRefreshStyle.textFill;
+      final short = await measure(tester, indicator(style: style, text: 'ab'));
+      final long = await measure(
+        tester,
+        FxRefreshTheme(
+          text: 'abcdefghij',
+          child: indicator(style: style),
+        ),
+      );
+      final both = await measure(
+        tester,
+        FxRefreshTheme(
+          text: 'abcdefghij',
+          child: indicator(style: style, text: 'ab'),
+        ),
+      );
+      final fallback = await measure(tester, indicator(style: style));
+      expect(both, short);
+      expect(short.width, lessThan(fallback.width));
+      expect(fallback.width, lessThan(long.width));
+    });
+
+    testWidgets('textStyle comes from the argument, then the theme', (
+      tester,
+    ) async {
+      const style = FxRefreshStyle.textWave;
+      final plain = await measure(tester, indicator(style: style));
+      final themed = await measure(
+        tester,
+        FxRefreshTheme(
+          textStyle: const TextStyle(fontSize: 30),
+          child: indicator(style: style),
+        ),
+      );
+      final both = await measure(
+        tester,
+        FxRefreshTheme(
+          textStyle: const TextStyle(fontSize: 30),
+          child: indicator(
+            style: style,
+            textStyle: const TextStyle(fontSize: 14),
+          ),
+        ),
+      );
+      expect(themed.height, greaterThan(plain.height));
+      expect(both.height, lessThan(plain.height));
+    });
+
+    testWidgets('a long word is cut off to fit a small phone', (tester) async {
+      tester.view
+        ..devicePixelRatio = 1
+        ..physicalSize = const Size(320, 480);
+      addTearDown(tester.view.reset);
+      final size = await measure(
+        tester,
+        indicator(style: FxRefreshStyle.textShimmer, text: 'savyo' * 30),
+      );
+      // The width less a 24px margin on each side and the pill's padding.
+      expect(size.width, lessThanOrEqualTo(320 - 48 - 44));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('a large font size is shrunk to fit the pill', (tester) async {
+      final size = await measure(
+        tester,
+        indicator(
+          style: FxRefreshStyle.textFill,
+          text: 'hunger',
+          textStyle: const TextStyle(fontSize: 80),
+        ),
+      );
+      expect(size.height, lessThanOrEqualTo(38.01));
+      expect(tester.takeException(), isNull);
+    });
+
+    for (final style in [
+      FxRefreshStyle.textFill,
+      FxRefreshStyle.textWave,
+      FxRefreshStyle.textShimmer,
+    ]) {
+      for (final reduceMotion in [false, true]) {
+        testWidgets('${style.name} runs a full cycle right to left with '
+            'Arabic and emoji${reduceMotion ? ', under reduced motion' : ''}', (
+          tester,
+        ) async {
+          await tester.pumpWidget(
+            _host(
+              indicator(style: style, text: 'تحديث 👋🏽 café'),
+              direction: TextDirection.rtl,
+              dark: true,
+              reduceMotion: reduceMotion,
+            ),
+          );
+          await _pull(tester, _past);
+          await _frames(tester, 1500);
+          expect(refreshes, 1);
+          refresh.complete();
+          await tester.pumpAndSettle();
+          expect(statuses.last, isNull);
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
   });
 
   // Every style through a full cycle on small and large screens, and in a

@@ -56,11 +56,13 @@
   `FxProgressButton`, `FxHoldButton` — hold the key to fill),
   `FxExpandable`'s header, `FxThemeToggle` and `FxScrollToTop`. A focus ring
   appears only under keyboard focus; disabled controls are skipped.
-- `FxRefreshIndicator`: pull-to-refresh in ten styles (`FxRefreshStyle.ring`,
-  `capsule`, `liquid`, `dots`, `line`, `morph`, `spokes`, `bars`, `infinity`
-  and `flip`), each with its own motion for the pull, the trigger point, the
-  refresh and the finish, drawn with a two-tone accent gradient on frosted,
-  glossy surfaces. Pulling past the trigger point stretches with a soft
+- `FxRefreshIndicator`: pull-to-refresh in thirteen styles
+  (`FxRefreshStyle.ring`, `capsule`, `liquid`, `dots`, `line`, `morph`,
+  `spokes`, `bars`, `infinity`, `flip`, and the text styles `textFill`,
+  `textWave` and `textShimmer`, which animate a word such as your app's name,
+  set with `text` and `textStyle`), each with its own motion for the pull,
+  the trigger point, the refresh and the finish, drawn with a two-tone accent
+  gradient on frosted, glossy surfaces. Pulling past the trigger point stretches with a soft
   rubber-band resistance. It keeps Material `RefreshIndicator`'s
   mechanics (trigger point, `triggerMode`, `notificationPredicate`, `show()`
   and the `onRefresh` future) without needing a Material ancestor, and
@@ -68,8 +70,8 @@
   follows the surrounding text color in light and dark themes, mirrors under
   right-to-left text and holds a still frame under reduced motion.
   `FxRefreshTheme` sets the style, the colors (`color`, `secondaryColor`,
-  `backgroundColor`) and the capsule's translatable `FxRefreshLabels`
-  app-wide. Also available as `.fxRefreshIndicator()`, and as a demo screen
+  `backgroundColor`), the capsule's translatable `FxRefreshLabels` and the
+  text styles' word app-wide. Also available as `.fxRefreshIndicator()`, and as a demo screen
   in the example app.
 - `FxGlow`: wraps any widget in an animated glow in six styles
   (`FxGlowStyle.pulse`, `aurora`, `beacon`, `neon`, `orbit` and `hover`) that

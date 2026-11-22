@@ -549,7 +549,7 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 <details>
 <summary><b>🔄 Pull to refresh</b></summary>
 
-`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in ten styles and needs no Material ancestor. Pulling past the trigger point stretches with a soft rubber-band resistance:
+`FxRefreshIndicator` works like Material's `RefreshIndicator`, with the same trigger point and `onRefresh` future, so it can replace one without touching your refresh logic. Letting go anywhere past the trigger point refreshes, on every platform. It comes in thirteen styles and needs no Material ancestor. Pulling past the trigger point stretches with a soft rubber-band resistance:
 
 | Style | While pulling | While refreshing | When done |
 |---|---|---|---|
@@ -563,6 +563,11 @@ Stack(children: [page, FxLoadingOverlay(visible: busy, message: 'Saving…')]);
 | `bars` | five gradient bars rise like a signal meter, then hop | they dance like an equalizer | they drop to dots and a check draws over them |
 | `infinity` | an infinity loop draws itself on a frosted pill, then glows | a comet runs round the loop | the loop unties into a check |
 | `flip` | a gradient tile tips up in 3D, then flips over to point up | it keeps flipping, showing a refresh glyph | it lands on a check |
+| `textFill` | your word fills with a gradient liquid as you pull, and brims at the trigger point | the liquid sloshes up and down inside the letters | it fills to the top and a shine sweeps across |
+| `textWave` | the letters rise into place one by one, then hop in a ripple | a wave runs through the letters | each letter hops once in turn |
+| `textShimmer` | the word draws itself in from the start as you pull, then turns to the accent | a bright shimmer sweeps across it | the accent washes across it with a shine |
+
+The three text styles draw `text`, such as your app's name, in `textStyle` (for your brand font), set on the indicator or app-wide in `FxRefreshTheme`. The word stays on one line, ends with an ellipsis if it does not fit, and keeps Arabic and other joined scripts shaped as they should be.
 
 ```dart
 FxRefreshIndicator(
@@ -572,6 +577,15 @@ FxRefreshIndicator(
 );
 
 listView.fxRefreshIndicator(onRefresh: reload, style: FxRefreshStyle.capsule);
+
+// Your brand name as the loader:
+FxRefreshIndicator(
+  style: FxRefreshStyle.textFill,
+  text: 'savyo',
+  textStyle: const TextStyle(fontFamily: 'Poppins'),
+  onRefresh: reload,
+  child: listView,
+);
 
 // Refresh from code, e.g. from a toolbar button:
 final refresher = GlobalKey<FxRefreshIndicatorState>();

@@ -63,6 +63,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('the text styles offer a choice of word', (tester) async {
+    tester.view
+      ..physicalSize = const Size(1600, 900)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(const MaterialApp(home: RefreshScreen()));
+    await tester.pumpAndSettle();
+    final words = find.byKey(const ValueKey('words'));
+    expect(words, findsNothing);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'textWave'));
+    await tester.pumpAndSettle();
+    expect(words, findsOneWidget);
+    String? word() =>
+        tester.widget<FxRefreshIndicator>(find.byType(FxRefreshIndicator)).text;
+    expect(word(), 'savyo');
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'hunger'));
+    await tester.pumpAndSettle();
+    expect(word(), 'hunger');
+    await pullToRefresh(tester);
+    expect(find.text('now'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'ring'));
+    await tester.pumpAndSettle();
+    expect(words, findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets(
     'a mouse drag pulls to refresh on desktop',
     variant: TargetPlatformVariant.only(TargetPlatform.macOS),
